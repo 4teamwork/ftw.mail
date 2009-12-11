@@ -1,0 +1,6 @@
+# created by: svn propset svn:ignore -F ./IGNORE.txt .
+
+ftw.mail.egg-info
+build
+dist
+
