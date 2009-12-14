@@ -24,7 +24,9 @@ setup(name='ftw.mail',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'Plone',
           'plone.app.dexterity',
+          'plone.namedfile',
           'collective.autopermission',
           'collective.testcaselayer',
           # -*- Extra requirements: -*-

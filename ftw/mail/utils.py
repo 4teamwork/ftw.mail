@@ -35,7 +35,7 @@ def get_payload(msg):
     payload = payload.encode('utf-8')
     return payload
     
-def get_body_as_html(msg, url_prefix=''):
+def get_body(msg, url_prefix=''):
     """Returns the mail body as HTML string. All text parts of a multipart
        message are returned."""
     html = ''
@@ -45,11 +45,33 @@ def get_body_as_html(msg, url_prefix=''):
     html = adjust_image_tags(html, msg, url_prefix)
     return html
 
+def get_attachments(msg):
+    """ Returns a list describing the attachements. Only attachments with
+    a filename are returned."""
+    attachments = []
+    if msg is not None and msg.is_multipart():
+        for position,part in enumerate(msg.walk()):
+            content_type = part.get_content_type()
+            filename = get_filename(part)
+            if filename is None:
+                continue
+            # determine size
+            size = 0
+            if content_type == 'message/rfc822':
+                size = len(part.as_string())
+            else:
+                size = len(part.get_payload(decode=1))        
+            attachments.append({'filename': filename,
+                                'content-type': content_type,
+                                'size': size,
+                                'position': position})
+    return attachments
+
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all
     text parts in HTML format"""
     if msg is None:
-        return ''
+        return []
     parts = []
     if msg.is_multipart():
         msgs = msg.get_payload()
@@ -65,10 +87,13 @@ def get_text_payloads(msg):
             for part in msgs:
                 parts += get_text_payloads(part)           
     # not a multipart message
-    elif msg.get_content_type() == 'text/html':
-        parts.append(get_payload(msg))
-    elif msg.get_content_type() == 'text/plain':
-        parts.append(text2html(get_payload(msg))) 
+    else:
+        payload = get_payload(msg)
+        if payload:
+            if msg.get_content_type() == 'text/html':
+                parts.append(payload)
+            elif msg.get_content_type() == 'text/plain':
+                parts.append(text2html(payload)) 
     return parts
 
 def adjust_image_tags(html, msg, url_prefix):
@@ -111,4 +136,4 @@ def get_best_alternative(alternatives):
 def text2html(text):
     """Replaces all line breaks with a br tag, and wraps it in a p tag.
     """
-    html_quote(text.strip()).replace('\n', '<br />')
+    return '<p>%s</p>' % html_quote(text.strip()).replace('\n', '<br />')

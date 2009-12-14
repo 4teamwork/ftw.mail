@@ -1,49 +1,18 @@
+import email
+from Acquisition import aq_inner
 from five import grok
 from zope import schema
-
 from plone.directives import form, dexterity
-
-from plone.app.textfield import RichText
 from plone.namedfile.field import NamedFile
 from plone.dexterity.content import Item
 
 from ftw.mail import _
 from ftw.mail import utils
 
+
 class IMail(form.Schema):
     """An e-mail message.
     """
-
-    mail_subject = schema.TextLine(
-        title = _(u"Subject"),
-        required = False,
-        readonly = True,
-    )
-    
-    mail_from = schema.TextLine(
-        title = _(u"From"),
-        required = False,
-    ) 
-
-    mail_to = schema.TextLine(
-        title = _(u"To"),
-        required = False,
-    )
-    
-    mail_cc = schema.TextLine(
-        title = _(u"Cc"),
-        required = False,
-    )
-    
-    mail_date = schema.Datetime(
-        title = _(u"Date"),
-        required = False,
-    )
-    
-    mail_body = RichText(
-        title = _(u"Body"),
-        required = False,
-    )
 
     form.primary('message')
     message = NamedFile(
@@ -60,11 +29,28 @@ class Mail(Item):
     def title(self):
         """get title from subject
         """
-        return self.mail_subject or '[No Subject]'
-    
+        subject = utils.get_header(self.message, 'Subject')
+        return subject or '[No Subject]'
+
     def setTitle(self, value):
         pass
 
-    @property
-    def mail_subject(self):
-        return utils.get_header(self.message, 'Subject')
+
+class View(grok.View):
+    """
+    """
+    grok.context(IMail)
+    grok.require('zope2.View')
+
+    def update(self):
+        context = aq_inner(self.context)
+        self.message = None
+        if context.message is not None:
+            self.message = email.message_from_string(context.message)
+
+    def get_header(self, name):
+        return utils.get_header(self.message, name)
+        
+    def body(self):
+        context = aq_inner(self.context)
+        return utils.get_body(self.message, context.absolute_url())
