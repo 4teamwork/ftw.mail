@@ -31,10 +31,10 @@
                 <td tal:content="mailSubject" />
             </tr>
             <tr class="mailDate"
-                tal:define="mailDate python:view.get_header('Date')"
+                tal:define="mailDate python:view.get_date_header('Date')"
                 tal:condition="mailDate">
                 <th>Date:</th>
-                <td tal:content="python:toLocalizedTime(mailDate)" />
+                <td tal:content="python:toLocalizedTime(mailDate, long_format=1)" />
             </tr>
             <tr class="mailTo"
                 tal:define="mailTo python:view.get_header('To')"

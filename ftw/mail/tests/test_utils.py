@@ -27,6 +27,20 @@ class TestUtils(unittest.TestCase):
         self.assertEquals('Die B\xc3\xbcrgschaft', utils.get_header(self.msg_utf8, 'Subject'))
         self.assertEquals('Friedrich H\xc3\xb6lderlin <to@example.org>', utils.get_header(self.msg_utf8, 'To'))
 
+    def test_get_date_header(self):
+        # a date header
+        msg_txt = 'Date: Thu, 01 Jan 1970 01:00:00 +0100'
+        msg = email.message_from_string(msg_txt)
+        self.assertEquals(0.0, utils.get_date_header(msg, 'Date'))
+        # a date header with timezone name
+        msg_txt = 'Date: Sat, 14 Feb 2009 00:31:30 +0100 (CET)'
+        msg = email.message_from_string(msg_txt)
+        self.assertEquals(1234567890.0, utils.get_date_header(msg, 'Date'))
+        # an unparsable date header
+        msg_txt = 'Date: at any time ...'
+        msg = email.message_from_string(msg_txt)
+        self.assertEqual(0.0, utils.get_date_header(msg, 'Date'))        
+        
     def test_get_payload(self):
         self.assertEquals('', utils.get_payload(self.msg_empty))
         self.assertEquals('Lorem ipsum', utils.get_payload(self.msg_ascii)[:11])

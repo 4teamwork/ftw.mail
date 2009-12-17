@@ -7,6 +7,7 @@ from plone.directives import form, dexterity
 from plone.namedfile.field import NamedFile
 from plone.dexterity.content import Item
 from plone.memoize import instance
+from DateTime import DateTime
 
 from ftw.mail import _
 from ftw.mail import utils
@@ -55,7 +56,11 @@ class View(grok.View):
     def get_header(self, name):
         context = aq_inner(self.context)
         return utils.get_header(context.msg, name)
-        
+
+    def get_date_header(self, name):
+        context = aq_inner(self.context)
+        return DateTime(utils.get_date_header(context.msg, name))
+
     def body(self):
         context = aq_inner(self.context)
         return utils.get_body(context.msg, context.absolute_url())

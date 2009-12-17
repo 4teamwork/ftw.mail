@@ -1,5 +1,6 @@
 # various utility methods for handling e-mail messages
 from email import Header
+from email.Utils import mktime_tz, parsedate_tz
 from DocumentTemplate.DT_Util import html_quote
 import re
 from ftw.mail import config
@@ -24,6 +25,19 @@ def get_header(msg, name):
             value += part_value + ' '
     return value.rstrip()
 
+def get_date_header(msg, name):
+    """ Returns an UTC timestamp from a header field containing a date.
+        Compensates for the timezone difference if the header contains
+        timezone information.
+    """
+    value = get_header(msg, name)
+    ts = 0.0
+    try:
+        ts = mktime_tz(parsedate_tz(value))
+    except TypeError:
+        pass
+    return ts
+    
 def get_payload(msg):
     """Get the decoded message payload as utf-8 string"""
     encoding = msg.get_content_charset('ascii')

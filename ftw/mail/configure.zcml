@@ -12,6 +12,8 @@
     <!-- Grok the package to initialize schema interfaces and content classes -->
     <grok:grok package="." />
 
+    <!--include file="behaviors.zcml" /-->
+
     <!-- Register an extension profile to make the product installable -->
     <genericsetup:registerProfile
         name="default"
