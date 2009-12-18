@@ -1,8 +1,11 @@
+import os
 from zope.component import createObject
-from zope.component import queryUtility
+from zope.component import queryUtility, getUtility
+from zope.schema import getFields
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.PloneTestCase.ptc import PloneTestCase
 from zExceptions import NotFound
+from plone.dexterity.utils import createContentInContainer
 from ftw.mail.tests.layer import Layer
 from ftw.mail.mail import IMail
 
@@ -10,6 +13,10 @@ from ftw.mail.mail import IMail
 class TestMailIntegration(PloneTestCase):
 
     layer = Layer
+
+    def afterSetUp(self):
+        here = os.path.dirname(__file__)
+        self.msg_txt_attachment = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
 
     def test_adding(self):
         self.folder.invokeFactory('ftw.mail.mail', 'mail1')
@@ -37,13 +44,29 @@ class TestMailIntegration(PloneTestCase):
         self.folder.invokeFactory('ftw.mail.mail', 'mail1')
         m1 = self.folder['mail1']
         view = m1.restrictedTraverse('@@view')
-        view.update()
+        view()
         subject = view.get_header('Subject')
         self.assertEquals('', subject)
         body = view.body()
         self.assertEquals('', body)
 
-    def test_attachment(self):
+    def test_attachments(self):
+        # create a mail object containing an attachment
+        fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
+        schema = fti.lookupSchema()
+        field_type = getFields(schema)['message']._type
+        obj = createContentInContainer(self.folder, 'ftw.mail.mail',
+                   message=field_type(data=self.msg_txt_attachment,
+                   contentType='message/rfc822', filename='message.eml'))
+        m1 = self.folder[obj.getId()]
+        view = m1.restrictedTraverse('@@view')
+        view()
+        attachments = view.attachments()
+        self.assertEquals(1, len(attachments))
+        self.failUnless('icon' in attachments[0])
+        
+        
+    def test_get_attachment(self):
         self.folder.invokeFactory('ftw.mail.mail', 'mail1')
         m1 = self.folder['mail1']
         view = m1.restrictedTraverse('@@get_attachment')

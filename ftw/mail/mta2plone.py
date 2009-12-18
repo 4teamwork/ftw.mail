@@ -29,7 +29,6 @@ def post_message(url, recipient, message_txt):
             sys.exit(int(exitcode))
     except ValueError:
         print 'Unknown error.'
-        print result.__dict__
         sys.exit(69)
 
     sys.exit(0)
@@ -51,4 +50,3 @@ if __name__ == '__main__':
         recipient = sys.argv[2]
 
     post_message(url, recipient, message_txt)
-        

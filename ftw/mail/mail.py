@@ -7,6 +7,7 @@ from plone.directives import form, dexterity
 from plone.namedfile.field import NamedFile
 from plone.dexterity.content import Item
 from plone.memoize import instance
+from Products.CMFCore.utils import getToolByName
 from DateTime import DateTime
 
 from ftw.mail import _
@@ -64,3 +65,20 @@ class View(grok.View):
     def body(self):
         context = aq_inner(self.context)
         return utils.get_body(context.msg, context.absolute_url())
+
+    @instance.memoize        
+    def attachments(self):
+        context = aq_inner(self.context)
+        attachments = utils.get_attachments(context.msg)
+        mtr = getToolByName(context, 'mimetypes_registry')
+        for attachment in attachments:
+            icon = 'file_icon.gif'
+            type_name = 'File'
+            lookup = mtr.lookup(attachment['content-type'])
+            if lookup:
+                icon = lookup[0].icon_path
+                type_name = lookup[0].name()
+            attachment['icon'] = icon
+            attachment['type-name'] = type_name
+        return attachments
+

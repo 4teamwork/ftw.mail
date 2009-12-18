@@ -5,13 +5,12 @@ from AccessControl import Unauthorized
 from email.Utils import parseaddr
 from five import grok
 from ftw.mail import utils
-from ftw.mail.interfaces import IMailInbound, IDestinationResolver
-from ftw.mail.mail import IMail
+from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
 from plone.dexterity.utils import createContentInContainer
 from plone.memoize import instance
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
-from zExceptions import NotFound
 from zope.component import getMultiAdapter, getUtility
 from zope.interface import implements
 from zope.intid.interfaces import IIntIds
@@ -41,8 +40,12 @@ class MailInbound(grok.CodeView):
     
     def render(self):
         context = aq_inner(self.context)
-        validate_sender = True
-        
+
+        registry = getUtility(IRegistry)
+        reg_proxy = registry.forInterface(IMailSettings)
+        validate_sender = reg_proxy.validate_sender
+        unwrap_mail = reg_proxy.unwrap_mail
+
         try:
             user = None
             sender_email = self.sender()
@@ -67,9 +70,9 @@ class MailInbound(grok.CodeView):
                 raise MailInboundException(EXIT_CODES['NOPERM'], 
                       'Unknown sender. Permission denied.')
 
-            # if we find an attached mail, use this instead of the whole one
             msg = self.msg()
-            if msg.is_multipart():
+            # if we find an attached mail, use this instead of the whole one
+            if unwrap_mail and msg.is_multipart():
                 for part in msg.walk():
                     content_type = part.get_content_type()
                     if content_type == 'message/rfc822':
@@ -84,12 +87,6 @@ class MailInbound(grok.CodeView):
                 raise MailInboundException(EXIT_CODES['CANTCREAT'], 
                                            'Destination does not exist.')
             if destination:
-                subject = utils.get_header(self.msg(), 'Subject') or '[No Subject]'
-                # if we couldn't get a member from the sender address,
-                # use the owner of the container to create the mail object
-                if user is None:
-                    user = destination.getWrappedOwner()
-
                 # lookup the type of the 'message' field and create an instance
                 fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
                 schema = fti.lookupSchema()
@@ -97,12 +94,19 @@ class MailInbound(grok.CodeView):
                 message_value = field_type(data=msg.as_string(),
                        contentType='message/rfc822', filename='message.eml')
 
+                # if we couldn't get a member from the sender address,
+                # use the owner of the container to create the mail object
+                if user is None:
+                    user = destination.getWrappedOwner()
                 newSecurityManager(self.request, user)
                 try:
                     createContentInContainer(destination, 'ftw.mail.mail', message=message_value)
                 except Unauthorized:
                     raise MailInboundException(EXIT_CODES['NOPERM'], 
                           'Unable to create message. Permission denied.')
+                except ValueError:
+                    raise MailInboundException(EXIT_CODES['NOPERM'], 
+                          'Disallowed subobject type. Permission denied.')
                 noSecurityManager()
 
         except MailInboundException, e:
@@ -179,6 +183,3 @@ class DestinationFromIntId(grok.Adapter):
         except ValueError:
             return None
         return id_util.queryObject(intid)
-
-
-    

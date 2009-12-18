@@ -18,6 +18,8 @@ class TestUtils(unittest.TestCase):
         self.msg_latin1 = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'utf8.txt'), 'r').read()
         self.msg_utf8 = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
+        self.msg_attachment = email.message_from_string(msg_txt)
         
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -62,7 +64,12 @@ class TestUtils(unittest.TestCase):
         
     def test_get_attachments(self):
         self.assertEquals([], utils.get_attachments(self.msg_ascii))
-        
+        self.assertEquals([{'position': 1,
+                            'size': 7,
+                            'content-type': 'text/plain',
+                            'filename': u'B\xfccher.txt'}],
+                          utils.get_attachments(self.msg_attachment))
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

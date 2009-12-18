@@ -73,8 +73,3 @@ class TestInboundMail(PloneTestCase):
                          'fullname': 'User #1'})
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         view()
-        
-        
-        
-
-        

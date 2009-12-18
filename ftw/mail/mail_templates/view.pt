@@ -54,6 +54,23 @@
 
         <div tal:replace="structure view/body">Body</div>
 
+        <tal:attachments condition="view/attachments">
+        <h2>Attachments</h2>
+        <tal:items tal:repeat="item view/attachments">
+            <div class="mailAttachment">
+                <a href=""
+                   tal:define="position python:item['position']"
+                   tal:attributes="href string:${here/absolute_url}/get_attachment?position=${position}">
+                   <img tal:define="icon python:item['icon']"
+                        tal:condition="icon" src=""
+                        tal:attributes="src string:${here/portal_url}/$icon"/>
+                            <span tal:content="python:item['filename']">filename</span></a>
+                    <span tal:content="python:item['type-name']">ContentType</span>
+                    <span tal:content="python:context.getObjSize(size=item['size'])">0Kb</span>
+            </div>
+        </tal:items>
+        </tal:attachments>
+
         <div tal:replace="structure provider:plone.belowcontentbody" />
 
     </tal:main-macro>
