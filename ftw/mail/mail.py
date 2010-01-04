@@ -34,7 +34,9 @@ class Mail(Item):
         """get title from subject
         """
         subject = utils.get_header(self.msg, 'Subject')
-        return subject or '[No Subject]'
+        if subject:
+            return subject.decode('utf8')
+        return u'[No Subject]'
 
     def setTitle(self, value):
         pass
@@ -64,7 +66,8 @@ class View(grok.View):
 
     def body(self):
         context = aq_inner(self.context)
-        return utils.get_body(context.msg, context.absolute_url())
+        html_body = utils.get_body(context.msg, context.absolute_url())
+        return utils.unwrap_html_body(html_body, 'mailBody')
 
     @instance.memoize        
     def attachments(self):

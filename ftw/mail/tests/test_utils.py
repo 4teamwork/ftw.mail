@@ -20,6 +20,8 @@ class TestUtils(unittest.TestCase):
         self.msg_utf8 = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
         self.msg_attachment = email.message_from_string(msg_txt)
+        # msg_txt = open(os.path.join(here, 'mails', 'cipra.txt'), 'r').read()
+        # self.msg_cipra = email.message_from_string(msg_txt)
         
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -69,6 +71,31 @@ class TestUtils(unittest.TestCase):
                             'content-type': 'text/plain',
                             'filename': u'B\xfccher.txt'}],
                           utils.get_attachments(self.msg_attachment))
+                          
+    # def test_image_tags(self):
+    #     text = utils.get_text_payloads(self.msg_cipra)
+    #     import pdb; pdb.set_trace( )
+
+    def test_unwrap_html_body(self):
+        html = """
+        <html>
+        <head></head>
+        <body>Body</body>
+        </html>
+        """
+        body = '<div>Body</div>'
+        self.assertEquals(body, utils.unwrap_html_body(html))
+        html = """
+        <html>
+        <body style="color: #666; font-size: 12px;">Body</body>
+        </html>
+        """
+        body ='<div class="mailBody" style="color: #666; font-size: 12px;">'\
+              'Body</div>'
+        self.assertEquals(body, utils.unwrap_html_body(html, 'mailBody'))
+        html = '<p>Body</p>'
+        body = '<div class="mailBody"><p>Body</p></div>'
+        self.assertEquals(body, utils.unwrap_html_body(html, 'mailBody'))
 
 
 def test_suite():

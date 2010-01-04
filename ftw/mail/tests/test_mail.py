@@ -48,7 +48,7 @@ class TestMailIntegration(PloneTestCase):
         subject = view.get_header('Subject')
         self.assertEquals('', subject)
         body = view.body()
-        self.assertEquals('', body)
+        self.assertEquals('<div class="mailBody"></div>', body)
 
     def test_attachments(self):
         # create a mail object containing an attachment
@@ -71,3 +71,17 @@ class TestMailIntegration(PloneTestCase):
         m1 = self.folder['mail1']
         view = m1.restrictedTraverse('@@get_attachment')
         self.assertRaises(NotFound, view)
+        
+    # def test_special(self):
+    #     here = os.path.dirname(__file__)
+    #     msg_txt = open(os.path.join(here, 'mails', 'cipra.txt'), 'r').read()
+    #     fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
+    #     schema = fti.lookupSchema()
+    #     field_type = getFields(schema)['message']._type
+    #     obj = createContentInContainer(self.folder, 'ftw.mail.mail',
+    #                message=field_type(data=msg_txt,
+    #                contentType='message/rfc822', filename='message.eml'))
+    #     m1 = self.folder[obj.getId()]
+    #     view = m1.restrictedTraverse('@@view')
+    #     import pdb; pdb.set_trace( )
+    #     view()

@@ -2,11 +2,13 @@
 from email import Header
 from email.Utils import mktime_tz, parsedate_tz
 from DocumentTemplate.DT_Util import html_quote
+from BeautifulSoup import BeautifulSoup
 import re
 from ftw.mail import config
 
 # a regular expression that matches src attributes of img tags containing a cid
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
+BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 
 def get_header(msg, name):
     """Returns the value of the named header field of a mail message.
@@ -151,3 +153,18 @@ def text2html(text):
     """Replaces all line breaks with a br tag, and wraps it in a p tag.
     """
     return '<p>%s</p>' % html_quote(text.strip()).replace('\n', '<br />')
+
+def unwrap_html_body(html, css_class=None):
+    """ Return the content of the body tag for inline display in another
+        html document.
+    """
+    soup = BeautifulSoup(html)
+    if soup.body:
+        soup = soup.body
+    body_soup = BeautifulSoup('<div>%s</div>' % soup.renderContents())
+    if css_class:
+        body_soup.div['class'] = css_class
+    body_style = soup.get('style')
+    if body_style:
+        body_soup.div['style'] = body_style
+    return body_soup.renderContents()
