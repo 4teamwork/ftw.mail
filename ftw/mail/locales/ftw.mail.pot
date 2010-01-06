@@ -1,0 +1,52 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-01-06 12:38+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: ftw.mail\n"
+
+#: ftw.mail/ftw/mail/mail_templates/view.pt:58
+msgid "Attachments"
+msgstr ""
+
+#: ftw.mail/ftw/mail/mail_templates/view.pt:36
+msgid "Date:"
+msgstr ""
+
+#: ftw.mail/ftw/mail/mail_templates/view.pt:24
+msgid "From:"
+msgstr ""
+
+#: ftw.mail/ftw/mail/profiles/default/types/ftw.mail.mail.xml
+msgid "Mail"
+msgstr ""
+
+#: ftw.mail/ftw/mail/mail_templates/view.pt:30
+msgid "Subject:"
+msgstr ""
+
+#: ftw.mail/ftw/mail/mail_templates/view.pt:42
+msgid "To:"
+msgstr ""
+
+#: ftw.mail/ftw/mail/mail.py:24
+msgid "help_raw_message"
+msgstr ""
+
+#. Default: "Raw Message"
+#: ftw.mail/ftw/mail/mail.py:23
+msgid "label_raw_message"
+msgstr ""
+

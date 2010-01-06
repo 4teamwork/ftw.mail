@@ -27,19 +27,19 @@
             <tr class="mailSubject"
                 tal:define="mailSubject python:view.get_header('Subject')"
                 tal:condition="mailSubject">
-                <th>Subject:</th>
+                <th i18n:translate="">Subject:</th>
                 <td tal:content="mailSubject" />
             </tr>
             <tr class="mailDate"
                 tal:define="mailDate python:view.get_date_header('Date')"
                 tal:condition="mailDate">
-                <th>Date:</th>
+                <th i18n:translate="">Date:</th>
                 <td tal:content="python:toLocalizedTime(mailDate, long_format=1)" />
             </tr>
             <tr class="mailTo"
                 tal:define="mailTo python:view.get_header('To')"
                 tal:condition="mailTo">
-                <th>To:</th>
+                <th i18n:translate="">To:</th>
                 <td tal:content="mailTo" />
             </tr>
             <tr class="mailCc"
@@ -55,7 +55,7 @@
         <div tal:replace="structure view/body">Body</div>
 
         <tal:attachments condition="view/attachments">
-        <h2>Attachments</h2>
+        <h2 i18n:translate="">Attachments</h2>
         <tal:items tal:repeat="item view/attachments">
             <div class="mailAttachment">
                 <a href=""
