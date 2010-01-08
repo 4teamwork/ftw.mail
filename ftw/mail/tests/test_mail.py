@@ -22,7 +22,7 @@ class TestMailIntegration(PloneTestCase):
         self.folder.invokeFactory('ftw.mail.mail', 'mail1')
         m1 = self.folder['mail1']
         self.failUnless(IMail.providedBy(m1))
-        self.assertEquals('[No Subject]', m1.title)
+        self.assertEquals(u'no_subject', m1.title)
 
     def test_fti(self):
         fti = queryUtility(IDexterityFTI, name='ftw.mail.mail')
@@ -38,7 +38,7 @@ class TestMailIntegration(PloneTestCase):
         factory = fti.factory
         new_object = createObject(factory)
         self.failUnless(IMail.providedBy(new_object))
-        self.assertEquals('[No Subject]', new_object.title)
+        self.assertEquals(u'no_subject', new_object.title)
 
     def test_view(self):
         self.folder.invokeFactory('ftw.mail.mail', 'mail1')

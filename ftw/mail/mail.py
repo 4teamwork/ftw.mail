@@ -36,7 +36,7 @@ class Mail(Item):
         subject = utils.get_header(self.msg, 'Subject')
         if subject:
             return subject.decode('utf8')
-        return _(u'no_subject',default='[No Subject]')
+        return _(u'no_subject',default=u'[No Subject]')
 
     def setTitle(self, value):
         pass
