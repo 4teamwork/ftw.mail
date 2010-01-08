@@ -21,6 +21,13 @@ class TestInboundMail(PloneTestCase):
         here = os.path.dirname(__file__)
         self.ascii = open(os.path.join(here, 'mails', 'ascii_7bit.txt'), 'r').read()
         self.resent = open(os.path.join(here, 'mails', 'resent.txt'), 'r').read()
+        # setup recipient and sender email addresses for test user
+        mtool = getToolByName(self.portal, 'portal_membership')
+        user = mtool.getAuthenticatedMember()
+        user.setMemberProperties(dict(email='from@example.org'))
+        id_util = getUtility(IIntIds)
+        intid = id_util.queryId(self.folder)
+        self.mail_to = '%s@example.org' % intid
 
     def test_no_message(self):
         view = self.portal.restrictedTraverse('@@mail-inbound')
@@ -65,11 +72,29 @@ class TestInboundMail(PloneTestCase):
         resolver = IDestinationResolver(DummyMailInbound(self.portal))
         self.assertEquals(f1, resolver.destination())
         
-    def test_from(self):
-        request = TestRequest(mail=self.ascii)
-        mtool = getToolByName(self.portal, 'portal_membership')
-        mtool.addMember('user1', 'u1', ['Member'], [],
-                        {'email': 'from@example.org',
-                         'fullname': 'User #1'})
+    def test_unkown_destination(self):
+        msg_txt = 'To: unknown@example.org\n'\
+                  'From: from@example.org\n'\
+                  'Subject: Test'
+        request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
-        view()
+        self.assertEquals('73:Destination does not exist.', view())
+
+    def test_mail_creation(self):
+        msg_txt = 'To: %s\n'\
+                  'From: from@example.org\n'\
+                  'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())
+
+    def test_long_header(self):
+        msg_txt = 'To: %s\n'\
+                  'From: from@example.org\n'\
+                  'Subject: A long mail header with more than 78 characters.'\
+                  'Lorem ipsum dolor sit amet, consectetur adipisicing elit,'\
+                  ' sed do eiusmod tempor incididunt ut labore et dolore '\
+                  'magna aliqua.' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())

@@ -91,7 +91,11 @@ class MailInbound(grok.CodeView):
                 fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
                 schema = fti.lookupSchema()
                 field_type = getFields(schema)['message']._type
-                message_value = field_type(data=msg.as_string(),
+                # use original message text from request for mail creation
+                # using msg.as_string() would not create exactly the same message
+                # this fixes problems with \n\t in headers
+                msg_txt = self.request.get('mail', None)
+                message_value = field_type(data=msg_txt,
                        contentType='message/rfc822', filename='message.eml')
 
                 # if we couldn't get a member from the sender address,
