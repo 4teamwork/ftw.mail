@@ -6,5 +6,10 @@
         id="ftw.mail.AddMail"
         title="ftw.mail: Add Mail"
         />
+
+    <permission
+        id="ftw.mail.AddInboundMail"
+        title="ftw.mail: Add Inbound Mail"
+        />
         
 </configure>

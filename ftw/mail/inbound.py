@@ -2,20 +2,23 @@ import email
 from Acquisition import aq_inner
 from AccessControl.SecurityManagement import newSecurityManager, noSecurityManager
 from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
 from email.Utils import parseaddr
 from five import grok
 from ftw.mail import utils
 from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
-from plone.dexterity.utils import createContentInContainer
+from plone.dexterity.utils import createContent
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
-from zope.component import getMultiAdapter, getUtility
+from zope.component import getMultiAdapter, getUtility, queryUtility
 from zope.interface import implements
 from zope.intid.interfaces import IIntIds
 from zope.schema import getFields
+from zope.security.interfaces import IPermission
 from plone.dexterity.interfaces import IDexterityFTI
+from zope.app.container.interfaces import INameChooser
 from ftw.mail.config import EXIT_CODES
 
 
@@ -87,16 +90,10 @@ class MailInbound(grok.CodeView):
                 raise MailInboundException(EXIT_CODES['CANTCREAT'], 
                                            'Destination does not exist.')
             if destination:
-                # lookup the type of the 'message' field and create an instance
-                fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
-                schema = fti.lookupSchema()
-                field_type = getFields(schema)['message']._type
                 # use original message text from request for mail creation
                 # using msg.as_string() would not create exactly the same message
                 # this fixes problems with \n\t in headers
                 msg_txt = self.request.get('mail', None)
-                message_value = field_type(data=msg_txt,
-                       contentType='message/rfc822', filename='message.eml')
 
                 # if we couldn't get a member from the sender address,
                 # use the owner of the container to create the mail object
@@ -104,7 +101,7 @@ class MailInbound(grok.CodeView):
                     user = destination.getWrappedOwner()
                 newSecurityManager(self.request, user)
                 try:
-                    createContentInContainer(destination, 'ftw.mail.mail', message=message_value)
+                    createMailInContainer(destination, msg_txt)
                 except Unauthorized:
                     raise MailInboundException(EXIT_CODES['NOPERM'], 
                           'Unable to create message. Permission denied.')
@@ -152,6 +149,43 @@ class MailInbound(grok.CodeView):
             recipient = utils.get_header(self.msg(), 'To')
         (recipient_name, recipient_address) = parseaddr(recipient)
         return recipient_address
+
+
+def createMailInContainer(container, message):
+    """Add a mail object to a container.
+
+    The new object, wrapped in its new acquisition context, is returned.
+    """
+
+    # lookup the type of the 'message' field and create an instance
+    fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
+    schema = fti.lookupSchema()
+    field_type = getFields(schema)['message']._type
+    message_value = field_type(data=message,
+                       contentType='message/rfc822', filename='message.eml')                
+    # create mail object
+    content = createContent('ftw.mail.mail', message=message_value)    
+
+    container = aq_inner(container)
+    container_fti = container.getTypeInfo()
+
+    # check permission
+    permission = queryUtility(IPermission, name='ftw.mail.AddInboundMail')
+    if permission is None:
+        raise Unauthorized("Cannot create %s" % content.portal_type)
+    if not getSecurityManager().checkPermission(permission.title, container):
+        raise Unauthorized("Cannot create %s" % content.portal_type)
+
+    # check addable types
+    if container_fti is not None and not container_fti.allowType(content.portal_type):
+        raise ValueError("Disallowed subobject type: %s" % content.portal_type)
+
+    name = INameChooser(container).chooseName(None, content)
+    content.id = name
+
+    newName = container._setObject(name, content)
+    return container._getOb(newName)
+
 
 # class DestinationFromLocalPart(grok.Adapter):
 #     """ A destination resolver that  
