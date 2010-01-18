@@ -98,5 +98,23 @@ class TestUtils(unittest.TestCase):
         self.assertEquals(body, utils.unwrap_html_body(html, 'mailBody'))
 
 
+    def test_unwrap_html_body_encoding(self):
+        # the html body may contain a charset header
+        # we always get an utf8-encoded body, thus we must ignore the charset
+        html = """
+        <html>
+        <head>
+        <meta http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+        </head>
+        <body>Äöü</body>
+        """
+        self.assertEquals('<div>Äöü</div>', utils.unwrap_html_body(html))
+        
+    # def test_special(self):
+    #     msg_txt = open('/Users/tom/Downloads/message-1.eml', 'r').read()
+    #     msg  = email.message_from_string(msg_txt)
+    #     body = utils.get_body(msg)
+    #     import pdb; pdb.set_trace( )
+        
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

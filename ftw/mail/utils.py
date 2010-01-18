@@ -158,7 +158,7 @@ def unwrap_html_body(html, css_class=None):
     """ Return the content of the body tag for inline display in another
         html document.
     """
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, fromEncoding='utf8')
     if soup.body:
         soup = soup.body
     body_soup = BeautifulSoup('<div>%s</div>' % soup.renderContents())
