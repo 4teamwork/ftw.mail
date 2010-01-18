@@ -83,5 +83,4 @@ class TestMailIntegration(PloneTestCase):
     #                contentType='message/rfc822', filename='message.eml'))
     #     m1 = self.folder[obj.getId()]
     #     view = m1.restrictedTraverse('@@view')
-    #     import pdb; pdb.set_trace( )
     #     view()

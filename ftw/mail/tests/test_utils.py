@@ -74,7 +74,6 @@ class TestUtils(unittest.TestCase):
                           
     # def test_image_tags(self):
     #     text = utils.get_text_payloads(self.msg_cipra)
-    #     import pdb; pdb.set_trace( )
 
     def test_unwrap_html_body(self):
         html = """
