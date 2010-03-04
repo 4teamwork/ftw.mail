@@ -9,7 +9,7 @@ def post_message(url, recipient, message_txt):
 
     if not url:
         print "Invalid url."
-        print "usage: mta2plone.py url"
+        print "usage: mta2plone.py url <recipient>"
         sys.exit(64)
 
     data = {'mail': message_txt}
