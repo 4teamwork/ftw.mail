@@ -5,6 +5,11 @@ Changelog
 1.0a3
 -----
 
+* Correctly restore current SecurityManger after mail creation.
+  [Thomas Buchberger]
+
+* Added tests for unknown sender
+  [Thomas Buchberger]
 
 1.0a2
 -----
