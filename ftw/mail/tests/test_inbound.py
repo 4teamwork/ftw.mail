@@ -54,6 +54,33 @@ class TestInboundMail(PloneTestCase):
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('resent.to@example.org', view.recipient())
 
+    def test_unknown_sender(self):
+        # unknown sender
+        msg_txt = 'To: to@example.org\n'\
+                  'From: unknown@example.org\n'\
+                  'Subject: Test'
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('77:Unknown sender. Permission denied.', view())
+        # known upper-case sender, lower-case member email
+        msg_txt = 'To: %s\n'\
+                  'From: FROM@example.org\n'\
+                  'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())
+        # known lower-case sender, upper-case member email
+        mtool = getToolByName(self.portal, 'portal_membership')
+        user = mtool.getAuthenticatedMember()
+        user.setMemberProperties(dict(email='FROM@example.org'))
+        msg_txt = 'To: %s\n'\
+                  'From: from@example.org\n'\
+                  'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())
+
+
     def test_intid_resolver(self):
         self.folder.invokeFactory('Folder', 'f1')
         f1 = self.folder['f1']
@@ -72,7 +99,7 @@ class TestInboundMail(PloneTestCase):
         resolver = IDestinationResolver(DummyMailInbound(self.portal))
         self.assertEquals(f1, resolver.destination())
         
-    def test_unkown_destination(self):
+    def test_unknown_destination(self):
         msg_txt = 'To: unknown@example.org\n'\
                   'From: from@example.org\n'\
                   'Subject: Test'
