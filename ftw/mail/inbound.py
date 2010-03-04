@@ -1,6 +1,6 @@
 import email
 from Acquisition import aq_inner
-from AccessControl.SecurityManagement import newSecurityManager, noSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager
 from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
 from email.Utils import parseaddr
@@ -99,6 +99,7 @@ class MailInbound(grok.CodeView):
                 # use the owner of the container to create the mail object
                 if user is None:
                     user = destination.getWrappedOwner()
+                sm = getSecurityManager()
                 newSecurityManager(self.request, user)
                 try:
                     createMailInContainer(destination, msg_txt)
@@ -108,7 +109,7 @@ class MailInbound(grok.CodeView):
                 except ValueError:
                     raise MailInboundException(EXIT_CODES['NOPERM'], 
                           'Disallowed subobject type. Permission denied.')
-                noSecurityManager()
+                setSecurityManager(sm)
 
         except MailInboundException, e:
             return str(e)
