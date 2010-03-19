@@ -5,6 +5,12 @@ Changelog
 1.0a3
 -----
 
+* Added test for filename encoding problem. Test still fails...
+  [Thomas Buchberger]
+
+* Moved unwrapping of attached messages into utility method. Added test.
+  [Thomas Buchberger]
+
 * Correctly restore current SecurityManger after mail creation.
   [Thomas Buchberger]
 

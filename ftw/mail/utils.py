@@ -168,3 +168,13 @@ def unwrap_html_body(html, css_class=None):
     if body_style:
         body_soup.div['style'] = body_style
     return body_soup.renderContents()
+
+def unwrap_attached_msg(msg):
+    """ If a msg contains an attachmed message return the attached one.
+    """
+    if msg.is_multipart():
+        for part in msg.walk():
+            content_type = part.get_content_type()
+            if content_type == 'message/rfc822':
+                return part.get_payload(0)
+    return msg

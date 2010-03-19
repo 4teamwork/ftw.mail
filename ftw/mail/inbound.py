@@ -75,12 +75,8 @@ class MailInbound(grok.CodeView):
 
             msg = self.msg()
             # if we find an attached mail, use this instead of the whole one
-            if unwrap_mail and msg.is_multipart():
-                for part in msg.walk():
-                    content_type = part.get_content_type()
-                    if content_type == 'message/rfc822':
-                        msg = part.get_payload(0)
-                        break
+            if unwrap_mail:
+                msg = utils.unwrap_attached_msg(msg)
 
             # get destination container
             resolver = IDestinationResolver(self)

@@ -20,6 +20,8 @@ class TestUtils(unittest.TestCase):
         self.msg_utf8 = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
         self.msg_attachment = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
+        self.msg_fwd_attachment = email.message_from_string(msg_txt)        
         # msg_txt = open(os.path.join(here, 'mails', 'cipra.txt'), 'r').read()
         # self.msg_cipra = email.message_from_string(msg_txt)
         
@@ -63,6 +65,20 @@ class TestUtils(unittest.TestCase):
     def test_get_body(self):
         self.assertEquals('', utils.get_body(self.msg_empty))
         self.assertEquals('<p>Lorem ipsum', utils.get_body(self.msg_ascii)[:14])
+
+    def test_get_filename(self):
+        msg_txt = \
+"""Content-Type: application/octet-stream;
+  name="=?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?="
+Content-Transfer-Encoding: base64
+Content-Description: =?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?=
+Content-Disposition: attachment;
+  filename="=?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?="        
+"""
+        msg = email.message_from_string(msg_txt)
+        # !!! seems to be a bug in email package
+        self.assertEquals('Aperovorschläge', utils.get_filename(msg))
+
         
     def test_get_attachments(self):
         self.assertEquals([], utils.get_attachments(self.msg_ascii))
@@ -108,6 +124,13 @@ class TestUtils(unittest.TestCase):
         <body>Äöü</body>
         """
         self.assertEquals('<div>Äöü</div>', utils.unwrap_html_body(html))
+
+
+    def test_unwrap_attached_msg(self):
+        msg = utils.unwrap_attached_msg(self.msg_fwd_attachment)
+        self.assertEquals(msg.get('Subject'), 'Lorem Ipsum')
+
+        
         
     # def test_special(self):
     #     msg_txt = open('/Users/tom/Downloads/message-1.eml', 'r').read()
