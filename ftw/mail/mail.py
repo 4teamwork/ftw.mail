@@ -35,6 +35,9 @@ class Mail(Item):
         """
         subject = utils.get_header(self.msg, 'Subject')
         if subject:
+            # long headers may contain line breaks with tabs.
+            # replace these by a space.
+            subject = subject.replace('\n\t', ' ')
             return subject.decode('utf8')
         return _(u'no_subject',default=u'[No Subject]')
 

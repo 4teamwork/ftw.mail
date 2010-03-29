@@ -86,10 +86,7 @@ class MailInbound(grok.CodeView):
                 raise MailInboundException(EXIT_CODES['CANTCREAT'], 
                                            'Destination does not exist.')
             if destination:
-                # use original message text from request for mail creation
-                # using msg.as_string() would not create exactly the same message
-                # this fixes problems with \n\t in headers
-                msg_txt = self.request.get('mail', None)
+                msg_txt = msg.as_string()
 
                 # if we couldn't get a member from the sender address,
                 # use the owner of the container to create the mail object
