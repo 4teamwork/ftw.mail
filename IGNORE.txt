@@ -3,4 +3,5 @@
 ftw.mail.egg-info
 build
 dist
+*.mo
 
