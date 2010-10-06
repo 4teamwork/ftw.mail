@@ -24,6 +24,8 @@ def get_header(msg, name):
             encoding = part[1]
             if encoding is not None and encoding != 'utf-8':
                 part_value = part_value.decode(encoding).encode('utf8')
+            if encoding is None:
+                part_value = safe_utf8(part_value)
             value += part_value + ' '
     return value.rstrip()
 
@@ -178,3 +180,16 @@ def unwrap_attached_msg(msg):
             if content_type == 'message/rfc822':
                 return part.get_payload(0)
     return msg
+
+def safe_utf8(text):
+    """Returns an utf-8 encoded version of the given string with unknown
+       encoding. 
+    """
+    encodings = ('iso-8859-1', 'iso-8859-15', 'utf8')
+    for enc in encodings:
+        try:
+            text = text.decode(enc)
+            return text.encode('utf8')
+        except UnicodeDecodeError:
+            pass
+    return text.decode('ascii', 'replace').encode('utf8')
