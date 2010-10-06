@@ -50,11 +50,10 @@ class Mail(Item):
         pass
 
     @property
-    @instance.memoize
     def msg(self):
         """ returns an email.Message instance
         """
-        if self.message:
+        if self.message is not None:
             return email.message_from_string(self.message.data)
         return MIMEText('')
 
@@ -66,17 +65,20 @@ class View(grok.View):
     grok.require('zope2.View')
 
     def get_header(self, name):
-        context = aq_inner(self.context)
-        return utils.get_header(context.msg, name)
+        return utils.get_header(self.msg(), name)
 
     def get_date_header(self, name):
-        context = aq_inner(self.context)
-        return DateTime(utils.get_date_header(context.msg, name))
+        return DateTime(utils.get_date_header(self.msg(), name))
 
     def body(self):
         context = aq_inner(self.context)
-        html_body = utils.get_body(context.msg, context.absolute_url())
+        html_body = utils.get_body(self.msg(), context.absolute_url())
         return utils.unwrap_html_body(html_body, 'mailBody')
+
+    @instance.memoize
+    def msg(self):
+        context = aq_inner(self.context)
+        return context.msg
 
     @instance.memoize
     def attachments(self):
@@ -159,7 +161,6 @@ class SaveAttachments(View):
                 setattr(tmp_document, 'file', tmp_file)
                 setattr(tmp_document, 'document_date', datetime.datetime.now())
                 setattr(tmp_document, 'keywords', ())
-            status_msg = ''
             if count>1:
                 count = "%s Dokumente" % str(count)
             else:
