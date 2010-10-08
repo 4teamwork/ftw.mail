@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 import email
 import os
@@ -21,10 +22,10 @@ class TestUtils(unittest.TestCase):
         msg_txt = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
         self.msg_attachment = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
-        self.msg_fwd_attachment = email.message_from_string(msg_txt)        
+        self.msg_fwd_attachment = email.message_from_string(msg_txt)
         # msg_txt = open(os.path.join(here, 'mails', 'cipra.txt'), 'r').read()
         # self.msg_cipra = email.message_from_string(msg_txt)
-        
+
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
         self.assertEquals('Lorem Ipsum', utils.get_header(self.msg_ascii, 'Subject'))
@@ -45,8 +46,8 @@ class TestUtils(unittest.TestCase):
         # an unparsable date header
         msg_txt = 'Date: at any time ...'
         msg = email.message_from_string(msg_txt)
-        self.assertEqual(0.0, utils.get_date_header(msg, 'Date'))        
-        
+        self.assertEqual(0.0, utils.get_date_header(msg, 'Date'))
+
     def test_get_payload(self):
         self.assertEquals('', utils.get_payload(self.msg_empty))
         self.assertEquals('Lorem ipsum', utils.get_payload(self.msg_ascii)[:11])
@@ -73,13 +74,13 @@ class TestUtils(unittest.TestCase):
 Content-Transfer-Encoding: base64
 Content-Description: =?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?=
 Content-Disposition: attachment;
-  filename="=?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?="        
+  filename="=?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?="
 """
         msg = email.message_from_string(msg_txt)
         # !!! seems to be a bug in email package
         self.assertEquals('Aperovorschläge', utils.get_filename(msg))
 
-        
+
     def test_get_attachments(self):
         self.assertEquals([], utils.get_attachments(self.msg_ascii))
         self.assertEquals([{'position': 1,
@@ -87,7 +88,7 @@ Content-Disposition: attachment;
                             'content-type': 'text/plain',
                             'filename': u'B\xfccher.txt'}],
                           utils.get_attachments(self.msg_attachment))
-                          
+
     # def test_image_tags(self):
     #     text = utils.get_text_payloads(self.msg_cipra)
 
@@ -130,13 +131,13 @@ Content-Disposition: attachment;
         msg = utils.unwrap_attached_msg(self.msg_fwd_attachment)
         self.assertEquals(msg.get('Subject'), 'Lorem Ipsum')
 
-        
-        
+
+
     # def test_special(self):
     #     msg_txt = open('/Users/tom/Downloads/message-1.eml', 'r').read()
     #     msg  = email.message_from_string(msg_txt)
     #     body = utils.get_body(msg)
     #     import pdb; pdb.set_trace( )
-        
+
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
