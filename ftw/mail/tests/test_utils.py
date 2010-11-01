@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 import unittest
 import email
 import os
@@ -88,6 +89,26 @@ Content-Disposition: attachment;
                             'content-type': 'text/plain',
                             'filename': u'B\xfccher.txt'}],
                           utils.get_attachments(self.msg_attachment))
+
+    def test_remove_attachments(self):
+        # we dont want to change the message itselve, so lets copy it
+        msg = deepcopy(self.msg_attachment)
+        self.assertNotEquals(msg, self.msg_attachment)
+
+        # our message has one attachment
+        self.assertEquals([{'position': 1,
+                            'size': 7,
+                            'content-type': 'text/plain',
+                            'filename': u'B\xfccher.txt'}],
+                          utils.get_attachments(msg))
+
+        # lets remove the attachment
+        new_msg = utils.remove_attachments(msg, (1,))
+
+        # we get the same message back
+        self.assertEquals(msg, new_msg)
+        self.assertEquals([], utils.get_attachments(new_msg))
+
 
     # def test_image_tags(self):
     #     text = utils.get_text_payloads(self.msg_cipra)

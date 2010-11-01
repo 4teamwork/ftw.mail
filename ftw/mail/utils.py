@@ -1,4 +1,5 @@
 # various utility methods for handling e-mail messages
+from copy import deepcopy
 from email import Header
 from email.Utils import mktime_tz, parsedate_tz
 from DocumentTemplate.DT_Util import html_quote
@@ -12,8 +13,8 @@ BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 
 def get_header(msg, name):
     """Returns the value of the named header field of a mail message.
-       Handles rfc 2047 encoded header with non-ascii characters.
-       Always returns an utf-8 encoded string.
+    Handles rfc 2047 encoded header with non-ascii characters.
+    Always returns an utf-8 encoded string.
     """
     value = ''
     if msg is not None and msg.has_key(name):
@@ -31,8 +32,8 @@ def get_header(msg, name):
 
 def get_date_header(msg, name):
     """ Returns an UTC timestamp from a header field containing a date.
-        Compensates for the timezone difference if the header contains
-        timezone information.
+    Compensates for the timezone difference if the header contains
+    timezone information.
     """
     value = get_header(msg, name)
     ts = 0.0
@@ -41,21 +42,21 @@ def get_date_header(msg, name):
     except TypeError:
         pass
     return ts
-    
+
 def get_payload(msg):
     """Get the decoded message payload as utf-8 string"""
     encoding = msg.get_content_charset('ascii')
     payload = msg.get_payload(decode=1)
-    try: 
+    try:
         payload = payload.decode(encoding)
     except UnicodeDecodeError:
         payload = payload.decode('iso-8859-1', 'replace')
     payload = payload.encode('utf-8')
     return payload
-    
+
 def get_body(msg, url_prefix=''):
     """Returns the mail body as HTML string. All text parts of a multipart
-       message are returned."""
+    message are returned."""
     html = ''
     parts = get_text_payloads(msg)
     for part in parts:
@@ -78,12 +79,42 @@ def get_attachments(msg):
             if content_type == 'message/rfc822':
                 size = len(part.as_string())
             else:
-                size = len(part.get_payload(decode=1))        
+                size = len(part.get_payload(decode=1))
             attachments.append({'filename': filename,
                                 'content-type': content_type,
                                 'size': size,
                                 'position': position})
     return attachments
+
+def remove_attachments(msg, positions):
+    """Remove all attachments which have position listed in `positions`
+    from the email Message `msg`.
+    Returns the same email Message object without attachments.
+    If `clone` is True, the message will be copied first
+    """
+
+    if 0 in positions:
+        raise ValueError('Cannot delete the message itself (position 0)')
+
+    if msg is not None and msg.is_multipart():
+
+        # get the parts to delete filtering the position
+        parts_to_delete = [part for pos, part in enumerate(msg.walk())
+                           if pos in positions]
+
+        if len(parts_to_delete):
+            # find the parts in the payload - set all others
+
+            new_payload = []
+
+            for part in msg.get_payload():
+                if part not in parts_to_delete:
+                    new_payload.append(part)
+
+            # set the new payload
+            msg.set_payload(new_payload)
+
+    return msg
 
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all
@@ -99,11 +130,11 @@ def get_text_payloads(msg):
             for part in msgs:
                 alternatives.append(part.get_content_type())
             best_pos = get_best_alternative(alternatives)
-            parts += get_text_payloads(msgs[best_pos])    
+            parts += get_text_payloads(msgs[best_pos])
         # we go through all parts
         else:
             for part in msgs:
-                parts += get_text_payloads(part)           
+                parts += get_text_payloads(part)
     # not a multipart message
     else:
         payload = get_payload(msg)
@@ -111,7 +142,7 @@ def get_text_payloads(msg):
             if msg.get_content_type() == 'text/html':
                 parts.append(payload)
             elif msg.get_content_type() == 'text/plain':
-                parts.append(text2html(payload)) 
+                parts.append(text2html(payload))
     return parts
 
 def adjust_image_tags(html, msg, url_prefix):
@@ -125,14 +156,14 @@ def adjust_image_tags(html, msg, url_prefix):
     return html
 
 def get_position_for_cid(msg, cid):
-   """Return the position of the message part with the given Content-Id"""
-   position = -1
-   cid = '<' + cid + '>'
-   for part in msg.walk():
-       position += 1
-       if part.get('Content-Id', None) == cid:
-           return position
-   return position
+    """Return the position of the message part with the given Content-Id"""
+    position = -1
+    cid = '<' + cid + '>'
+    for part in msg.walk():
+        position += 1
+        if part.get('Content-Id', None) == cid:
+            return position
+        return position
 
 def get_filename(msg):
     """Get the filename of a message (part)
@@ -144,8 +175,8 @@ def get_filename(msg):
 
 def get_best_alternative(alternatives):
     """Get the index of the most preferred alternative in the given list of
-       alternatives.
-    """    
+    alternatives.
+    """
     for content_type in config.PREFERRED_MULTIPART_ALTERNATIVES:
         if content_type in alternatives:
             return alternatives.index(content_type)
@@ -158,7 +189,7 @@ def text2html(text):
 
 def unwrap_html_body(html, css_class=None):
     """ Return the content of the body tag for inline display in another
-        html document.
+    html document.
     """
     soup = BeautifulSoup(html, fromEncoding='utf8')
     if soup.body:
@@ -183,7 +214,7 @@ def unwrap_attached_msg(msg):
 
 def safe_utf8(text):
     """Returns an utf-8 encoded version of the given string with unknown
-       encoding. 
+    encoding.
     """
     encodings = ('iso-8859-1', 'iso-8859-15', 'utf8')
     for enc in encodings:

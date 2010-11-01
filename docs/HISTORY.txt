@@ -5,6 +5,9 @@ Changelog
 1.0a3
 -----
 
+* Added `remove_attachments` method
+  [01.11.2010, jbaumann]
+
 * Added test for filename encoding problem. Test still fails...
   [Thomas Buchberger]
 
