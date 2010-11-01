@@ -1,5 +1,4 @@
 # various utility methods for handling e-mail messages
-from copy import deepcopy
 from email import Header
 from email.Utils import mktime_tz, parsedate_tz
 from DocumentTemplate.DT_Util import html_quote
