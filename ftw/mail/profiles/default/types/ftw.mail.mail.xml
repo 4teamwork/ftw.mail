@@ -49,10 +49,5 @@
           url_expr="string:${object_url}/edit" visible="True">
     <permission value="Modify portal content"/>
   </action>
-  <action title="save attachments" action_id="save_attachments"
-          category="object_buttons"
-          url_expr="string:${object_url}/save_attachments" visible="True">
-      <permission value="Modify portal content" />
-  </action>
 
 </object>

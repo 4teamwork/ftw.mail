@@ -5,6 +5,9 @@ Changelog
 1.0a3
 -----
 
+* Removed `save_attachments`: moved to `opengever.mail` since its opengever specific
+  [02.11.2010, jbaumann]
+
 * Added `remove_attachments` method
   [01.11.2010, jbaumann]
 
