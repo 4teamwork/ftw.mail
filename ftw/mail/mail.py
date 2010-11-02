@@ -1,22 +1,15 @@
-import datetime
-import email
-
-from Acquisition import aq_inner, aq_parent
+from Acquisition import aq_inner
 from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 from email.MIMEText import MIMEText
 from five import grok
-from ftw.mail import utils
 from ftw.mail import _
-
+from ftw.mail import utils
 from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
-from plone.namedfile import NamedFile
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
-from Products.statusmessages.interfaces import IStatusMessage
+import email
 
 
 class IMail(form.Schema):
