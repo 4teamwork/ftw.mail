@@ -4,6 +4,8 @@ import os
 version = open('ftw/mail/version.txt').read().strip()
 maintainer = 'Thomas Buchberger'
 
+tests_require = []
+
 setup(name='ftw.mail',
       version=version,
       description="Provides a mail content type and a mail-in behavior" + \
@@ -35,6 +37,8 @@ setup(name='ftw.mail',
         'collective.testcaselayer',
         # -*- Extra requirements: -*-
         ],
+      tests_require=tests_require,
+      extras_require=dict(tests=tests_require),
       entry_points="""
       # -*- Entry points: -*-
 
