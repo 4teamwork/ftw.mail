@@ -4,7 +4,9 @@ import os
 version = open('ftw/mail/version.txt').read().strip()
 maintainer = 'Thomas Buchberger'
 
-tests_require = []
+tests_require = [
+    'collective.testcaselayer',
+    ]
 
 setup(name='ftw.mail',
       version=version,
@@ -34,7 +36,6 @@ setup(name='ftw.mail',
         'plone.app.registry',
         'plone.namedfile',
         'collective.autopermission',
-        'collective.testcaselayer',
         # -*- Extra requirements: -*-
         ],
       tests_require=tests_require,
