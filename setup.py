@@ -32,7 +32,6 @@ setup(name='ftw.mail',
       install_requires=[
         'setuptools',
         'BeautifulSoup',
-        'Plone',
         'plone.app.dexterity',
         'plone.app.registry',
         'plone.namedfile',
