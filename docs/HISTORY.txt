@@ -5,6 +5,10 @@ Changelog
 1.0a5
 -----
 
+* Added support for nested multipart emails where the attachment is within another part
+  of the message.
+  [jbaumann]
+
 
 1.0a4
 -----

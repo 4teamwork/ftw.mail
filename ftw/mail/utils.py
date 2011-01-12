@@ -92,28 +92,42 @@ def remove_attachments(msg, positions):
     If `clone` is True, the message will be copied first
     """
 
+    if msg is None:
+        raise ValueError('Cannot delete attachments from email message None')
+
     if 0 in positions:
         raise ValueError('Cannot delete the message itself (position 0)')
 
-    if msg is not None and msg.is_multipart():
+    if len(positions) == 0:
+        # no attachments should be removed - so just skip
+        return msg
 
-        # get the parts to delete filtering the position
-        parts_to_delete = [part for pos, part in enumerate(msg.walk())
+    if not msg.is_multipart():
+        raise ValueError('Email message is not multipart - there are '
+                         'no attachments.')
+
+    # get the parts to delete filtering the position
+    parts_to_delete = [part for pos, part in enumerate(msg.walk())
                            if pos in positions]
 
-        if len(parts_to_delete):
-            # find the parts in the payload - set all others
+    if len(positions) != len(parts_to_delete):
+        raise ValueError('One or more attachments could not be found.')
 
-            new_payload = []
+    def _recursive_remove_parts(msg):
+        """Recursive function for removing payloads (attachments).
+        """
+        if not msg.is_multipart():
+            return msg
 
-            for part in msg.get_payload():
-                if part not in parts_to_delete:
-                    new_payload.append(part)
+        new_payload = []
+        for part in msg.get_payload():
+            if part not in parts_to_delete:
+                new_payload.append(_recursive_remove_parts(part))
+        msg.set_payload(new_payload)
+        return msg
 
-            # set the new payload
-            msg.set_payload(new_payload)
-
-    return msg
+    # do it
+    return _recursive_remove_parts(msg)
 
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all

@@ -24,6 +24,8 @@ class TestUtils(unittest.TestCase):
         self.msg_attachment = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
         self.msg_fwd_attachment = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'nested_attachments.txt'), 'r').read()
+        self.msg_nested_attachments = email.message_from_string(msg_txt)
         # msg_txt = open(os.path.join(here, 'mails', 'cipra.txt'), 'r').read()
         # self.msg_cipra = email.message_from_string(msg_txt)
 
@@ -70,7 +72,7 @@ class TestUtils(unittest.TestCase):
 
     def test_get_filename(self):
         msg_txt = \
-"""Content-Type: application/octet-stream;
+            """Content-Type: application/octet-stream;
   name="=?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?="
 Content-Transfer-Encoding: base64
 Content-Description: =?iso-8859-1?Q?Aperovorschl=E4ge_2010=2Epdf?=
@@ -89,6 +91,20 @@ Content-Disposition: attachment;
                             'content-type': 'text/plain',
                             'filename': u'B\xfccher.txt'}],
                           utils.get_attachments(self.msg_attachment))
+
+    def test_nested_get_attachments(self):
+        """A forwarded mail with attachments results in nested multipart
+        payloads - this should also be handled by get_attachments method.
+        """
+        self.assertEquals([{'position': 4,
+                            'size': 137588,
+                            'content-type': 'image/jpg',
+                            'filename': '1703693_0412c29a4f.jpg'},
+                           {'position': 5,
+                            'size': 223504,
+                            'content-type': 'image/jpg',
+                            'filename': '3512536451_e1310bf568.jpg'}],
+                          utils.get_attachments(self.msg_nested_attachments))
 
     def test_remove_attachments(self):
         # we dont want to change the message itselve, so lets copy it
@@ -109,6 +125,35 @@ Content-Disposition: attachment;
         self.assertEquals(msg, new_msg)
         self.assertEquals([], utils.get_attachments(new_msg))
 
+    def test_nested_remove_attachments(self):
+        """A forwarded mail with attachments results in nested multipart
+        payloads - this should also be handled by remove_attachments.
+        """
+        msg = deepcopy(self.msg_nested_attachments)
+        self.assertNotEquals(msg, self.msg_nested_attachments)
+
+        # we have two attachments (which are nested)
+        self.assertEquals([{'position': 4,
+                            'size': 137588,
+                            'content-type': 'image/jpg',
+                            'filename': '1703693_0412c29a4f.jpg'},
+                           {'position': 5,
+                            'size': 223504,
+                            'content-type': 'image/jpg',
+                            'filename': '3512536451_e1310bf568.jpg'}],
+                          utils.get_attachments(msg))
+
+        # lets remove one attachment
+        new_msg = utils.remove_attachments(msg, (5,))
+
+        # we get the same message back..
+        self.assertEquals(msg, new_msg)
+        # .. but without the removed attachment
+        self.assertEquals([{'position': 4,
+                            'size': 137588,
+                            'content-type': 'image/jpg',
+                            'filename': '1703693_0412c29a4f.jpg'}],
+                          utils.get_attachments(new_msg))
 
     # def test_image_tags(self):
     #     text = utils.get_text_payloads(self.msg_cipra)
@@ -128,7 +173,7 @@ Content-Disposition: attachment;
         </html>
         """
         body ='<div class="mailBody" style="color: #666; font-size: 12px;">'\
-              'Body</div>'
+            'Body</div>'
         self.assertEquals(body, utils.unwrap_html_body(html, 'mailBody'))
         html = '<p>Body</p>'
         body = '<div class="mailBody"><p>Body</p></div>'
