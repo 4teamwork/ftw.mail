@@ -5,6 +5,9 @@ Changelog
 1.0a5
 -----
 
+* According to rfc 2047, multiple encoded words are seperated by space: fixed tests.
+  [jbaumann]
+
 * Created safe_decode_header util function, which handles the encoding
   properly for get_filenames according to rfc 2047.
   This solves a test issue.

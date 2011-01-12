@@ -31,11 +31,16 @@ class TestUtils(unittest.TestCase):
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
-        self.assertEquals('Lorem Ipsum', utils.get_header(self.msg_ascii, 'Subject'))
-        self.assertEquals('Die B\xc3\xbcrgschaft', utils.get_header(self.msg_latin1, 'Subject'))
-        self.assertEquals('Friedrich H\xc3\xb6lderlin <to@example.org>', utils.get_header(self.msg_latin1, 'To'))
-        self.assertEquals('Die B\xc3\xbcrgschaft', utils.get_header(self.msg_utf8, 'Subject'))
-        self.assertEquals('Friedrich H\xc3\xb6lderlin <to@example.org>', utils.get_header(self.msg_utf8, 'To'))
+        self.assertEquals('Lorem Ipsum',
+                          utils.get_header(self.msg_ascii, 'Subject'))
+        self.assertEquals('Die B\xc3\xbcrgschaft',
+                          utils.get_header(self.msg_latin1, 'Subject'))
+        self.assertEquals('Friedrich H\xc3\xb6lderlin <to@example.org>',
+                          utils.get_header(self.msg_latin1, 'To'))
+        self.assertEquals('Die B\xc3\xbcrgschaft',
+                          utils.get_header(self.msg_utf8, 'Subject'))
+        self.assertEquals('Friedrich H\xc3\xb6lderlin <to@example.org>',
+                          utils.get_header(self.msg_utf8, 'To'))
 
     def test_get_date_header(self):
         # a date header
