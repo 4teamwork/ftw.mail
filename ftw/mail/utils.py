@@ -1,5 +1,5 @@
 # various utility methods for handling e-mail messages
-from email import Header
+from email.header import decode_header
 from email.Utils import mktime_tz, parsedate_tz
 from DocumentTemplate.DT_Util import html_quote
 from BeautifulSoup import BeautifulSoup
@@ -10,6 +10,25 @@ from ftw.mail import config
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
 BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 
+def safe_decode_header(value):
+    """ Handles rfc 2047 encoded header with non-ascii characters.
+    Always returns an utf-8 encoded string.
+    """
+
+    if value is None:
+        return None
+
+    new_value = []
+    for data, charset in decode_header(value):
+        if charset is not None and charset not in ('utf-8', 'utf8'):
+            data = data.decode(charset).encode('utf-8')
+        elif charset is None:
+            data = safe_utf8(data)
+        new_value.append(data and data or '')
+
+    return ' '.join(new_value).rstrip()
+
+
 def get_header(msg, name):
     """Returns the value of the named header field of a mail message.
     Handles rfc 2047 encoded header with non-ascii characters.
@@ -17,17 +36,8 @@ def get_header(msg, name):
     """
     value = ''
     if msg is not None and msg.has_key(name):
-        header = msg.get(name)
-        decoded = Header.decode_header(header)
-        for part in decoded:
-            part_value = part[0]
-            encoding = part[1]
-            if encoding is not None and encoding != 'utf-8':
-                part_value = part_value.decode(encoding).encode('utf8')
-            if encoding is None:
-                part_value = safe_utf8(part_value)
-            value += part_value + ' '
-    return value.rstrip()
+        value = safe_decode_header(msg.get(name))
+    return value
 
 def get_date_header(msg, name):
     """ Returns an UTC timestamp from a header field containing a date.
@@ -182,8 +192,9 @@ def get_filename(msg):
     """Get the filename of a message (part)
     """
     filename = msg.get_filename(None)
-    if filename is None:
+    if filename is not None:
         filename = msg.get_param('Name', None)
+        filename = safe_decode_header(filename)
     return filename
 
 def get_best_alternative(alternatives):

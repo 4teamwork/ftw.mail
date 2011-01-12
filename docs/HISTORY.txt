@@ -5,6 +5,11 @@ Changelog
 1.0a5
 -----
 
+* Created safe_decode_header util function, which handles the encoding
+  properly for get_filenames according to rfc 2047.
+  This solves a test issue.
+  [jbaumann]
+
 * Added support for nested multipart emails where the attachment is within another part
   of the message.
   [jbaumann]

@@ -81,7 +81,7 @@ Content-Disposition: attachment;
 """
         msg = email.message_from_string(msg_txt)
         # !!! seems to be a bug in email package
-        self.assertEquals('Aperovorschläge', utils.get_filename(msg))
+        self.assertEquals('Aperovorschläge 2010.pdf', utils.get_filename(msg))
 
 
     def test_get_attachments(self):
@@ -89,7 +89,7 @@ Content-Disposition: attachment;
         self.assertEquals([{'position': 1,
                             'size': 7,
                             'content-type': 'text/plain',
-                            'filename': u'B\xfccher.txt'}],
+                            'filename': 'Bücher.txt'}],
                           utils.get_attachments(self.msg_attachment))
 
     def test_nested_get_attachments(self):
@@ -115,7 +115,7 @@ Content-Disposition: attachment;
         self.assertEquals([{'position': 1,
                             'size': 7,
                             'content-type': 'text/plain',
-                            'filename': u'B\xfccher.txt'}],
+                            'filename': 'Bücher.txt'}],
                           utils.get_attachments(msg))
 
         # lets remove the attachment
