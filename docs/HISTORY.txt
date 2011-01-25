@@ -5,6 +5,9 @@ Changelog
 1.0a6
 -----
 
+* Changed minor typo in German translation.
+  [phabegger]
+
 
 1.0a5
 -----

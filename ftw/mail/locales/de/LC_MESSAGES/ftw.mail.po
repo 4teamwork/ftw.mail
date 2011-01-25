@@ -43,7 +43,7 @@ msgstr ""
 #. Default: "Raw Message"
 #: ftw.mail/ftw/mail/mail.py:23
 msgid "label_raw_message"
-msgstr "Orginalnachrichts"
+msgstr "Orginalnachricht"
 
 #. Default: "[No Subject]"
 #: ftw.mail/ftw/mail/mail.py:39
