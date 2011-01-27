@@ -6,6 +6,7 @@ from five import grok
 from ftw.mail import _
 from ftw.mail import utils
 from plone.dexterity.content import Item
+from collective import dexteritytextindexer
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
@@ -49,6 +50,30 @@ class Mail(Item):
         if self.message is not None:
             return email.message_from_string(self.message.data)
         return MIMEText('')
+
+
+# SearchableText
+class SearchableTextExtender(grok.Adapter):
+    """This DynamicTextIndexExtender decodes the body of e-Mail messages
+    and adds it to the searchableText.
+    """
+    grok.context(IMail)
+    grok.name('IMail')
+    grok.implements(dexteritytextindexer.IDynamicTextIndexExtender)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self):
+        searchable = []
+        # append some other attributes to the searchableText index
+        # message body
+        html_body = utils.get_body(self.context.msg)
+        msg_body = utils.unwrap_html_body(html_body)
+
+        searchable.append(msg_body)
+
+        return ' '.join(searchable)
 
 
 class View(grok.View):

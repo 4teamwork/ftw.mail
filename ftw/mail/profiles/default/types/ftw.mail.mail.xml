@@ -23,6 +23,7 @@
 
   <!-- enabled behaviors -->
   <property name="behaviors">
+    <element value="collective.dexteritytextindexer.behavior.IDexterityTextIndexer" />
     <element value="plone.app.content.interfaces.INameFromTitle" />
   </property>
 
