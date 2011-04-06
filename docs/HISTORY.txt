@@ -5,6 +5,9 @@ Changelog
 1.0a8
 -----
 
+* Added missing dependency on collective.dexteritytextindexer in setup.py
+  [lgraf]
+
 * Pinned zope.component=3.8.0 in test-plone-4.0.x.cfg to resolve version conflict
   [lgraf]
 

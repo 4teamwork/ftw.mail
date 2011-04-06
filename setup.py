@@ -36,6 +36,7 @@ setup(name='ftw.mail',
         'plone.app.registry',
         'plone.namedfile',
         'collective.autopermission',
+        'collective.dexteritytextindexer',
         # -*- Extra requirements: -*-
         ],
       tests_require=tests_require,
