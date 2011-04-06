@@ -64,14 +64,25 @@ class TestMailIntegration(PloneTestCase):
         attachments = view.attachments()
         self.assertEquals(1, len(attachments))
         self.failUnless('icon' in attachments[0])
-        
-        
+
     def test_get_attachment(self):
         self.folder.invokeFactory('ftw.mail.mail', 'mail1')
         m1 = self.folder['mail1']
         view = m1.restrictedTraverse('@@get_attachment')
         self.assertRaises(NotFound, view)
-        
+
+    def test_setting_title(self):
+        self.folder.invokeFactory('ftw.mail.mail', 'mail1')
+        m1 = self.folder['mail1']
+        self.assertEquals(u'no_subject', m1.title)
+        # Try setting the title property
+        # This is not supposed to change the title,
+        # since that is always read from the subject,
+        # but it shouldn't fail with an AttributeError
+        m1.title = "New Title"
+        self.assertEquals(u'no_subject', m1.title)
+
+
     # def test_special(self):
     #     here = os.path.dirname(__file__)
     #     msg_txt = open(os.path.join(here, 'mails', 'cipra.txt'), 'r').read()

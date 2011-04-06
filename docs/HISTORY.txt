@@ -5,6 +5,10 @@ Changelog
 1.0a8
 -----
 
+* Added dummy setter for `title` property so it doesn't fail with an AttributeError
+  when trying to set the title of a ftw.mail.mail object.
+  [lgraf]
+
 * Added missing dependency on collective.dexteritytextindexer in setup.py
   [lgraf]
 

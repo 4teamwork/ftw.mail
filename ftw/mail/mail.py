@@ -40,7 +40,14 @@ class Mail(Item):
             return subject.decode('utf8')
         return _(u'no_subject', default=u'[No Subject]')
 
-    def setTitle(self, value):
+    @title.setter
+    def title(self, value):
+        """Since the title of an e-Mail can't be changed (it's always
+        what the subject of the message contains), this is a dummy setter.
+        It is still needed though, because otherwise plone.dexterity.utils
+        fails in createContent() when trying to set attributes on the newly
+        created content object.
+        """
         pass
 
     @property
