@@ -57,7 +57,7 @@ class TestMailIntegration(PloneTestCase):
         field_type = getFields(schema)['message']._type
         obj = createContentInContainer(self.folder, 'ftw.mail.mail',
                    message=field_type(data=self.msg_txt_attachment,
-                   contentType='message/rfc822', filename='message.eml'))
+                   contentType=u'message/rfc822', filename=u'message.eml'))
         m1 = self.folder[obj.getId()]
         view = m1.restrictedTraverse('@@view')
         view()

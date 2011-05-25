@@ -5,6 +5,10 @@ Changelog
 1.0a8
 -----
 
+* Fixed message value creation: filename must be in unicode, that it
+  works with the new plone.namedfile 1.0.3
+  [phgross]
+
 * Added dummy setter for `title` property so it doesn't fail with an AttributeError
   when trying to set the title of a ftw.mail.mail object.
   [lgraf]
