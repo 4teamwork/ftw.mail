@@ -88,6 +88,15 @@ Content-Disposition: attachment;
         # !!! seems to be a bug in email package
         self.assertEquals('Aperovorschläge 2010.pdf', utils.get_filename(msg))
 
+        msg_txt = \
+        """Content-Disposition: attachment;
+	filename*=iso-8859-1''f%F6rmularz%FCgriffsber%E4chtigungen.doc
+Content-Type: application/msword;
+	name*=iso-8859-1''f%F6rmularz%FCgriffsber%E4chtigungen.doc
+Content-Transfer-Encoding: base64
+"""
+        msg = email.message_from_string(msg_txt)
+        self.assertEquals('f\xc3\xb6rmularz\xc3\xbcgriffsber\xc3\xa4chtigungen.doc', utils.get_filename(msg))
 
     def test_get_attachments(self):
         self.assertEquals([], utils.get_attachments(self.msg_ascii))
@@ -201,7 +210,6 @@ Content-Disposition: attachment;
     def test_unwrap_attached_msg(self):
         msg = utils.unwrap_attached_msg(self.msg_fwd_attachment)
         self.assertEquals(msg.get('Subject'), 'Lorem Ipsum')
-
 
 
     # def test_special(self):

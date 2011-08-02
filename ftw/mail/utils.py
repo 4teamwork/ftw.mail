@@ -20,11 +20,6 @@ def safe_decode_header(value):
 
     new_value = []
 
-    # if the value is already decoded or a other tuple
-    # we just take the value and use the decode_header function
-    if isinstance(value, tuple):
-        value = value[len(value)-1]
-
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):
             data = data.decode(charset).encode('utf-8')
@@ -200,7 +195,17 @@ def get_filename(msg):
     filename = msg.get_filename(None)
     if filename is not None:
         filename = msg.get_param('Name', None)
-        filename = safe_decode_header(filename)
+
+        # if the value is already decoded or a other tuple
+        # we just take the value and use the decode_header function
+        if isinstance(filename, tuple):
+            if filename[0] is not None and filename[0] not in ('utf-8', 'utf8'):
+                filename = filename[2].decode(filename[0]).encode('utf-8')
+            else:
+                filename = safe_utf8(filename[2])
+        else:
+            filename = safe_decode_header(filename)
+
     return filename
 
 def get_best_alternative(alternatives):
