@@ -19,6 +19,12 @@ def safe_decode_header(value):
         return None
 
     new_value = []
+
+    # if the value is already decoded or a other tuple
+    # we just take the value and use the decode_header function
+    if isinstance(value, tuple):
+        value = value[len(value)-1]
+
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):
             data = data.decode(charset).encode('utf-8')
