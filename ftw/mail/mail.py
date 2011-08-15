@@ -18,7 +18,7 @@ class IMail(form.Schema):
     """
 
     form.primary('message')
-    message = field.NamedFile(
+    message = field.NamedBlobFile(
         title = _(u"label_raw_message", default=u"Raw Message"),
         description = _(u"help_raw_message", default=u""),
         required = False,

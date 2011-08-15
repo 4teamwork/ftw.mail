@@ -5,6 +5,9 @@ Changelog
 1.0a9
 -----
 
+* Implements Blob support, use now NamedBlobFiles instead of NamedFiles
+  [phgross]
+
 * Issue #1134 Test Gelb 2.0.3: Nicht korrekte Dateiendung beim Extrahieren eines Dokuments mit Umlaut aus Mail 
   https://extranet.4teamwork.ch/projects/opengever-kanton-zug/sprint-backlog/1134/
   added fallback in the get_filename method for allready decoded filenames tuple
