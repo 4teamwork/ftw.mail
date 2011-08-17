@@ -5,6 +5,9 @@ Changelog
 1.0a9
 -----
 
+* Fix tests
+  [eschmutz]
+
 * Implements Blob support, use now NamedBlobFiles instead of NamedFiles
   [phgross]
 

@@ -36,7 +36,7 @@ setup(name='ftw.mail',
         'BeautifulSoup',
         'plone.app.dexterity',
         'plone.app.registry',
-        'plone.namedfile',
+        'plone.namedfile[blobs]',
         'collective.autopermission',
         'collective.dexteritytextindexer',
         # -*- Extra requirements: -*-
