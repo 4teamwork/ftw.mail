@@ -33,7 +33,7 @@ class MailInboundException(Exception):
         return '%s:%s' % (self.exitcode, self.errormsg)
 
 
-class MailInbound(grok.CodeView):
+class MailInbound(grok.View):
     """ A view that handles inbound mail posted by mta2plone.py
     """
     grok.context(ISiteRoot)

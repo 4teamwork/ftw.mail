@@ -5,7 +5,7 @@ from ftw.mail import utils
 from zExceptions import NotFound
 from ftw.mail.mail import IMail
 
-class AttachmentView(grok.CodeView):
+class AttachmentView(grok.View):
     """Returns the attachment at the position specified in the request.
     """
     grok.context(IMail)

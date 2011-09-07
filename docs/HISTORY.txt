@@ -5,6 +5,9 @@ Changelog
 1.0a10
 ------
 
+* changed deprecated grok.CodeView to grok.View
+  [eschmutz]
+
 * added test-buildout for plone 4.1
   [eschmutz]
 
