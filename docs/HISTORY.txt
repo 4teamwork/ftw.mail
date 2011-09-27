@@ -2,30 +2,30 @@ Changelog
 =========
 
 
-1.0a10
-------
+1.0a10 (unreleased)
+-------------------
 
-* changed fallback encoding in the get_payload method for msg objects
+- changed fallback encoding in the get_payload method for msg objects
   without a correct charset information. So we could fix display errors in mails
   with non-ascii characters in the mail body.
   [phgross]
 
-* changed deprecated grok.CodeView to grok.View
+- changed deprecated grok.CodeView to grok.View
   [eschmutz]
 
-* added test-buildout for plone 4.1
+- added test-buildout for plone 4.1
   [eschmutz]
 
-1.0a9
------
+1.0a9 (2011-08-24)
+------------------
 
-* Fix tests
+- Fix tests
   [eschmutz]
 
-* Implements Blob support, use now NamedBlobFiles instead of NamedFiles
+- Implements Blob support, use now NamedBlobFiles instead of NamedFiles
   [phgross]
 
-* Issue #1134 Test Gelb 2.0.3: Nicht korrekte Dateiendung beim Extrahieren eines Dokuments mit Umlaut aus Mail
+- Issue #1134 Test Gelb 2.0.3: Nicht korrekte Dateiendung beim Extrahieren eines Dokuments mit Umlaut aus Mail
   https://extranet.4teamwork.ch/projects/opengever-kanton-zug/sprint-backlog/1134/
   added fallback in the get_filename method for allready decoded filenames tuple
   [phgross]
@@ -33,47 +33,47 @@ Changelog
 1.0a8
 -----
 
-* Fixed message value creation: filename must be in unicode, that it
+- Fixed message value creation: filename must be in unicode, that it
   works with the new plone.namedfile 1.0.3
   [phgross]
 
-* Added dummy setter for `title` property so it doesn't fail with an AttributeError
+- Added dummy setter for `title` property so it doesn't fail with an AttributeError
   when trying to set the title of a ftw.mail.mail object.
   [lgraf]
 
-* Added missing dependency on collective.dexteritytextindexer in setup.py
+- Added missing dependency on collective.dexteritytextindexer in setup.py
   [lgraf]
 
-* Pinned zope.component=3.8.0 in test-plone-4.0.x.cfg to resolve version conflict
+- Pinned zope.component=3.8.0 in test-plone-4.0.x.cfg to resolve version conflict
   [lgraf]
 
 
 1.0a7
 -----
 
-* Added DynamicTextIndexExtender to add message body to searchableText
+- Added DynamicTextIndexExtender to add message body to searchableText
   [lgraf]
 
 
 1.0a6
 -----
 
-* Changed minor typo in German translation.
+- Changed minor typo in German translation.
   [phabegger]
 
 
 1.0a5
 -----
 
-* According to rfc 2047, multiple encoded words are seperated by space: fixed tests.
+- According to rfc 2047, multiple encoded words are seperated by space: fixed tests.
   [jbaumann]
 
-* Created safe_decode_header util function, which handles the encoding
+- Created safe_decode_header util function, which handles the encoding
   properly for get_filenames according to rfc 2047.
   This solves a test issue.
   [jbaumann]
 
-* Added support for nested multipart emails where the attachment is within another part
+- Added support for nested multipart emails where the attachment is within another part
   of the message.
   [jbaumann]
 
@@ -85,22 +85,22 @@ Changelog
 1.0a3
 -----
 
-* Removed `save_attachments`: moved to `opengever.mail` since its opengever specific
+- Removed `save_attachments`: moved to `opengever.mail` since its opengever specific
   [02.11.2010, jbaumann]
 
-* Added `remove_attachments` method
+- Added `remove_attachments` method
   [01.11.2010, jbaumann]
 
-* Added test for filename encoding problem. Test still fails...
+- Added test for filename encoding problem. Test still fails...
   [Thomas Buchberger]
 
-* Moved unwrapping of attached messages into utility method. Added test.
+- Moved unwrapping of attached messages into utility method. Added test.
   [Thomas Buchberger]
 
-* Correctly restore current SecurityManger after mail creation.
+- Correctly restore current SecurityManger after mail creation.
   [Thomas Buchberger]
 
-* Added tests for unknown sender
+- Added tests for unknown sender
   [Thomas Buchberger]
 
 1.0a2
@@ -110,4 +110,4 @@ Changelog
 1.0
 ---
 
-* Initial release
+- Initial release
