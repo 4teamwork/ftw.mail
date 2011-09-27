@@ -5,6 +5,11 @@ Changelog
 1.0a10
 ------
 
+* changed fallback encoding in the get_payload method for msg objects
+  without a correct charset information. So we could fix display errors in mails
+  with non-ascii characters in the mail body.
+  [phgross]
+
 * changed deprecated grok.CodeView to grok.View
   [eschmutz]
 
@@ -20,7 +25,7 @@ Changelog
 * Implements Blob support, use now NamedBlobFiles instead of NamedFiles
   [phgross]
 
-* Issue #1134 Test Gelb 2.0.3: Nicht korrekte Dateiendung beim Extrahieren eines Dokuments mit Umlaut aus Mail 
+* Issue #1134 Test Gelb 2.0.3: Nicht korrekte Dateiendung beim Extrahieren eines Dokuments mit Umlaut aus Mail
   https://extranet.4teamwork.ch/projects/opengever-kanton-zug/sprint-backlog/1134/
   added fallback in the get_filename method for allready decoded filenames tuple
   [phgross]

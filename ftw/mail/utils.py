@@ -55,7 +55,10 @@ def get_date_header(msg, name):
 
 def get_payload(msg):
     """Get the decoded message payload as utf-8 string"""
-    encoding = msg.get_content_charset('ascii')
+
+    # get encoding for the msg object, use utf-8 as fallback encoding
+    # for msg objects without a correct charset information
+    encoding = msg.get_content_charset('utf-8')
     payload = msg.get_payload(decode=1)
     try:
         payload = payload.decode(encoding)
