@@ -5,7 +5,8 @@ Changelog
 1.0a11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Added test to test mail creation with weird characters in subject.
+  [lgraf]
 
 
 1.0a10 (2011-09-27)
@@ -22,6 +23,7 @@ Changelog
 - added test-buildout for plone 4.1
   [eschmutz]
 
+
 1.0a9 (2011-08-24)
 ------------------
 
@@ -35,6 +37,7 @@ Changelog
   https://extranet.4teamwork.ch/projects/opengever-kanton-zug/sprint-backlog/1134/
   added fallback in the get_filename method for allready decoded filenames tuple
   [phgross]
+
 
 1.0a8
 -----
@@ -108,6 +111,7 @@ Changelog
 
 - Added tests for unknown sender
   [Thomas Buchberger]
+
 
 1.0a2
 -----

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from email.MIMEText import MIMEText
 from Products.PloneTestCase.ptc import PloneTestCase
@@ -122,6 +123,14 @@ class TestInboundMail(PloneTestCase):
                   'Lorem ipsum dolor sit amet, consectetur adipisicing elit,'\
                   ' sed do eiusmod tempor incididunt ut labore et dolore '\
                   'magna aliqua.' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())
+
+    def test_weird_characters_in_subject(self):
+        msg_txt = 'To: %s\n'\
+                  'From: from@example.org\n'\
+                  'Subject: Here comes a tab	and some umlauts äöü' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
