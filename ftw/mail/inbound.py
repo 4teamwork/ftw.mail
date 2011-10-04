@@ -40,7 +40,7 @@ class MailInbound(grok.View):
     grok.require('zope2.View')
     grok.name('mail-inbound')
     implements(IMailInbound)
-    
+
     def render(self):
         context = aq_inner(self.context)
 
@@ -54,9 +54,9 @@ class MailInbound(grok.View):
             sender_email = self.sender()
 
             if validate_sender and not sender_email:
-                raise MailInboundException(EXIT_CODES['NOPERM'], 
+                raise MailInboundException(EXIT_CODES['NOPERM'],
                       'Unknown sender. Permission denied.')
-                        
+
             # get portal member by sender address
             if sender_email:
                 pas_search = getMultiAdapter((context, self.request), name='pas_search')
@@ -68,9 +68,9 @@ class MailInbound(grok.View):
                     if not hasattr(user, 'aq_base'):
                         user = user.__of__(uf)
                     #member = mtool.getMemberById(users[0].get('userid'))
-            
+
             if validate_sender and user is None:
-                raise MailInboundException(EXIT_CODES['NOPERM'], 
+                raise MailInboundException(EXIT_CODES['NOPERM'],
                       'Unknown sender. Permission denied.')
 
             msg = self.msg()
@@ -83,7 +83,7 @@ class MailInbound(grok.View):
             destination = resolver.destination()
 
             if destination is None:
-                raise MailInboundException(EXIT_CODES['CANTCREAT'], 
+                raise MailInboundException(EXIT_CODES['CANTCREAT'],
                                            'Destination does not exist.')
             if destination:
                 msg_txt = msg.as_string()
@@ -97,10 +97,10 @@ class MailInbound(grok.View):
                 try:
                     createMailInContainer(destination, msg_txt)
                 except Unauthorized:
-                    raise MailInboundException(EXIT_CODES['NOPERM'], 
+                    raise MailInboundException(EXIT_CODES['NOPERM'],
                           'Unable to create message. Permission denied.')
                 except ValueError:
-                    raise MailInboundException(EXIT_CODES['NOPERM'], 
+                    raise MailInboundException(EXIT_CODES['NOPERM'],
                           'Disallowed subobject type. Permission denied.')
                 setSecurityManager(sm)
 
@@ -115,12 +115,12 @@ class MailInbound(grok.View):
         """
         msg_txt = self.request.get('mail', None)
         if msg_txt is None:
-            raise MailInboundException(EXIT_CODES['NOINPUT'], 
+            raise MailInboundException(EXIT_CODES['NOINPUT'],
                                        'No mail message supplied.')
         try:
             msg = email.message_from_string(msg_txt)
         except TypeError:
-            raise MailInboundException(EXIT_CODES['DATAERR'], 
+            raise MailInboundException(EXIT_CODES['DATAERR'],
                                        'Invalid mail message supplied.')
         return msg
 
@@ -134,7 +134,7 @@ class MailInbound(grok.View):
         (sender_name, sender_address) = parseaddr(sender)
         return sender_address
 
-    @instance.memoize        
+    @instance.memoize
     def recipient(self):
         """ get the email address of the recipient
         """
@@ -158,7 +158,7 @@ def createMailInContainer(container, message):
     message_value = field_type(data=message,
                        contentType=u'message/rfc822', filename=u'message.eml')
     # create mail object
-    content = createContent('ftw.mail.mail', message=message_value)    
+    content = createContent('ftw.mail.mail', message=message_value)
 
     container = aq_inner(container)
     container_fti = container.getTypeInfo()
@@ -182,12 +182,12 @@ def createMailInContainer(container, message):
 
 
 # class DestinationFromLocalPart(grok.Adapter):
-#     """ A destination resolver that  
+#     """ A destination resolver that
 #     """
 #     grok.provides(IDestinationResolver)
 #     grok.context(IMailInbound)
 #     #grok.name(u'path-from-local-part')
-# 
+#
 #     def destination(self):
 #         parts = self.context.recipient().split('@')
 #         path = parts[0].replace('.', '/')
@@ -206,7 +206,7 @@ class DestinationFromIntId(grok.Adapter):
     grok.provides(IDestinationResolver)
     grok.context(IMailInbound)
     #grok.name(u'intid')
-    
+
     def destination(self):
         intid = self.context.recipient().split('@')[0]
         id_util = getUtility(IIntIds)
