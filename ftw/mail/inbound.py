@@ -1,25 +1,26 @@
 import email
-from Acquisition import aq_inner
-from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager
-from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
+from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager
+from Acquisition import aq_inner
 from email.Utils import parseaddr
 from five import grok
 from ftw.mail import utils
+from ftw.mail.config import EXIT_CODES
 from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
+from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import createContent
+from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
+from zope.app.container.interfaces import INameChooser
 from zope.component import getMultiAdapter, getUtility, queryUtility
 from zope.interface import implements
 from zope.intid.interfaces import IIntIds
 from zope.schema import getFields
 from zope.security.interfaces import IPermission
-from plone.dexterity.interfaces import IDexterityFTI
-from zope.app.container.interfaces import INameChooser
-from ftw.mail.config import EXIT_CODES
 
 
 class MailInboundException(Exception):
@@ -174,7 +175,10 @@ def createMailInContainer(container, message):
     if container_fti is not None and not container_fti.allowType(content.portal_type):
         raise ValueError("Disallowed subobject type: %s" % content.portal_type)
 
-    name = INameChooser(container).chooseName(None, content)
+    normalizer = queryUtility(IIDNormalizer)
+    normalized_subject = normalizer.normalize(content.title)
+
+    name = INameChooser(container).chooseName(normalized_subject, content)
     content.id = name
 
     newName = container._setObject(name, content)
