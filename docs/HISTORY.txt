@@ -5,6 +5,10 @@ Changelog
 1.0a11 (unreleased)
 -------------------
 
+- Fixing long subject headers separated by \n\t before creating email.message
+  object.
+  [lgraf]
+
 - Added test to test mail creation with weird characters in subject.
   [lgraf]
 

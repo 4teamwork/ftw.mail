@@ -55,8 +55,16 @@ class Mail(Item):
         """ returns an email.Message instance
         """
         if self.message is not None:
-            return email.message_from_string(self.message.data)
+            data = self.message.data
+            temp_msg = email.message_from_string(data)
+            if '\n\t' in temp_msg['Subject']:
+                # It's a long subject header than has been separated by
+                # line break and tab - fix it
+                fixed_subject = temp_msg['Subject'].replace('\n\t', ' ')
+                data = data.replace(temp_msg['Subject'], fixed_subject)
+            return email.message_from_string(data)
         return MIMEText('')
+
 
 
 # SearchableText
