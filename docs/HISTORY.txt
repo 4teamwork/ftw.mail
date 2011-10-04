@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0a11 (unreleased)
+1.0a11 (2011-10-04)
 -------------------
 
 - Fixing long subject headers separated by \n\t before creating email.message
