@@ -98,7 +98,7 @@ class TestInboundMail(PloneTestCase):
                 return '%s@example.org' % intid
         resolver = IDestinationResolver(DummyMailInbound(self.portal))
         self.assertEquals(f1, resolver.destination())
-        
+
     def test_unknown_destination(self):
         msg_txt = 'To: unknown@example.org\n'\
                   'From: from@example.org\n'\
