@@ -15,6 +15,11 @@ Changelog
 - Normalizing subject before using it as an ID to create a mail object.
   [lgraf]
 
+- Changed default encoding to 'utf-8' for the safe_utf8 method.
+  Should fix decoding problem in mail subjects.
+  Issue #1209 Falsche Umlaute bei importierten Mails
+  https://extranet.4teamwork.ch/projects/opengever-kanton-zug/sprint-backlog/1209
+  [phgross]
 
 1.0a10 (2011-09-27)
 -------------------

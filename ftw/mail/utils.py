@@ -254,7 +254,7 @@ def safe_utf8(text):
     """Returns an utf-8 encoded version of the given string with unknown
     encoding.
     """
-    encodings = ('iso-8859-1', 'iso-8859-15', 'utf8')
+    encodings = ('utf8', 'iso-8859-1', 'iso-8859-15')
     for enc in encodings:
         try:
             text = text.decode(enc)
