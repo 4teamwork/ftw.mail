@@ -5,6 +5,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Added some French translations
+  [ttschanz]
+
 - Nothing changed yet.
 
 
