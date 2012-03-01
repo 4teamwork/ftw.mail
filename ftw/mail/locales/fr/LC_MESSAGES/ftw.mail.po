@@ -26,7 +26,7 @@ msgstr "De :"
 
 #: ftw.mail/ftw/mail/profiles/default/types/ftw.mail.mail.xml
 msgid "Mail"
-msgstr "Mail :"
+msgstr "Email :"
 
 #: ftw.mail/ftw/mail/mail_templates/view.pt:30
 msgid "Subject:"
