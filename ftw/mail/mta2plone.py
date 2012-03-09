@@ -15,7 +15,7 @@ def post_message(url, recipient, message_txt):
     data = {'mail': message_txt}
     if len(recipient) > 0:
         data ['recipient'] = recipient
-        
+
     try:
         result = urllib.urlopen(url, urllib.urlencode(data)).read()
     except (IOError,EOFError),e:
@@ -37,14 +37,14 @@ def post_message(url, recipient, message_txt):
 if __name__ == '__main__':
     # This gets called by the MTA when a new message arrives.
     # The mail message file gets passed in on the stdin
-        
+
     # Get the raw mail
     message_txt = sys.stdin.read()
-        
+
     url = ''
     if len(sys.argv)>1:
         url = sys.argv[1]
-        
+
     recipient = ''
     if len(sys.argv)>2:
         recipient = sys.argv[2]
