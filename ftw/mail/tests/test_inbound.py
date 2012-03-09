@@ -59,6 +59,16 @@ class TestInboundMail(PloneTestCase):
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('resent.to@example.org', view.recipient())
 
+    def test_recipient_from_request(self):
+        request = TestRequest(mail=self.ascii)
+        request.form['recipient'] = 'recipient@example.org'
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('recipient@example.org', view.recipient())
+        request = TestRequest(mail=self.resent)
+        request.form['recipient'] = 'recipient@example.org'
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('recipient@example.org', view.recipient())
+
     def test_unknown_sender(self):
         # unknown sender
         msg_txt = 'To: to@example.org\n'\

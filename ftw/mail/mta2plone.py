@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys, urllib
+import os
 
 
 def post_message(url, recipient, message_txt):
@@ -13,7 +14,7 @@ def post_message(url, recipient, message_txt):
         sys.exit(64)
 
     data = {'mail': message_txt}
-    if len(recipient) > 0:
+    if recipient and len(recipient) > 0:
         data ['recipient'] = recipient
 
     try:
@@ -46,6 +47,11 @@ if __name__ == '__main__':
         url = sys.argv[1]
 
     recipient = ''
+    # If mta2plone is executed as external command by the MTA, the
+    # environment variable ORIGINAL_RECIPIENT contains the entire
+    # recipient address, before any address rewriting or aliasing
+    recipient = os.environ.get('ORIGINAL_RECIPIENT')
+
     if len(sys.argv)>2:
         recipient = sys.argv[2]
 

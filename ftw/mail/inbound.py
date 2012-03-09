@@ -139,12 +139,15 @@ class MailInbound(grok.View):
     def recipient(self):
         """ get the email address of the recipient
         """
-        recipient = utils.get_header(self.msg(), 'Resent-To')
+        # If recipient is supplied in request (by mta2plone), use that
+        recipient = self.request.get('recipient')
         if not recipient:
-            recipient = utils.get_header(self.msg(), 'To')
+            # Otherwise fall back to `Resent-To` or `To` headers
+            recipient = utils.get_header(self.msg(), 'Resent-To')
+            if not recipient:
+                recipient = utils.get_header(self.msg(), 'To')
         (recipient_name, recipient_address) = parseaddr(recipient)
         return recipient_address
-
 
 def createMailInContainer(container, message):
     """Add a mail object to a container.
