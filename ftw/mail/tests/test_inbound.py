@@ -27,6 +27,10 @@ class TestInboundMail(PloneTestCase):
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='from@example.org'))
         id_util = getUtility(IIntIds)
+
+        # Make intids work in tests
+        id_util.register(self.folder)
+
         intid = id_util.queryId(self.folder)
         self.mail_to = '%s@example.org' % intid
 
