@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.2 (unreleased)
+1.0.2 (2012-03-28)
 ------------------
 
 - Inbound mail: Get recipient from env variable set by MTA, not from To header.
