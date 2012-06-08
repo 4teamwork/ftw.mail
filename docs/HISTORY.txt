@@ -5,6 +5,9 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+- Fixed BeautifulSoup related encoding bug when unwrapping html body.
+  [lgraf]
+
 - Fix filename encoding handling.
   [jone]
 

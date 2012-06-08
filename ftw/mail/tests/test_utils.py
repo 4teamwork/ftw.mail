@@ -206,6 +206,16 @@ Content-Transfer-Encoding: base64
         """
         self.assertEquals('<div>Äöü</div>', utils.unwrap_html_body(html))
 
+        # BeautifulSoup does some weird encoding guessing.
+        # For the snippet above it guesses utf-8, but if the body
+        # only contains a single ä Umlaut, it seems to guess latin1.
+        # Check we still get utf-8 back.
+        html = """
+        <html>
+        <body>ä</body>
+        """
+        self.assertEquals('<div>ä</div>', utils.unwrap_html_body(html))
+
 
     def test_unwrap_attached_msg(self):
         msg = utils.unwrap_attached_msg(self.msg_fwd_attachment)

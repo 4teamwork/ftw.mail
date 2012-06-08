@@ -237,7 +237,7 @@ def unwrap_html_body(html, css_class=None):
     soup = BeautifulSoup(html, fromEncoding='utf8')
     if soup.body:
         soup = soup.body
-    body_soup = BeautifulSoup('<div>%s</div>' % soup.renderContents())
+    body_soup = BeautifulSoup('<div>%s</div>' % soup.renderContents(), fromEncoding='utf8')
     if css_class:
         body_soup.div['class'] = css_class
     body_style = soup.get('style')
