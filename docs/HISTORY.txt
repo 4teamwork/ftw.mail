@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.3 (unreleased)
+1.0.3 (2012-06-18)
 ------------------
 
 - Fixed BeautifulSoup related encoding bug when unwrapping html body.
