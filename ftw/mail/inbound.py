@@ -191,6 +191,7 @@ def createMailInContainer(container, message):
     newName = container._setObject(name, content)
     obj = container._getOb(newName)
     obj = set_defaults(obj)
+    obj.reindexObject()
     return obj
 
 def set_defaults(obj):
