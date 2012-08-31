@@ -1,8 +1,9 @@
-import email
-from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager
 from Acquisition import aq_inner
+from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.utils import getToolByName
 from email.Utils import parseaddr
 from five import grok
 from ftw.mail import utils
@@ -10,17 +11,20 @@ from ftw.mail.config import EXIT_CODES
 from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import createContent
+from plone.dexterity.utils import iterSchemata
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
-from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.utils import getToolByName
+from z3c.form.interfaces import IValue
 from zope.app.container.interfaces import INameChooser
 from zope.component import getMultiAdapter, getUtility, queryUtility
+from zope.component import queryMultiAdapter
 from zope.interface import implements
 from zope.intid.interfaces import IIntIds
 from zope.schema import getFields
+from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
+import email
 
 
 class MailInboundException(Exception):
@@ -185,7 +189,39 @@ def createMailInContainer(container, message):
     content.id = name
 
     newName = container._setObject(name, content)
-    return container._getOb(newName)
+    obj = container._getOb(newName)
+    obj = set_defaults(obj)
+    return obj
+
+def set_defaults(obj):
+    """set the default value for all fields on the mail object
+    (including additional behaviors)"""
+
+    for schemata in iterSchemata(obj):
+        for name, field in getFieldsInOrder(schemata):
+            if field.get(field.interface(obj)) == field.missing_value \
+                or field.get(field.interface(obj)) is None:
+
+                # No value is set, so we try to set the default value
+                # otherwise we set the missing value
+                default = queryMultiAdapter((
+                        obj,
+                        obj.REQUEST,  # request
+                        None,  # form
+                        field,
+                        None,  # Widget
+                        ), IValue, name='default')
+                if default is not None:
+                    default = default.get()
+                if default is None:
+                    default = getattr(field, 'default', None)
+                if default is None:
+                    try:
+                        default = field.missing_value
+                    except:
+                        pass
+                field.set(field.interface(obj), default)
+    return obj
 
 
 # class DestinationFromLocalPart(grok.Adapter):

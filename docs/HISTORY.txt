@@ -5,7 +5,10 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Set default values on all fields in the inbound mail creation.
+  Issue #222 Metadaten Standort und Sprache
+  https://extranet.4teamwork.ch/support/ph-vs/tracker/222/
+  [philippegross]
 
 
 1.0.3 (2012-06-18)
