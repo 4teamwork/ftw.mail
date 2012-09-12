@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.4 (unreleased)
+1.0.4 (2012-09-12)
 ------------------
 
 - Set default values on all fields in the inbound mail creation.
