@@ -40,6 +40,13 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        for="Products.CMFCore.interfaces.IFolderish"
+        name="mail-in"
+        class=".mailin.MailIn"
+        permission="zope2.View"
+        />
+
 
     <!-- Intid resolver -->
     <adapter
