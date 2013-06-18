@@ -1,15 +1,16 @@
 from Acquisition import aq_inner
+from collective import dexteritytextindexer
 from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
 from email.MIMEText import MIMEText
-from five import grok
 from ftw.mail import _
 from ftw.mail import utils
 from plone.dexterity.content import Item
-from collective import dexteritytextindexer
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from zope.interface import implements
 import email
 
 
@@ -66,15 +67,13 @@ class Mail(Item):
         return MIMEText('')
 
 
-
 # SearchableText
-class SearchableTextExtender(grok.Adapter):
+class SearchableTextExtender(object):
     """This DynamicTextIndexExtender decodes the body of e-Mail messages
     and adds it to the searchableText.
     """
-    grok.context(IMail)
-    grok.name('IMail')
-    grok.implements(dexteritytextindexer.IDynamicTextIndexExtender)
+
+    implements(dexteritytextindexer.IDynamicTextIndexExtender)
 
     def __init__(self, context):
         self.context = context
@@ -91,11 +90,12 @@ class SearchableTextExtender(grok.Adapter):
         return ' '.join(searchable)
 
 
-class View(grok.View):
+class View(BrowserView):
     """
     """
-    grok.context(IMail)
-    grok.require('zope2.View')
+
+    def __call__(self):
+        return self.body()
 
     def get_header(self, name):
         return utils.get_header(self.msg(), name)
