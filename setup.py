@@ -40,6 +40,7 @@ setup(name='ftw.mail',
         'plone.namedfile[blobs]',
         'collective.autopermission',
         'collective.dexteritytextindexer',
+        'zope.intid',
         # -*- Extra requirements: -*-
         ],
       tests_require=tests_require,

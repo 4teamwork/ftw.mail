@@ -5,7 +5,8 @@ Changelog
 1.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add plone 4.3.x tests cfg and development.cfg.
+  [mathias.leimgruber]
 
 
 1.0.4 (2012-09-12)
