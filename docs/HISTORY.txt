@@ -5,6 +5,9 @@ Changelog
 1.0.5 (unreleased)
 ------------------
 
+- Use view.pt for mail content type's default view.
+  [mathias.leimgruber]
+
 - Ungrock the package.
   [mathias.leimgruber]
 

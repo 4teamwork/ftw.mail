@@ -10,6 +10,7 @@ from plone.memoize import instance
 from plone.namedfile import field
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 import email
 
@@ -91,11 +92,13 @@ class SearchableTextExtender(object):
 
 
 class View(BrowserView):
-    """
+    """Default view for mail content type
     """
 
+    template = ViewPageTemplateFile('mail_templates/view.pt')
+
     def __call__(self):
-        return self.body()
+        return self.template()
 
     def get_header(self, name):
         return utils.get_header(self.msg(), name)
