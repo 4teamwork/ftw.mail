@@ -43,3 +43,9 @@ class IMailSettings(Interface):
         description = u'If enabled, mails containing an attached mail are '\
                       'unwrapped and only the attached mail is stored.'
     )
+
+    mail_domain = schema.TextLine(
+        title=u"Mail domain",
+        description=u'Enter the mail domain which will be used \
+for sending mails into this site.',
+        default=u'mail.4teamwork.ch')

@@ -23,6 +23,7 @@ from zope.intid.interfaces import IIntIds
 from zope.schema import getFields
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
+from plone.app.uuid.utils import uuidToObject
 import email
 
 
@@ -259,3 +260,15 @@ class DestinationFromIntId(object):
         except ValueError:
             return None
         return id_util.queryObject(intid)
+
+
+class DestinationFromUUID(object):
+    """UUID resolver
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    def destination(self):
+        uuid = self.context.recipient().split('@')[0]
+        return uuidToObject(uuid)

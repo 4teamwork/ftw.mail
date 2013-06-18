@@ -55,6 +55,14 @@
         provides="ftw.mail.interfaces.IDestinationResolver"
         />
 
+    <!-- UUID resolver -->
+    <adapter
+        for="ftw.mail.interfaces.IMailInbound
+             plone.uuid.interfaces.IUUIDAware"
+        factory=".inbound.DestinationFromUUID"
+        provides="ftw.mail.interfaces.IDestinationResolver"
+        />
+
 
     <!-- SearchableTextExtender -->
     <adapter
