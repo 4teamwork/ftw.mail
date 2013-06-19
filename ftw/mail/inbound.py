@@ -83,38 +83,43 @@ class MailInbound(BrowserView):
             if unwrap_mail:
                 msg = utils.unwrap_attached_msg(msg)
 
-            # get destination container
-            resolver = IDestinationResolver(self)
-            destination = resolver.destination()
+            msg_txt = msg.as_string()
 
-            if destination is None:
-                raise MailInboundException(EXIT_CODES['CANTCREAT'],
-                                           'Destination does not exist.')
-            if destination:
-                msg_txt = msg.as_string()
+            sm = getSecurityManager()
+            try:
+                newSecurityManager(self.request, user)
+
+                destination = self.get_destination()
 
                 # if we couldn't get a member from the sender address,
                 # use the owner of the container to create the mail object
                 if user is None:
                     user = destination.getWrappedOwner()
-                sm = getSecurityManager()
+
                 try:
-                    newSecurityManager(self.request, user)
-                    try:
-                        createMailInContainer(destination, msg_txt)
-                    except Unauthorized:
-                        raise MailInboundException(EXIT_CODES['NOPERM'],
-                              'Unable to create message. Permission denied.')
-                    except ValueError:
-                        raise MailInboundException(EXIT_CODES['NOPERM'],
-                              'Disallowed subobject type. Permission denied.')
-                finally:
-                    setSecurityManager(sm)
+                    createMailInContainer(destination, msg_txt)
+                except Unauthorized:
+                    raise MailInboundException(EXIT_CODES['NOPERM'],
+                          'Unable to create message. Permission denied.')
+                except ValueError:
+                    raise MailInboundException(EXIT_CODES['NOPERM'],
+                          'Disallowed subobject type. Permission denied.')
+            finally:
+                setSecurityManager(sm)
 
         except MailInboundException, e:
             return str(e)
 
         return '0:OK'
+
+    def get_destination(self):
+        resolver = IDestinationResolver(self)
+        destination = resolver.destination()
+
+        if destination is None:
+            raise MailInboundException(EXIT_CODES['CANTCREAT'],
+                                       'Destination does not exist.')
+        return destination
 
     @instance.memoize
     def msg(self):
