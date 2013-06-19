@@ -58,4 +58,4 @@ class IMailSettings(Interface):
         title=u"Mail domain",
         description=u'Enter the mail domain which will be used \
 for sending mails into this site.',
-        default=u'mail.4teamwork.ch')
+        default=u'example.org')

@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
-from email.MIMEText import MIMEText
-from ftw.mail.interfaces import IMailInbound, IDestinationResolver
-from ftw.mail.mail import IMail
 from ftw.mail.tests.layer import Layer
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Products.PloneTestCase.ptc import PloneTestCase
-from zExceptions import NotFound
 from zope.component import getMultiAdapter
-from zope.component import getUtility
-from zope.interface import implements
 from zope.publisher.browser import TestRequest
 import os
 
@@ -90,23 +84,6 @@ class TestInboundMail(PloneTestCase):
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
-
-    def test_uuid_resolver(self):
-        self.folder.invokeFactory('Folder', 'f1')
-        f1 = self.folder['f1']
-        uuid = IUUID(f1)
-        class DummyMailInbound:
-            implements(IMailInbound)
-            def __init__(self, context):
-                self.context = context
-            def msg(self):
-                return MIMEText('')
-            def sender(self):
-                return ''
-            def recipient(self):
-                return '%s@example.org' % uuid
-        resolver = IDestinationResolver(DummyMailInbound(self.portal))
-        self.assertEquals(f1, resolver.destination())
 
     def test_unknown_destination(self):
         msg_txt = 'To: unknown@example.org\n'\
