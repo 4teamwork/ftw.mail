@@ -1,7 +1,4 @@
-from ftw.mail.interfaces import IMailSettings
 from plone.app.uuid.utils import uuidToObject
-from plone.registry.interfaces import IRegistry
-from zope.component import queryUtility
 
 
 class DestinationFromUUID(object):
@@ -16,9 +13,3 @@ class DestinationFromUUID(object):
 
     def destination(self):
         return uuidToObject(self.uuid())
-
-    def email(self):
-        registry = queryUtility(IRegistry)
-        proxy = registry.forInterface(IMailSettings)
-        domain = getattr(proxy, 'mail_domain', 'nodomain.com')
-        return '%s@%s' % (self.uuid(), domain)

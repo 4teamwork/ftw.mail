@@ -33,11 +33,6 @@ class IDestinationResolver(Interface):
         """ Returns a container for storing incoming mails.
         """
 
-    def email():
-        """ Returns the email address of the current folder
-        """
-
-
 class IMailSettings(Interface):
 
     validate_sender = schema.Bool(

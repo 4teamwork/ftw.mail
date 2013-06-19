@@ -62,6 +62,7 @@ class MailInbound(BrowserView):
                 raise MailInboundException(EXIT_CODES['NOPERM'],
                       'Unknown sender. Permission denied.')
 
+            import pdb; pdb.set_trace( )
             # get portal member by sender address
             if sender_email:
                 pas_search = getMultiAdapter((context, self.request), name='pas_search')

@@ -6,7 +6,7 @@ from Products.PloneTestCase.ptc import PloneTestCase
 from zope.interface import implements
 
 
-class TestInboundMail(PloneTestCase):
+class TestUUIDResolver(PloneTestCase):
 
     layer = Layer
 
@@ -34,14 +34,33 @@ class TestInboundMail(PloneTestCase):
         resolver = IDestinationResolver(inbound)
         self.assertEquals(context, resolver.destination())
 
-    def test_uuid_resolver_email(self):
-        context, inbound = self.set_up_dummy_inbound()
-
-        resolver = IDestinationResolver(inbound)
-        self.assertEquals(inbound.recipient(), resolver.email())
-
     def test_uuid_resolver_uuid(self):
         context, inbound = self.set_up_dummy_inbound()
 
         resolver = IDestinationResolver(inbound)
         self.assertEquals(IUUID(context), resolver.uuid())
+
+
+class TestMailIn(PloneTestCase):
+
+    layer = Layer
+
+    def set_up_content(self):
+        self.folder.invokeFactory('Folder', 'f1', title='Test Folder')
+        f1 = self.folder['f1']
+        view = f1.restrictedTraverse('@@mail-in')
+        return f1, view
+
+    def test_mailin_email(self):
+        obj, view = self.set_up_content()
+
+        expect = "%s@example.org" % IUUID(obj)
+        self.assertEquals(expect, view.email())
+
+    def test_mailin_title(self):
+        obj, view = self.set_up_content()
+
+        expect = "Mail-In of Test Folder"
+        self.assertEquals(expect, view.title())
+
+

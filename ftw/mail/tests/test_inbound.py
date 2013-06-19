@@ -21,8 +21,8 @@ class TestInboundMail(PloneTestCase):
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='from@example.org'))
 
-        uuid = IUUID(self.folder)
-        self.mail_to = '%s@example.org' % uuid
+        mailin = self.folder.restrictedTraverse('@@mail-in')
+        self.mail_to = mailin.email()
 
     def test_no_message(self):
         view = self.portal.restrictedTraverse('@@mail-inbound')
