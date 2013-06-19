@@ -1,9 +1,10 @@
 Introduction
 ============
 
-``ftw.mail`` provides a dexterity based Mail contenttype which allows you to
-upload Emails to your Plone site.
-This includes extracting of important data of the Email, like:
+``ftw.mail`` provides a dexterity based mail contenttype which allows you to
+upload emails to your Plone site.
+This includes extracting of important data of the email, like:
+
 - Attachments
 - Mail header
 - Body text
@@ -13,21 +14,22 @@ This includes extracting of important data of the Email, like:
 Mail-Inbound functionality
 ==========================
 
-The major feature of ``ftw.mail``is called "Mail-Inbound".
-"Mail-Inbound" allows you to send emails directly to your plone site.
-An Email sent to Plone will be extracted and created as Mail contenttype
+The major feature of ``ftw.mail`` is the mail inbound.
+Mail inbound allows you to send emails directly to your Plone site.
+An email sent to Plone will be extracted and created as mail contenttype
 automatically.
 
-**About security**
-1. There must be a registered user with the sender email address.
-2. The user must have enough permissions to add a Mail in the specific
-   context
-3. The Email will be created with the security context of the sender.
+**Security**
 
-**What Email address?**
+1. There must be a registered user with the sender email address
+2. The user must have enough permissions to add a mail object in the folder
+3. The email will be created with the security context of the sender
+
+**What is the email address?**
+
 The default implementation is using the objects uuid.
 Simply call `mail-in` on a folder, the view will show you the email address.
-The domain can be configured through the plone registry.
+The domain can be configured in the plone registry.
 
 
 Installing
@@ -46,31 +48,27 @@ Installing
 
 **Enable Mail-Inbound Feature**
 
-Make mta2plone.py available (it's located in ftw.mail/ftw/mail)
-Symlink or copy the file to /usr/local/bin, or wherever it makes sense to you :-)
-Be sure mta2plone.py is executable (chmod +x).
+Install the [mta2plone.py](https://github.com/4teamwork/ftw.mail/blob/master/ftw/mail/mta2plone.py)
+script somewhere in the PATH of your server.
+Be sure mta2plone.py is executable (`chmod +x mta2plone.py`).
 
-Assume you have postfix
+Example Postfix configuration in `/etc/postfix/virtual`::
 
-Postfix configuration /etc/postfix/virtual:
-```
-inbound.example.org anything
-@inbound.example.org inbound-example
-```
-
-/etc/aliases
-```
-inbound-example: "|/path/to/mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound"
-```
+    inbound.example.org anything
+    @inbound.example.org inbound-example
 
 
-For local testing it's also possible to start the mta2plone.py manually
-in a console and paste the raw Mail to stdin.
+Example `/etc/aliases`::
 
-```
-./mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound recipient-email
-```
+    inbound-example: "|/path/to/mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound"
 
+
+For local testing it is also possible to start the `mta2plone.py`
+in a console and paste the raw mail to `stdin`:
+
+.. code:: bash
+
+    ./mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound recipient-email
 
 
 THIS NEEDS MORE DOCUMENTATION
@@ -80,7 +78,7 @@ THIS NEEDS MORE DOCUMENTATION
 Compatibility
 -------------
 
-Runs with `Plone <http://www.plone.org/>`_ `4.0`, `4.1`, `4.2` or `4.3`.
+Runs with `Plone <http://www.plone.org/>`_ `4.1`, `4.2` or `4.3`.
 
 
 Links
@@ -98,7 +96,3 @@ Copyright
 This package is copyright by `4teamwork <http://www.4teamwork.ch/>`_.
 
 ``ftw.mail`` is licensed under GNU General Public License, version 2.
-
-.. image:: https://cruel-carlota.pagodabox.com/d3e4ca26391a0beac20e5c8ff77e5559
-   :alt: githalytics.com
-   :target: http://githalytics.com/4teamwork/ftw.mail
