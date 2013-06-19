@@ -24,9 +24,19 @@ class IDestinationResolver(Interface):
     """ A destination resolver provides a container object where
         mails can be stored.
     """
+
+    def uuid():
+        """Extract the uuid from recipient
+        """
+
     def destination():
         """ Returns a container for storing incoming mails.
         """
+
+    def email():
+        """ Returns the email address of the current folder
+        """
+
 
 class IMailSettings(Interface):
 

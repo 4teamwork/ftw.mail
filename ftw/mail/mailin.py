@@ -1,11 +1,8 @@
 from ftw.mail import _
-from plone.registry.interfaces import IRegistry
+from ftw.mail.interfaces import IDestinationResolver
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.component import queryUtility
 from zope.i18n import translate
-from ftw.mail.interfaces import IMailSettings
-from plone.uuid.interfaces import IUUID
 
 
 class MailIn(BrowserView):
@@ -21,7 +18,5 @@ class MailIn(BrowserView):
                            context=self.request)
 
     def email(self):
-        registry = queryUtility(IRegistry)
-        proxy = registry.forInterface(IMailSettings)
-        domain = getattr(proxy, 'mail_domain', 'nodomain.com')
-        return '%s@%s' % (IUUID(self.context), domain)
+        resolver = IDestinationResolver(self.context)
+        return resolver.email
