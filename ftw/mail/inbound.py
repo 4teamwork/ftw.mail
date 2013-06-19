@@ -62,7 +62,6 @@ class MailInbound(BrowserView):
                 raise MailInboundException(EXIT_CODES['NOPERM'],
                       'Unknown sender. Permission denied.')
 
-            import pdb; pdb.set_trace( )
             # get portal member by sender address
             if sender_email:
                 pas_search = getMultiAdapter((context, self.request), name='pas_search')
@@ -99,16 +98,18 @@ class MailInbound(BrowserView):
                 if user is None:
                     user = destination.getWrappedOwner()
                 sm = getSecurityManager()
-                newSecurityManager(self.request, user)
                 try:
-                    createMailInContainer(destination, msg_txt)
-                except Unauthorized:
-                    raise MailInboundException(EXIT_CODES['NOPERM'],
-                          'Unable to create message. Permission denied.')
-                except ValueError:
-                    raise MailInboundException(EXIT_CODES['NOPERM'],
-                          'Disallowed subobject type. Permission denied.')
-                setSecurityManager(sm)
+                    newSecurityManager(self.request, user)
+                    try:
+                        createMailInContainer(destination, msg_txt)
+                    except Unauthorized:
+                        raise MailInboundException(EXIT_CODES['NOPERM'],
+                              'Unable to create message. Permission denied.')
+                    except ValueError:
+                        raise MailInboundException(EXIT_CODES['NOPERM'],
+                              'Disallowed subobject type. Permission denied.')
+                finally:
+                    setSecurityManager(sm)
 
         except MailInboundException, e:
             return str(e)
