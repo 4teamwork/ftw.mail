@@ -20,17 +20,18 @@ class IMailInbound(Interface):
         """
 
 
-class IDestinationResolver(Interface):
-    """ A destination resolver provides a container object where
-        mails can be stored.
+class IEmailAddress(Interface):
+    """ Returns the email address for an object or the object an email
+    email address
     """
 
-    def uuid():
-        """Extract the uuid from recipient
+    def get_object_for_email():
+        """ Extract the important data of an email address and returns the
+            object
         """
 
-    def destination():
-        """ Returns a container for storing incoming mails.
+    def get_email_for_object():
+        """ Returns the generated email address for an object
         """
 
 class IMailSettings(Interface):

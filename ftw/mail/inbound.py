@@ -5,7 +5,7 @@ from Acquisition import aq_inner
 from email.Utils import parseaddr
 from ftw.mail import utils
 from ftw.mail.config import EXIT_CODES
-from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
+from ftw.mail.interfaces import IMailInbound, IMailSettings
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import createContent
 from plone.dexterity.utils import iterSchemata
@@ -19,7 +19,7 @@ from zope.container.interfaces import INameChooser
 from zope.component import getMultiAdapter, getUtility, queryUtility
 from zope.component import queryMultiAdapter
 from zope.interface import implements
-
+from ftw.mail.interfaces import IEmailAddress
 from zope.schema import getFields
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
@@ -113,8 +113,8 @@ class MailInbound(BrowserView):
         return '0:OK'
 
     def get_destination(self):
-        resolver = IDestinationResolver(self)
-        destination = resolver.destination()
+        emailaddress = IEmailAddress(self.request)
+        destination = emailaddress.get_object_for_email(self.recipient())
 
         if destination is None:
             raise MailInboundException(EXIT_CODES['CANTCREAT'],

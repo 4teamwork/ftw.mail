@@ -48,9 +48,8 @@
 
     <!-- UUID resolver -->
     <adapter
-        for="ftw.mail.interfaces.IMailInbound"
-        factory=".uuid_resolver.DestinationFromUUID"
-        provides="ftw.mail.interfaces.IDestinationResolver"
+        for="*"
+        factory=".emailaddress.UUIDEmailAddress"
         />
 
     <!-- SearchableTextExtender -->

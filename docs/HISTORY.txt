@@ -5,6 +5,13 @@ Changelog
 1.0.5 (unreleased)
 ------------------
 
+- Add IEmailAddress adapter, so it's easy to change the behavior of generating
+  the email address of a destination and getting the destination of a given
+  email address.(Dropped the destination resolver)
+
+- Add uuid support and drop intid.
+  [mathias.leimgruber]
+
 - Use view.pt for mail content type's default view.
   [mathias.leimgruber]
 
