@@ -1,11 +1,8 @@
-from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager
 from Acquisition import aq_inner
-from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.utils import getToolByName
 from email.Utils import parseaddr
-from five import grok
 from ftw.mail import utils
 from ftw.mail.config import EXIT_CODES
 from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
@@ -15,8 +12,10 @@ from plone.dexterity.utils import iterSchemata
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 from z3c.form.interfaces import IValue
-from zope.app.container.interfaces import INameChooser
+from zope.container.interfaces import INameChooser
 from zope.component import getMultiAdapter, getUtility, queryUtility
 from zope.component import queryMultiAdapter
 from zope.interface import implements
@@ -38,13 +37,14 @@ class MailInboundException(Exception):
         return '%s:%s' % (self.exitcode, self.errormsg)
 
 
-class MailInbound(grok.View):
+class MailInbound(BrowserView):
     """ A view that handles inbound mail posted by mta2plone.py
     """
-    grok.context(ISiteRoot)
-    grok.require('zope2.View')
-    grok.name('mail-inbound')
+
     implements(IMailInbound)
+
+    def __call__(self):
+        return self.render()
 
     def render(self):
         context = aq_inner(self.context)
@@ -244,12 +244,12 @@ def set_defaults(obj):
 #             pass
 #         return destination
 
-class DestinationFromIntId(grok.Adapter):
+class DestinationFromIntId(object):
     """ An intid resolver
     """
-    grok.provides(IDestinationResolver)
-    grok.context(IMailInbound)
-    #grok.name(u'intid')
+
+    def __init__(self, context):
+        self.context = context
 
     def destination(self):
         intid = self.context.recipient().split('@')[0]

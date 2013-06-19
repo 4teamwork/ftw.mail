@@ -1,21 +1,20 @@
-import email
-from five import grok
 from Acquisition import aq_inner
 from ftw.mail import utils
+from Products.Five.browser import BrowserView
 from zExceptions import NotFound
-from ftw.mail.mail import IMail
+import email
 
-class AttachmentView(grok.View):
+
+class AttachmentView(BrowserView):
     """Returns the attachment at the position specified in the request.
     """
-    grok.context(IMail)
-    grok.require('zope2.View')
-    grok.name('get_attachment')
 
-    def update(self):
+    def __call__(self):
         context = aq_inner(self.context)
         self.message = context.message
         self.position = self.request.get('position', '0')
+
+        return self.render()
     
     def render(self):
 
