@@ -19,11 +19,10 @@ from zope.container.interfaces import INameChooser
 from zope.component import getMultiAdapter, getUtility, queryUtility
 from zope.component import queryMultiAdapter
 from zope.interface import implements
-from zope.intid.interfaces import IIntIds
+
 from zope.schema import getFields
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
-from plone.app.uuid.utils import uuidToObject
 import email
 
 
@@ -244,31 +243,3 @@ def set_defaults(obj):
 #         except KeyError:
 #             pass
 #         return destination
-
-class DestinationFromIntId(object):
-    """ An intid resolver
-    """
-
-    def __init__(self, context):
-        self.context = context
-
-    def destination(self):
-        intid = self.context.recipient().split('@')[0]
-        id_util = getUtility(IIntIds)
-        try:
-            intid = int(intid)
-        except ValueError:
-            return None
-        return id_util.queryObject(intid)
-
-
-class DestinationFromUUID(object):
-    """UUID resolver
-    """
-
-    def __init__(self, context):
-        self.context = context
-
-    def destination(self):
-        uuid = self.context.recipient().split('@')[0]
-        return uuidToObject(uuid)

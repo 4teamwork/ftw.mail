@@ -1,12 +1,10 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
 	xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="ftw.mail">
-
-    <include package="plone.app.intid" />
 
     <include file="permissions.zcml" />
 
@@ -48,21 +46,12 @@
         />
 
 
-    <!-- Intid resolver -->
-    <adapter
-        for="ftw.mail.interfaces.IMailInbound"
-        factory=".inbound.DestinationFromIntId"
-        provides="ftw.mail.interfaces.IDestinationResolver"
-        />
-
     <!-- UUID resolver -->
     <adapter
-        for="ftw.mail.interfaces.IMailInbound
-             plone.uuid.interfaces.IUUIDAware"
-        factory=".inbound.DestinationFromUUID"
+        for="ftw.mail.interfaces.IMailInbound"
+        factory=".uuid_resolver.DestinationFromUUID"
         provides="ftw.mail.interfaces.IDestinationResolver"
         />
-
 
     <!-- SearchableTextExtender -->
     <adapter

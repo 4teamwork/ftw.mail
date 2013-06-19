@@ -29,6 +29,7 @@ def post_message(url, recipient, message_txt):
             print 'Error %s: %s' % (exitcode, errormsg)
             sys.exit(int(exitcode))
     except ValueError:
+        print result
         print 'Unknown error.'
         sys.exit(69)
 
