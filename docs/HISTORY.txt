@@ -2,8 +2,25 @@ Changelog
 =========
 
 
-1.0.5 (unreleased)
-------------------
+2.0 (unreleased)
+----------------
+
+- Implement mail-in as viewlet.
+  [mathias.leimgruber]
+
+- Add readme.
+  [mathias.leimgruber]
+
+- Add IEmailAddress adapter, so it's easy to change the behavior of generating
+  the email address of a destination and getting the destination of a given
+  email address.(Dropped the destination resolver)
+  [mathias.leimgruber]
+
+- Add uuid support and drop intid.
+  [mathias.leimgruber]
+
+- Use view.pt for mail content type's default view.
+  [mathias.leimgruber]
 
 - Ungrock the package.
   [mathias.leimgruber]

@@ -1,17 +1,10 @@
-# -*- coding: utf-8 -*-
-import os
-from email.MIMEText import MIMEText
-from Products.PloneTestCase.ptc import PloneTestCase
-from Products.CMFCore.utils import getToolByName
-from zExceptions import NotFound
-from zope.publisher.browser import TestRequest
-from zope.component import getMultiAdapter
-from zope.interface import implements
-from zope.component import getUtility
-from zope.intid.interfaces import IIntIds
+from ftw.mail.interfaces import IEmailAddress
 from ftw.mail.tests.layer import Layer
-from ftw.mail.mail import IMail
-from ftw.mail.interfaces import IMailInbound, IDestinationResolver
+from Products.CMFCore.utils import getToolByName
+from Products.PloneTestCase.ptc import PloneTestCase
+from zope.component import getMultiAdapter
+from zope.publisher.browser import TestRequest
+import os
 
 
 class TestInboundMail(PloneTestCase):
@@ -26,13 +19,9 @@ class TestInboundMail(PloneTestCase):
         mtool = getToolByName(self.portal, 'portal_membership')
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='from@example.org'))
-        id_util = getUtility(IIntIds)
 
-        # Make intids work in tests
-        id_util.register(self.folder)
-
-        intid = id_util.queryId(self.folder)
-        self.mail_to = '%s@example.org' % intid
+        emailaddress = IEmailAddress(TestRequest())
+        self.mail_to = emailaddress.get_email_for_object(self.folder)
 
     def test_no_message(self):
         view = self.portal.restrictedTraverse('@@mail-inbound')
@@ -95,25 +84,6 @@ class TestInboundMail(PloneTestCase):
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
 
-
-    def test_intid_resolver(self):
-        self.folder.invokeFactory('Folder', 'f1')
-        f1 = self.folder['f1']
-        id_util = getUtility(IIntIds)
-        intid = id_util.queryId(f1)
-        class DummyMailInbound:
-            implements(IMailInbound)
-            def __init__(self, context):
-                self.context = context
-            def msg(self):
-                return MIMEText('')
-            def sender(self):
-                return ''
-            def recipient(self):
-                return '%s@example.org' % intid
-        resolver = IDestinationResolver(DummyMailInbound(self.portal))
-        self.assertEquals(f1, resolver.destination())
-
     def test_unknown_destination(self):
         msg_txt = 'To: unknown@example.org\n'\
                   'From: from@example.org\n'\
@@ -144,7 +114,7 @@ class TestInboundMail(PloneTestCase):
     def test_weird_characters_in_subject(self):
         msg_txt = 'To: %s\n'\
                   'From: from@example.org\n'\
-                  'Subject: Here comes a tab	and some umlauts äöü' % self.mail_to
+                  'Subject: Here comes a tab	and some umlauts \xc3\xa4\xc3\xb6\xc3\xbc' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
