@@ -5,6 +5,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Implement mail-in as viewlet.
+  [mathias.leimgruber]
+
 - Add readme.
   [mathias.leimgruber]
 

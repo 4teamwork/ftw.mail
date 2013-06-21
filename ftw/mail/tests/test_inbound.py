@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
+from ftw.mail.interfaces import IEmailAddress
 from ftw.mail.tests.layer import Layer
-from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Products.PloneTestCase.ptc import PloneTestCase
 from zope.component import getMultiAdapter
@@ -21,8 +20,8 @@ class TestInboundMail(PloneTestCase):
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='from@example.org'))
 
-        mailin = self.folder.restrictedTraverse('@@mail-in')
-        self.mail_to = mailin.email()
+        emailaddress = IEmailAddress(TestRequest())
+        self.mail_to = emailaddress.get_email_for_object(self.folder)
 
     def test_no_message(self):
         view = self.portal.restrictedTraverse('@@mail-inbound')
@@ -115,7 +114,7 @@ class TestInboundMail(PloneTestCase):
     def test_weird_characters_in_subject(self):
         msg_txt = 'To: %s\n'\
                   'From: from@example.org\n'\
-                  'Subject: Here comes a tab	and some umlauts äöü' % self.mail_to
+                  'Subject: Here comes a tab	and some umlauts \xc3\xa4\xc3\xb6\xc3\xbc' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())

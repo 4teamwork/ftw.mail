@@ -38,11 +38,13 @@
         permission="zope2.View"
         />
 
-    <browser:page
+    <!-- Mail-in viewlet - shows the mail in link -->
+    <browser:viewlet
         for="Products.CMFCore.interfaces.IFolderish"
-        name="mail-in"
+        name="ftw.mail.mail-in"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         class=".mailin.MailIn"
-        permission="zope2.View"
+        permission="ftw.mail.AddInboundMail"
         />
 
 

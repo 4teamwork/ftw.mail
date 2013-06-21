@@ -14,7 +14,7 @@ This includes extracting of important data of the email, like:
 Mail-Inbound functionality
 ==========================
 
-The major feature of ``ftw.mail`` is the mail inbound.
+The major feature of ``ftw.mail`` is the inbound mail functionality.
 Mail inbound allows you to send emails directly to your Plone site.
 An email sent to Plone will be extracted and created as mail contenttype
 automatically.
@@ -27,9 +27,10 @@ automatically.
 
 **What is the email address?**
 
-The default implementation is using the objects uuid.
-Simply call `mail-in` on a folder, the view will show you the email address.
-The domain can be configured in the plone registry.
+The localpart of the email address is a unique identifier that
+identifies the respective folderish object. The default implementations
+uses the object's UUID. The mail-in address will automatically shown in a
+viewlet if `ftw.mail.mail` content type is addable.
 
 
 Installing
@@ -43,14 +44,14 @@ Installing
     eggs +=
         ftw.mail
 
-- Install the generic import profile.
+- Install the generic setup import profile.
 
 
 **Enable Mail-Inbound Feature**
 
 Install the [mta2plone.py](https://github.com/4teamwork/ftw.mail/blob/master/ftw/mail/mta2plone.py)
 script somewhere in the PATH of your server.
-Be sure mta2plone.py is executable (`chmod +x mta2plone.py`).
+Make sure mta2plone.py is executable (`chmod +x mta2plone.py`).
 
 Example Postfix configuration in `/etc/postfix/virtual`::
 
@@ -63,16 +64,17 @@ Example `/etc/aliases`::
     inbound-example: "|/path/to/mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound"
 
 
+Remember to run the `newaliases command (as root) after you update /etc/aliases in order for Postfix to pick up the changes.
+
+
 For local testing it is also possible to start the `mta2plone.py`
-in a console and paste the raw mail to `stdin`:
+in a console and paste the raw mail to `STDIN`:
 
 .. code:: bash
 
     ./mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound recipient-email
 
-
-THIS NEEDS MORE DOCUMENTATION
-
+(Since the `mta2plone.py` script will read from STDIN, you'll need to send an EOF using CTRL-D after you pases the mail contents.)
 
 
 Compatibility

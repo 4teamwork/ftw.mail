@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-import sys, urllib
 import os
+import sys
+import urllib
 
 
 def post_message(url, recipient, message_txt):
@@ -15,12 +16,12 @@ def post_message(url, recipient, message_txt):
 
     data = {'mail': message_txt}
     if recipient and len(recipient) > 0:
-        data ['recipient'] = recipient
+        data['recipient'] = recipient
 
     try:
         result = urllib.urlopen(url, urllib.urlencode(data)).read()
-    except (IOError,EOFError),e:
-        print "ftw.mail error: could not connect to server",e
+    except (IOError, EOFError), e:
+        print "ftw.mail error: could not connect to server", e
         sys.exit(73)
 
     try:
@@ -29,7 +30,6 @@ def post_message(url, recipient, message_txt):
             print 'Error %s: %s' % (exitcode, errormsg)
             sys.exit(int(exitcode))
     except ValueError:
-        print result
         print 'Unknown error.'
         sys.exit(69)
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     message_txt = sys.stdin.read()
 
     url = ''
-    if len(sys.argv)>1:
+    if len(sys.argv) > 1:
         url = sys.argv[1]
 
     recipient = ''
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # recipient address, before any address rewriting or aliasing
     recipient = os.environ.get('ORIGINAL_RECIPIENT')
 
-    if len(sys.argv)>2:
+    if len(sys.argv) > 2:
         recipient = sys.argv[2]
 
     post_message(url, recipient, message_txt)

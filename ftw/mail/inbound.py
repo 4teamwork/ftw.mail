@@ -86,9 +86,9 @@ class MailInbound(BrowserView):
             msg_txt = msg.as_string()
 
             sm = getSecurityManager()
-            try:
-                newSecurityManager(self.request, user)
+            newSecurityManager(self.request, user)
 
+            try:
                 destination = self.get_destination()
 
                 # if we couldn't get a member from the sender address,
