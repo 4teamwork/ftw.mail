@@ -1,8 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = open('ftw/mail/version.txt').read().strip()
-maintainer = 'Thomas Buchberger'
+version = '2.0dev0'
 
 tests_require = [
     'collective.testcaselayer',
@@ -11,25 +10,31 @@ tests_require = [
 
 setup(name='ftw.mail',
       version=version,
-      description="Provides a mail content type and a mail-in behavior" + \
-          ' (Maintainer: %s)' % maintainer,
-      long_description=open("README.txt").read() + "\n" + \
-          open(os.path.join("docs", "HISTORY.txt")).read(),
+      description='Provides a mail content type and a mail-in behavior',
+      long_description=open('README.rst').read() + '\n' + \
+          open(os.path.join('docs', 'HISTORY.txt')).read(),
+
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
-        "Framework :: Plone",
-        "Programming Language :: Python",
+        'Framework :: Plone',
+        'Framework :: Plone :: 4.1',
+        'Framework :: Plone :: 4.2',
+        'Framework :: Plone :: 4.3',
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         ],
+
       keywords='',
-      author='%s, 4teamwork GmbH' % maintainer,
+      author='4teamwork GmbH',
       author_email='mailto:info@4teamwork.ch',
-      maintainer=maintainer,
-      url='http://psc.4teamwork.ch/dist/ftw.mail',
+      url='https://github.com/4teamwork/ftw.mail',
       license='GPL2',
+
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['ftw'],
       include_package_data=True,
       zip_safe=False,
+
       install_requires=[
         'plone.registry',
         'plone.dexterity',
@@ -40,18 +45,14 @@ setup(name='ftw.mail',
         'plone.namedfile[blobs]',
         'collective.autopermission',
         'collective.dexteritytextindexer',
-        'zope.intid',
-        'five.intid',
-        'plone.app.intid',
         'plone.directives.form',
-        # -*- Extra requirements: -*-
         ],
+
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
-      entry_points="""
+      entry_points='''
       # -*- Entry points: -*-
-
       [z3c.autoinclude.plugin]
       target = plone
-      """,
+      ''',
       )

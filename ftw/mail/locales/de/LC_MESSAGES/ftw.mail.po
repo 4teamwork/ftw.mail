@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-01-08 09:00+0000\n"
+"POT-Creation-Date: 2013-06-21 13:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,41 +12,46 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: ftw.mail/ftw/mail/mail_templates/view.pt:58
+#: ./ftw/mail/mail_templates/view.pt:58
 msgid "Attachments"
 msgstr "Anhänge"
 
-#: ftw.mail/ftw/mail/mail_templates/view.pt:36
+#: ./ftw/mail/mail_templates/view.pt:36
 msgid "Date:"
 msgstr "Datum:"
 
-#: ftw.mail/ftw/mail/mail_templates/view.pt:24
+#: ./ftw/mail/mail_templates/view.pt:24
 msgid "From:"
 msgstr "Von:"
 
-#: ftw.mail/ftw/mail/profiles/default/types/ftw.mail.mail.xml
+#: ./ftw/mail/profiles/default/types/ftw.mail.mail.xml
 msgid "Mail"
 msgstr ""
 
-#: ftw.mail/ftw/mail/mail_templates/view.pt:30
+#: ./ftw/mail/mail_templates/view.pt:30
 msgid "Subject:"
 msgstr "Betreff:"
 
-#: ftw.mail/ftw/mail/mail_templates/view.pt:42
+#: ./ftw/mail/mail_templates/view.pt:42
 msgid "To:"
 msgstr "An:"
 
-#: ftw.mail/ftw/mail/mail.py:24
+#: ./ftw/mail/mail.py:25
 msgid "help_raw_message"
 msgstr ""
 
+#. Default: "Mail-In address"
+#: ./ftw/mail/mail_templates/mail_in.pt:2
+msgid "label_mailin"
+msgstr "Mail-In Adresse:"
+
 #. Default: "Raw Message"
-#: ftw.mail/ftw/mail/mail.py:23
+#: ./ftw/mail/mail.py:24
 msgid "label_raw_message"
 msgstr "Orginalnachricht"
 
 #. Default: "[No Subject]"
-#: ftw.mail/ftw/mail/mail.py:39
+#: ./ftw/mail/mail.py:43
 msgid "no_subject"
 msgstr "[Kein Betreff]"
 

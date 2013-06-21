@@ -5,7 +5,7 @@ from Acquisition import aq_inner
 from email.Utils import parseaddr
 from ftw.mail import utils
 from ftw.mail.config import EXIT_CODES
-from ftw.mail.interfaces import IMailInbound, IDestinationResolver, IMailSettings
+from ftw.mail.interfaces import IMailInbound, IMailSettings
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import createContent
 from plone.dexterity.utils import iterSchemata
@@ -19,7 +19,7 @@ from zope.container.interfaces import INameChooser
 from zope.component import getMultiAdapter, getUtility, queryUtility
 from zope.component import queryMultiAdapter
 from zope.interface import implements
-from zope.intid.interfaces import IIntIds
+from ftw.mail.interfaces import IEmailAddress
 from zope.schema import getFields
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
@@ -83,22 +83,19 @@ class MailInbound(BrowserView):
             if unwrap_mail:
                 msg = utils.unwrap_attached_msg(msg)
 
-            # get destination container
-            resolver = IDestinationResolver(self)
-            destination = resolver.destination()
+            msg_txt = msg.as_string()
 
-            if destination is None:
-                raise MailInboundException(EXIT_CODES['CANTCREAT'],
-                                           'Destination does not exist.')
-            if destination:
-                msg_txt = msg.as_string()
+            sm = getSecurityManager()
+            newSecurityManager(self.request, user)
+
+            try:
+                destination = self.get_destination()
 
                 # if we couldn't get a member from the sender address,
                 # use the owner of the container to create the mail object
                 if user is None:
                     user = destination.getWrappedOwner()
-                sm = getSecurityManager()
-                newSecurityManager(self.request, user)
+
                 try:
                     createMailInContainer(destination, msg_txt)
                 except Unauthorized:
@@ -107,12 +104,22 @@ class MailInbound(BrowserView):
                 except ValueError:
                     raise MailInboundException(EXIT_CODES['NOPERM'],
                           'Disallowed subobject type. Permission denied.')
+            finally:
                 setSecurityManager(sm)
 
         except MailInboundException, e:
             return str(e)
 
         return '0:OK'
+
+    def get_destination(self):
+        emailaddress = IEmailAddress(self.request)
+        destination = emailaddress.get_object_for_email(self.recipient())
+
+        if destination is None:
+            raise MailInboundException(EXIT_CODES['CANTCREAT'],
+                                       'Destination does not exist.')
+        return destination
 
     @instance.memoize
     def msg(self):
@@ -243,19 +250,3 @@ def set_defaults(obj):
 #         except KeyError:
 #             pass
 #         return destination
-
-class DestinationFromIntId(object):
-    """ An intid resolver
-    """
-
-    def __init__(self, context):
-        self.context = context
-
-    def destination(self):
-        intid = self.context.recipient().split('@')[0]
-        id_util = getUtility(IIntIds)
-        try:
-            intid = int(intid)
-        except ValueError:
-            return None
-        return id_util.queryObject(intid)

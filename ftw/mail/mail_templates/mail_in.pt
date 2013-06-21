@@ -1,0 +1,5 @@
+<div class="MailInLinkWrapper" i18n:domain="ftw.mail" tal:condition="view/available">
+  <span class="MailInLink" i18n:translate="label_mailin">Mail-In address</span>
+  <a tal:define="email view/email"
+     href="#" tal:attributes="href string:mailto:${email}" tal:content="email" />
+</div>
