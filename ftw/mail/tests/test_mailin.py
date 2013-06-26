@@ -32,7 +32,7 @@ class TestMailInViewlet(PloneTestCase):
             return None
 
     def test_viewlet_registered(self):
-        self.assertIsNotNone(self.get_viewlet(self.folder),
+        self.assertNotEquals(None, self.get_viewlet(self.folder),
             'The ftw.mail.mail-in viewlet is not registered properly')
 
     def test_viewlet_is_present_if_mail_is_addable(self):
