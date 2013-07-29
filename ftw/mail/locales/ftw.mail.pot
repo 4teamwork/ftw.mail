@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-21 13:04+0000\n"
+"POT-Creation-Date: 2013-07-29 12:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,6 +41,11 @@ msgstr ""
 msgid "To:"
 msgstr ""
 
+#. Default: "Attachment"
+#: ./ftw/mail/mailtab.py:26
+msgid "attachment_icon_alt_text"
+msgstr ""
+
 #: ./ftw/mail/mail.py:25
 msgid "help_raw_message"
 msgstr ""
@@ -48,6 +53,36 @@ msgstr ""
 #. Default: "Mail-In address"
 #: ./ftw/mail/mail_templates/mail_in.pt:2
 msgid "label_mailin"
+msgstr ""
+
+#. Default: "Attachments"
+#: ./ftw/mail/mailtab.py:71
+msgid "label_mailstab_attachments"
+msgstr ""
+
+#. Default: "Creator"
+#: ./ftw/mail/mailtab.py:76
+msgid "label_mailstab_creator"
+msgstr ""
+
+#. Default: "Date Received"
+#: ./ftw/mail/mailtab.py:66
+msgid "label_mailstab_date"
+msgstr ""
+
+#. Default: "From"
+#: ./ftw/mail/mailtab.py:56
+msgid "label_mailstab_from"
+msgstr ""
+
+#. Default: "To"
+#: ./ftw/mail/mailtab.py:61
+msgid "label_mailstab_to"
+msgstr ""
+
+#. Default: "Subject"
+#: ./ftw/mail/mailtab.py:51
+msgid "label_mailtab_subject"
 msgstr ""
 
 #. Default: "Raw Message"
