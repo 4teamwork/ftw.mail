@@ -5,6 +5,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Add mail tab for ftw.workspace.
+  [mathias.leimgruber]
+
 - Implement mail-in as viewlet.
   [mathias.leimgruber]
 

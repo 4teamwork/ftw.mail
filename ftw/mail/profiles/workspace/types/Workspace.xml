@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<object name="Workspace"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        meta_type="Factory-based Type Information with dynamic views"
+        i18n:domain="ftw.workspace">
+
+    <action
+        action_id="mails"
+        title="Mails"
+        category="tabbedview-tabs"
+        condition_expr=""
+        url_expr="string:${object_url}?view=mails"
+        visible="True">
+        <permission value="View"/>
+    </action>
+
+    <property name="allowed_content_types" purge="False">
+        <element value="ftw.mail.mail" />
+    </property>
+
+
+</object>

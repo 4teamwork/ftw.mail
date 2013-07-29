@@ -78,7 +78,15 @@
             directory="profiles/workspace"
             provides="Products.GenericSetup.interfaces.EXTENSION"
             />
+    <configure zcml:condition="installed ftw.workspace">
 
+        <genericsetup:registerProfile
+            name="workspace"
+            title="ftw.mail: Mail tab for ftw.workspace"
+            description="Installs the mail tab for ftw.workspace"
+            directory="profiles/workspace"
+            provides="Products.GenericSetup.interfaces.EXTENSION"
+            />
         <browser:page
             for="*"
             layer="ftw.workspace.interfaces.IWorkspaceLayer"
