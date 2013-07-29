@@ -5,6 +5,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Add ftw.lawgiver support.
+  [mathias.leimgruber]
+
 - Add mail tab for ftw.workspace.
   [mathias.leimgruber]
 
