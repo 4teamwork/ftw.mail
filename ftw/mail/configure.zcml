@@ -12,6 +12,9 @@
 
     <!--include file="behaviors.zcml" /-->
 
+
+    <include zcml:condition="installed ftw.lawgiver" file="lawgiver.zcml" />
+
     <!-- Register an extension profile to make the product installable -->
     <genericsetup:registerProfile
         name="default"
