@@ -7,6 +7,7 @@
     i18n_domain="ftw.mail">
 
     <include file="permissions.zcml" />
+    <include package=".upgrades" />
 
 	<i18n:registerTranslations directory="locales" />
 

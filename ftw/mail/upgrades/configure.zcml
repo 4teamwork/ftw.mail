@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="ftw.mail">
+
+    <!-- 1 -> 2000 -->
+    <genericsetup:upgradeStep
+        title="Revoke 'ftw.mail: Add Mail' permission."
+        description=""
+        source="1"
+        destination="2000"
+        handler="ftw.mail.upgrades.to2000.RevokeAddMailPermission"
+        profile="ftw.mail:default"
+        />
+
+    <genericsetup:registerProfile
+        name="2000"
+        title="ftw.mail.upgrades.2000"
+        description=""
+        directory="profiles/2000"
+        for="Products.CMFPlone.interfaces.IMigratingPloneSiteRoot"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+
+</configure>
