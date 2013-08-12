@@ -49,7 +49,7 @@ Installing
 
 **Enable Mail-Inbound Feature**
 
-Install the [mta2plone.py](https://github.com/4teamwork/ftw.mail/blob/master/ftw/mail/mta2plone.py)
+Install the `mta2plone.py <https://github.com/4teamwork/ftw.mail/blob/master/ftw/mail/mta2plone.py>`_
 script somewhere in the PATH of your server.
 Make sure mta2plone.py is executable (`chmod +x mta2plone.py`).
 
