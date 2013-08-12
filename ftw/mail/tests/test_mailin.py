@@ -36,6 +36,9 @@ class TestMailInViewlet(PloneTestCase):
             'The ftw.mail.mail-in viewlet is not registered properly')
 
     def test_viewlet_is_present_if_mail_is_addable(self):
+        portal_types = getToolByName(self.portal, 'portal_types')
+        portal_types.get('Folder').allowed_content_types = ['ftw.mail.mail']
+
         viewlet = self.get_viewlet(self.folder)
 
         self.assertTrue(viewlet.available(),
@@ -44,7 +47,7 @@ class TestMailInViewlet(PloneTestCase):
 
     def test_viewlet_is_not_present_if_mail_is_not_addable(self):
         portal_types = getToolByName(self.portal, 'portal_types')
-        portal_types.get('ftw.mail.mail').global_allow = False
+        portal_types.get('Folder').allowed_content_types = []
 
         viewlet = self.get_viewlet(self.folder)
 

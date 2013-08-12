@@ -15,6 +15,7 @@ class TestMailIntegration(PloneTestCase):
     layer = Layer
 
     def afterSetUp(self):
+        self.setRoles(['Manager', 'Member'])
         here = os.path.dirname(__file__)
         self.msg_txt_attachment = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
 

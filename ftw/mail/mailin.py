@@ -1,7 +1,8 @@
-from ftw.mail.interfaces import IEmailAddress
-from plone.app.layout.viewlets import ViewletBase
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from ftw.mail.interfaces import IEmailAddress
 from plone.app.content.browser.folderfactories import _allowedTypes
+from plone.app.layout.viewlets import ViewletBase
 from zope.component import getMultiAdapter
 
 
@@ -12,13 +13,10 @@ class MailIn(ViewletBase):
     def available(self):
         """Only show viewlet if ftw.mail.mail is addable in current context
         """
-        factories_view = getMultiAdapter((self.context, self.request),
-                                         name='folder_factories')
 
-        addContext = factories_view.add_context()
-        allowed = _allowedTypes(self.request, addContext)
-
-        return 'ftw.mail.mail' in [type_.id for type_ in allowed]
+        portal_types = getToolByName(self.context, 'portal_types')
+        fti = portal_types.get(self.context.portal_type)
+        return 'ftw.mail.mail' in fti.allowed_content_types
 
     def email(self):
         email = IEmailAddress(self.request)

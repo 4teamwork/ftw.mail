@@ -5,6 +5,13 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Revoke "ftw.mail: Add Mail" permission.
+  This permission makes the "mail" type show up in the add menu.
+  Only admins (Manager) should be able to add new mails through the
+  add menu, the normal use case is sending the mails via inbound.
+  Also change the lawgiver hint to ingnore this permission.
+  [jone]
+
 - Add ftw.lawgiver support.
   [mathias.leimgruber]
 
