@@ -47,6 +47,7 @@ setup(name='ftw.mail',
         'collective.autopermission',
         'collective.dexteritytextindexer',
         'plone.directives.form',
+        'ftw.upgrade',
         ],
 
       tests_require=tests_require,

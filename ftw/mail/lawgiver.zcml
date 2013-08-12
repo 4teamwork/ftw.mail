@@ -7,12 +7,13 @@
 
     <lawgiver:map_permissions
         action_group="add"
-        permissions="ftw.mail: Add Mail"
+        permissions="ftw.mail: Add Inbound Mail"
         />
 
-    <lawgiver:map_permissions
-        action_group="add"
-        permissions="ftw.mail: Add Inbound Mail"
+    <!-- Do not manage the "Add Mail" permission so that normal
+         users can not upload mails through the add menu. -->
+    <lawgiver:ignore
+        permissions="ftw.mail: Add Mail"
         />
 
 </configure>
