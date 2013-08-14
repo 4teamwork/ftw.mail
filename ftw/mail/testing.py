@@ -1,3 +1,5 @@
+from ftw.builder.testing import BUILDER_LAYER
+from ftw.mail.tests import builders
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
@@ -8,7 +10,7 @@ from zope.configuration import xmlconfig
 
 class FtwMailLayer(PloneSandboxLayer):
 
-    defaultBases = (PLONE_FIXTURE, )
+    defaultBases = (PLONE_FIXTURE, BUILDER_LAYER)
 
     def setUpZope(self, app, configurationContext):
         import z3c.autoinclude

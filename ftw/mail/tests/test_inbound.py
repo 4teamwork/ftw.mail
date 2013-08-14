@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
+from ftw.builder import Builder
+from ftw.builder import create
 from ftw.mail.interfaces import IEmailAddress
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from plone.app.testing import TEST_USER_ID
@@ -20,7 +22,7 @@ class TestInboundMail(TestCase):
         self.portal = self.layer['portal']
         setRoles(self.portal, TEST_USER_ID, ['Manager', ])
 
-        self.folder = self.portal.get(self.portal.invokeFactory('Folder', 'f1'))
+        self.folder = create(Builder('folder'))
 
         here = os.path.dirname(__file__)
         self.ascii = open(os.path.join(here, 'mails', 'ascii_7bit.txt'), 'r').read()
