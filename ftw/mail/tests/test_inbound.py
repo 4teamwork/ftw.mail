@@ -1,17 +1,27 @@
-from ftw.mail.interfaces import IEmailAddress
-from ftw.mail.tests.layer import Layer
+# -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
-from Products.PloneTestCase.ptc import PloneTestCase
+from ftw.mail.interfaces import IEmailAddress
+from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import setRoles
+from unittest2 import TestCase
 from zope.component import getMultiAdapter
 from zope.publisher.browser import TestRequest
 import os
 
 
-class TestInboundMail(PloneTestCase):
+class TestInboundMail(TestCase):
 
-    layer = Layer
+    layer = FTW_MAIL_FUNCTIONAL_TESTING
 
-    def afterSetUp(self):
+    def setUp(self):
+        super(TestInboundMail, self).setUp()
+
+        self.portal = self.layer['portal']
+        setRoles(self.portal, TEST_USER_ID, ['Manager', ])
+
+        self.folder = self.portal.get(self.portal.invokeFactory('Folder', 'f1'))
+
         here = os.path.dirname(__file__)
         self.ascii = open(os.path.join(here, 'mails', 'ascii_7bit.txt'), 'r').read()
         self.resent = open(os.path.join(here, 'mails', 'resent.txt'), 'r').read()

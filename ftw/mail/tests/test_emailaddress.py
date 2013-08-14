@@ -1,19 +1,25 @@
+from ftw.mail.emailaddress import UUIDEmailAddress
 from ftw.mail.interfaces import IEmailAddress
-from ftw.mail.tests.layer import Layer
+from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from plone.uuid.interfaces import IUUID
-from Products.PloneTestCase.ptc import PloneTestCase
+from unittest2 import TestCase
 from zope.interface.verify import verifyClass
 from zope.publisher.browser import TestRequest
-from ftw.mail.emailaddress import UUIDEmailAddress
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import setRoles
 
 
-class TestUUIDResolver(PloneTestCase):
+class TestUUIDResolver(TestCase):
 
-    layer = Layer
+    layer = FTW_MAIL_FUNCTIONAL_TESTING
 
-    def afterSetUp(self):
-        self.folder.invokeFactory('Folder', 'f1')
-        self.subfolder = self.folder['f1']
+    def setUp(self):
+        self.portal = self.layer.get('portal')
+
+        setRoles(self.portal, TEST_USER_ID, ['Manager', 'Member'])
+
+        self.portal.invokeFactory('Folder', 'f1')
+        self.subfolder = self.portal['f1']
 
         self.request = TestRequest()
         self.emailaddress = IEmailAddress(self.request)
