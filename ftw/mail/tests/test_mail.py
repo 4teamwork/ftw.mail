@@ -23,7 +23,8 @@ class TestMailIntegration(TestCase):
         setRoles(self.portal, TEST_USER_ID, ['Manager', 'Member'])
 
         here = os.path.dirname(__file__)
-        self.msg_txt_attachment = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
+        self.msg_txt_attachment = open(
+            os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
 
     def test_adding(self):
         self.portal.invokeFactory('ftw.mail.mail', 'mail1')
