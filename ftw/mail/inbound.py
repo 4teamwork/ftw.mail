@@ -47,6 +47,7 @@ class MailInbound(BrowserView):
         return self.render()
 
     def render(self):
+        self.request.response.setHeader('Content-Type', 'text/plain')
         context = aq_inner(self.context)
 
         registry = getUtility(IRegistry)

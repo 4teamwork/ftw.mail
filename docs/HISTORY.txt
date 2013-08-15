@@ -5,6 +5,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Fixed response content-type in inbound view.
+  [lknoepfel]
+
 - Revoke "ftw.mail: Add Mail" permission.
   This permission makes the "mail" type show up in the add menu.
   Only admins (Manager) should be able to add new mails through the
