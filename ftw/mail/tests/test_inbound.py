@@ -130,3 +130,15 @@ class TestInboundMail(TestCase):
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
+
+    def test_inbound_view_returns_text_plain(self):
+        msg_txt = 'To: %s\n'\
+                  'From: FROM@example.org\n'\
+                  'Subject: Test' % self.mail_to
+        self.portal.REQUEST.set("mail", msg_txt)
+        view = self.portal.restrictedTraverse("mail-inbound")
+        view()
+        self.assertEquals(
+            "text/plain",
+            self.portal.REQUEST.response.getHeader('Content-Type'))
+
