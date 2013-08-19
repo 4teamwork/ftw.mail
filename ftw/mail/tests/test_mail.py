@@ -1,29 +1,36 @@
-import os
-from zope.component import createObject
-from zope.component import queryUtility, getUtility
-from zope.schema import getFields
-from plone.dexterity.interfaces import IDexterityFTI
-from Products.PloneTestCase.ptc import PloneTestCase
-from zExceptions import NotFound
-from plone.dexterity.utils import createContentInContainer
-from ftw.mail.tests.layer import Layer
+from ftw.builder import Builder
+from ftw.builder import create
 from ftw.mail.mail import IMail
+from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import setRoles
+from plone.dexterity.interfaces import IDexterityFTI
+from unittest2 import TestCase
+from zExceptions import NotFound
+from zope.component import createObject
+from zope.component import queryUtility
+import os
 
 
-class TestMailIntegration(PloneTestCase):
+class TestMailIntegration(TestCase):
 
-    layer = Layer
+    layer = FTW_MAIL_FUNCTIONAL_TESTING
 
-    def afterSetUp(self):
-        self.setRoles(['Manager', 'Member'])
+    def setUp(self):
+        super(TestMailIntegration, self).setUp()
+
+        self.portal = self.layer['portal']
+        setRoles(self.portal, TEST_USER_ID, ['Manager', 'Member'])
+
         here = os.path.dirname(__file__)
-        self.msg_txt_attachment = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
+        self.msg_txt_attachment = open(
+            os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
 
     def test_adding(self):
-        self.folder.invokeFactory('ftw.mail.mail', 'mail1')
-        m1 = self.folder['mail1']
-        self.failUnless(IMail.providedBy(m1))
-        self.assertEquals(u'no_subject', m1.title)
+        mail = create(Builder('mail'))
+        self.failUnless(IMail.providedBy(mail))
+
+        self.assertEquals(u'no_subject', mail.title)
 
     def test_fti(self):
         fti = queryUtility(IDexterityFTI, name='ftw.mail.mail')
@@ -42,46 +49,44 @@ class TestMailIntegration(PloneTestCase):
         self.assertEquals(u'no_subject', new_object.title)
 
     def test_view(self):
-        self.folder.invokeFactory('ftw.mail.mail', 'mail1')
-        m1 = self.folder['mail1']
-        view = m1.restrictedTraverse('@@view')
+        mail = create(Builder('mail'))
+
+        mail.REQUEST.set('ACTUAL_URL', mail.absolute_url())
+        view = mail.restrictedTraverse('@@view')
         view()
-        subject = view.get_header('Subject')
-        self.assertEquals('', subject)
-        body = view.body()
-        self.assertEquals('<div class="mailBody"></div>', body)
+
+        self.assertEquals('', view.get_header('Subject'))
+        self.assertEquals('<div class="mailBody"></div>', view.body())
 
     def test_attachments(self):
-        # create a mail object containing an attachment
-        fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
-        schema = fti.lookupSchema()
-        field_type = getFields(schema)['message']._type
-        obj = createContentInContainer(self.folder, 'ftw.mail.mail',
-                   message=field_type(data=self.msg_txt_attachment,
-                   contentType=u'message/rfc822', filename=u'message.eml'))
-        m1 = self.folder[obj.getId()]
-        view = m1.restrictedTraverse('@@view')
+        mail = create(Builder('mail')
+                      .with_message(self.msg_txt_attachment))
+
+        mail.REQUEST.set('ACTUAL_URL', mail.absolute_url())
+        view = mail.restrictedTraverse('@@view')
         view()
+
         attachments = view.attachments()
         self.assertEquals(1, len(attachments))
         self.failUnless('icon' in attachments[0])
 
     def test_get_attachment(self):
-        self.folder.invokeFactory('ftw.mail.mail', 'mail1')
-        m1 = self.folder['mail1']
-        view = m1.restrictedTraverse('@@get_attachment')
+        mail = create(Builder('mail'))
+
+        view = mail.restrictedTraverse('@@get_attachment')
         self.assertRaises(NotFound, view)
 
     def test_setting_title(self):
-        self.folder.invokeFactory('ftw.mail.mail', 'mail1')
-        m1 = self.folder['mail1']
-        self.assertEquals(u'no_subject', m1.title)
         # Try setting the title property
         # This is not supposed to change the title,
         # since that is always read from the subject,
         # but it shouldn't fail with an AttributeError
-        m1.title = "New Title"
-        self.assertEquals(u'no_subject', m1.title)
+
+        mail = create(Builder('mail'))
+        self.assertEquals(u'no_subject', mail.title)
+
+        mail.title = "New Title"
+        self.assertEquals(u'no_subject', mail.title)
 
 
     # def test_special(self):
@@ -90,9 +95,9 @@ class TestMailIntegration(PloneTestCase):
     #     fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
     #     schema = fti.lookupSchema()
     #     field_type = getFields(schema)['message']._type
-    #     obj = createContentInContainer(self.folder, 'ftw.mail.mail',
+    #     obj = createContentInContainer(self.portal, 'ftw.mail.mail',
     #                message=field_type(data=msg_txt,
     #                contentType='message/rfc822', filename='message.eml'))
-    #     m1 = self.folder[obj.getId()]
+    #     m1 = self.portal[obj.getId()]
     #     view = m1.restrictedTraverse('@@view')
     #     view()

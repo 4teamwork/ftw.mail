@@ -1,15 +1,25 @@
-from ftw.mail.tests.layer import Layer
-from plone.uuid.interfaces import IUUID
-from Products.PloneTestCase.ptc import PloneTestCase
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from ftw.builder import Builder
+from ftw.builder import create
+from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import setRoles
+from plone.uuid.interfaces import IUUID
+from unittest2 import TestCase
 from zope.component import queryMultiAdapter
 from zope.viewlet.interfaces import IViewletManager
-from Products.CMFCore.utils import getToolByName
 
 
-class TestMailInViewlet(PloneTestCase):
+class TestMailInViewlet(TestCase):
 
-    layer = Layer
+    layer = FTW_MAIL_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer.get('portal')
+        setRoles(self.portal, TEST_USER_ID, ['Manager', 'Member'])
+
+        self.folder = create(Builder('folder'))
 
     def get_viewlet(self, context):
         view = BrowserView(context, context.REQUEST)
