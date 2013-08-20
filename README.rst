@@ -64,7 +64,7 @@ Example `/etc/aliases`::
     inbound-example: "|/path/to/mta2plone.py http://127.0.0.1:8080/Plone/mail-inbound"
 
 
-Remember to run the `newaliases command (as root) after you update /etc/aliases in order for Postfix to pick up the changes.
+Remember to run the ``newaliases`` command (as root) after you update /etc/aliases in order for Postfix to pick up the changes.
 
 
 For local testing it is also possible to start the `mta2plone.py`
