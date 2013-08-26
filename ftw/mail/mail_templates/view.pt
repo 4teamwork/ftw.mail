@@ -17,7 +17,7 @@
 
         <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-        <table class="mailHeaders">
+        <table class="mailHeaders vertical listing">
             <tr class="mailFrom"
                 tal:define="mailFrom python:view.get_header('From')"
                 tal:condition="mailFrom">
