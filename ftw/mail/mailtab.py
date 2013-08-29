@@ -1,9 +1,11 @@
 from DateTime import DateTime
+from DateTime.interfaces import SyntaxError
 from ftw.mail import _
 from ftw.tabbedview.browser import listing
 from ftw.table import helper
 from ftw.table.helper import readable_author
 from zope.i18n import translate
+import re
 
 
 def get_mail_header(field=None, isdate=False):
@@ -16,7 +18,12 @@ def get_mail_header(field=None, isdate=False):
         view = obj.restrictedTraverse('@@view')
 
         if isdate:
-            date = DateTime(view.get_header(field))
+            raw_date = view.get_header(field)
+            raw_date = re.sub(r'\((.*)\)', '\g<1>', raw_date)
+            try:
+                date = DateTime(raw_date)
+            except SyntaxError:
+                return ''
             return helper.readable_date_time_text(item, date)
 
         elif field == 'attachments':
