@@ -5,6 +5,13 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Disable sorting in mail tab for header information columns.
+  Sorting header informations does currently not work because
+  the information is not in the catalog.
+  When doing it outside the catalog we could run into performance
+  issues when we have many mails, therefore we disable it for now.
+  [jone]
+
 - Use plone default classes for table styling.
   [Julian Infanger]
 
