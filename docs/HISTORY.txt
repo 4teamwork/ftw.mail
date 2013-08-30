@@ -5,6 +5,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Make mail tab date parsing robust.
+  [jone]
+
 - Disable sorting in mail tab for header information columns.
   Sorting header informations does currently not work because
   the information is not in the catalog.
