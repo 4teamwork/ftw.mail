@@ -5,7 +5,9 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix tests for Plone 4.1.x - 4.2.x by using a compatible ftw.workspace
+  version.
+  [mathias.leimgruber]
 
 
 2.0 (2013-10-21)
