@@ -5,6 +5,9 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- Added registry entry 'mail_domain' in upgrade step to 2000.
+  [lknoepfel]
+
 - Fix tests for Plone 4.1.x - 4.2.x by using a compatible ftw.workspace
   version.
   [mathias.leimgruber]
