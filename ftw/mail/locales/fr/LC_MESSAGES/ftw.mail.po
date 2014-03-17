@@ -38,7 +38,7 @@ msgstr "A :"
 #. Default: "Attachment"
 #: ./ftw/mail/mailtab.py:26
 msgid "attachment_icon_alt_text"
-msgstr ""
+msgstr "Annexes"
 
 #: ./ftw/mail/mail.py:25
 msgid "help_raw_message"
@@ -47,37 +47,37 @@ msgstr "Destinataire :"
 #. Default: "Mail-In address"
 #: ./ftw/mail/mail_templates/mail_in.pt:2
 msgid "label_mailin"
-msgstr ""
+msgstr "Adresse Mail-In"
 
 #. Default: "Attachments"
 #: ./ftw/mail/mailtab.py:71
 msgid "label_mailstab_attachments"
-msgstr ""
+msgstr "Annexes"
 
 #. Default: "Creator"
 #: ./ftw/mail/mailtab.py:76
 msgid "label_mailstab_creator"
-msgstr ""
+msgstr "Créateur"
 
 #. Default: "Date Received"
 #: ./ftw/mail/mailtab.py:66
 msgid "label_mailstab_date"
-msgstr ""
+msgstr "Reçu"
 
 #. Default: "From"
 #: ./ftw/mail/mailtab.py:56
 msgid "label_mailstab_from"
-msgstr ""
+msgstr "De"
 
 #. Default: "To"
 #: ./ftw/mail/mailtab.py:61
 msgid "label_mailstab_to"
-msgstr ""
+msgstr "Destinataire"
 
 #. Default: "Subject"
 #: ./ftw/mail/mailtab.py:51
 msgid "label_mailtab_subject"
-msgstr ""
+msgstr "Objet"
 
 #. Default: "Raw Message"
 #: ./ftw/mail/mail.py:24
@@ -88,4 +88,5 @@ msgstr "Message original"
 #: ./ftw/mail/mail.py:43
 msgid "no_subject"
 msgstr "Pas d'objet :"
+
 
