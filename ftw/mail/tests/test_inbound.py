@@ -204,3 +204,29 @@ class TestInboundMail(TestCase):
 
         obj = self.folder.get('fwd-lorem-ipsum')
         self.assertEquals('Fwd: Lorem Ipsum', obj.Title())
+
+    def test_unauthorized_to_add_mails(self):
+        self.folder.manage_permission('ftw.mail: Add Inbound Mail',
+                                      roles=[], acquire=False)
+
+        msg_txt = 'To: %s\n'\
+            'From: from@example.org\n'\
+            'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+
+        self.assertEquals('77:Unable to create message. Permission denied.',
+                          view())
+
+    def test_mails_not_addable(self):
+        ttool = getToolByName(self.portal, 'portal_types')
+        ttool.get('ftw.mail.mail').global_allow = False
+
+        msg_txt = 'To: %s\n'\
+            'From: from@example.org\n'\
+            'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+
+        self.assertEquals('77:Disallowed subobject type. Permission denied.',
+                          view())
