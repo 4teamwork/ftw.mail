@@ -5,6 +5,10 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- Refactor inbound view so that customization and error-handling
+  is easier possible.
+  [jone]
+
 - Improve searchable text to index attachments recursively.
   [jone]
 
