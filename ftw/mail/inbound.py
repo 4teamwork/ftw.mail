@@ -41,6 +41,13 @@ class MailInbound(BrowserView):
 
     def render(self):
         self.request.response.setHeader('Content-Type', 'text/plain')
+        try:
+            self.inbound()
+            return '0:OK'
+        except exceptions.MailInboundException, e:
+            return str(e)
+
+    def inbound(self):
         context = aq_inner(self.context)
 
         registry = getUtility(IRegistry)
@@ -48,61 +55,55 @@ class MailInbound(BrowserView):
         validate_sender = reg_proxy.validate_sender
         unwrap_mail = reg_proxy.unwrap_mail
 
+        msg = self.msg()
+        # if we find an attached mail, use this instead of the whole one
+        if unwrap_mail:
+            msg = utils.unwrap_attached_msg(msg)
+
+        user = None
+        sender_email = self.sender()
+
+        if validate_sender and not sender_email:
+            raise exceptions.NoSenderFound(msg)
+
+        # get portal member by sender address
+        if sender_email:
+            pas_search = getMultiAdapter((context, self.request),
+                                         name='pas_search')
+            users = pas_search.searchUsers(email=sender_email)
+            if len(users) > 0:
+                portal = getToolByName(context, 'portal_url'
+                                       ).getPortalObject()
+                uf = portal.acl_users
+                user = uf.getUserById(users[0].get('userid'))
+                if not hasattr(user, 'aq_base'):
+                    user = user.__of__(uf)
+
+        if validate_sender and user is None:
+            raise exceptions.UnkownSender(msg)
+
+        msg_txt = msg.as_string()
+
+        sm = getSecurityManager()
+
         try:
-            msg = self.msg()
-            # if we find an attached mail, use this instead of the whole one
-            if unwrap_mail:
-                msg = utils.unwrap_attached_msg(msg)
+            destination = self.get_destination()
 
-            user = None
-            sender_email = self.sender()
+            # if we couldn't get a member from the sender address,
+            # use the owner of the container to create the mail object
+            if user is None:
+                user = destination.getWrappedOwner()
 
-            if validate_sender and not sender_email:
-                raise exceptions.NoSenderFound(msg)
-
-            # get portal member by sender address
-            if sender_email:
-                pas_search = getMultiAdapter((context, self.request),
-                                             name='pas_search')
-                users = pas_search.searchUsers(email=sender_email)
-                if len(users) > 0:
-                    portal = getToolByName(context, 'portal_url'
-                                           ).getPortalObject()
-                    uf = portal.acl_users
-                    user = uf.getUserById(users[0].get('userid'))
-                    if not hasattr(user, 'aq_base'):
-                        user = user.__of__(uf)
-
-            if validate_sender and user is None:
-                raise exceptions.UnkownSender(msg)
-
-            msg_txt = msg.as_string()
-
-            sm = getSecurityManager()
+            newSecurityManager(self.request, user)
 
             try:
-                destination = self.get_destination()
-
-                # if we couldn't get a member from the sender address,
-                # use the owner of the container to create the mail object
-                if user is None:
-                    user = destination.getWrappedOwner()
-
-                newSecurityManager(self.request, user)
-
-                try:
-                    createMailInContainer(destination, msg_txt)
-                except Unauthorized:
-                    raise exceptions.PermissionDenied(msg, user)
-                except ValueError:
-                    raise exceptions.DisallowedSubobjectType(msg, user)
-            finally:
-                setSecurityManager(sm)
-
-        except exceptions.MailInboundException, e:
-            return str(e)
-
-        return '0:OK'
+                createMailInContainer(destination, msg_txt)
+            except Unauthorized:
+                raise exceptions.PermissionDenied(msg, user)
+            except ValueError:
+                raise exceptions.DisallowedSubobjectType(msg, user)
+        finally:
+            setSecurityManager(sm)
 
     def get_destination(self):
         emailaddress = IEmailAddress(self.request)
