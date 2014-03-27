@@ -5,6 +5,9 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- Improve searchable text to index attachments recursively.
+  [jone]
+
 - Added registry entry 'mail_domain' in upgrade step to 2000.
   [lknoepfel]
 
