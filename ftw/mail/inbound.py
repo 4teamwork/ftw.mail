@@ -1,4 +1,5 @@
 from AccessControl import Unauthorized
+from ftw.mail import exceptions
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
@@ -7,7 +8,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from email.Utils import parseaddr
 from ftw.mail import utils
-from ftw.mail.config import EXIT_CODES
 from ftw.mail.interfaces import IEmailAddress
 from ftw.mail.interfaces import IMailInbound
 from ftw.mail.interfaces import IMailSettings
@@ -30,17 +30,6 @@ from zope.security.interfaces import IPermission
 import email
 
 
-class MailInboundException(Exception):
-    """ An exception indicating an error occured while processing
-        an inbound mail.
-    """
-    def __init__(self, exitcode, errormsg):
-        self.exitcode = exitcode
-        self.errormsg = errormsg
-    def __str__(self):
-        return '%s:%s' % (self.exitcode, self.errormsg)
-
-
 class MailInbound(BrowserView):
     """ A view that handles inbound mail posted by mta2plone.py
     """
@@ -60,12 +49,16 @@ class MailInbound(BrowserView):
         unwrap_mail = reg_proxy.unwrap_mail
 
         try:
+            msg = self.msg()
+            # if we find an attached mail, use this instead of the whole one
+            if unwrap_mail:
+                msg = utils.unwrap_attached_msg(msg)
+
             user = None
             sender_email = self.sender()
 
             if validate_sender and not sender_email:
-                raise MailInboundException(EXIT_CODES['NOPERM'],
-                      'Unknown sender. Permission denied.')
+                raise exceptions.NoSenderFound(msg)
 
             # get portal member by sender address
             if sender_email:
@@ -81,13 +74,7 @@ class MailInbound(BrowserView):
                         user = user.__of__(uf)
 
             if validate_sender and user is None:
-                raise MailInboundException(EXIT_CODES['NOPERM'],
-                      'Unknown sender. Permission denied.')
-
-            msg = self.msg()
-            # if we find an attached mail, use this instead of the whole one
-            if unwrap_mail:
-                msg = utils.unwrap_attached_msg(msg)
+                raise exceptions.UnkownSender(msg)
 
             msg_txt = msg.as_string()
 
@@ -106,15 +93,13 @@ class MailInbound(BrowserView):
                 try:
                     createMailInContainer(destination, msg_txt)
                 except Unauthorized:
-                    raise MailInboundException(EXIT_CODES['NOPERM'],
-                          'Unable to create message. Permission denied.')
+                    raise exceptions.PermissionDenied(msg, user)
                 except ValueError:
-                    raise MailInboundException(EXIT_CODES['NOPERM'],
-                          'Disallowed subobject type. Permission denied.')
+                    raise exceptions.DisallowedSubobjectType(msg, user)
             finally:
                 setSecurityManager(sm)
 
-        except MailInboundException, e:
+        except exceptions.MailInboundException, e:
             return str(e)
 
         return '0:OK'
@@ -124,8 +109,7 @@ class MailInbound(BrowserView):
         destination = emailaddress.get_object_for_email(self.recipient())
 
         if destination is None:
-            raise MailInboundException(EXIT_CODES['CANTCREAT'],
-                                       'Destination does not exist.')
+            raise exceptions.DestinationDoesNotExist(emailaddress)
         return destination
 
     @instance.memoize
@@ -134,13 +118,11 @@ class MailInbound(BrowserView):
         """
         msg_txt = self.request.get('mail', None)
         if msg_txt is None:
-            raise MailInboundException(EXIT_CODES['NOINPUT'],
-                                       'No mail message supplied.')
+            raise exceptions.NoInput()
         try:
             msg = email.message_from_string(msg_txt)
         except TypeError:
-            raise MailInboundException(EXIT_CODES['DATAERR'],
-                                       'Invalid mail message supplied.')
+            raise exceptions.InvalidMessage()
         return msg
 
     @instance.memoize
