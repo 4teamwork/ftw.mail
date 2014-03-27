@@ -73,15 +73,15 @@ class TestInboundMail(TestCase):
     def test_unknown_sender(self):
         # unknown sender
         msg_txt = 'To: to@example.org\n'\
-                  'From: unknown@example.org\n'\
-                  'Subject: Test'
+            'From: unknown@example.org\n'\
+            'Subject: Test'
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('77:Unknown sender. Permission denied.', view())
         # known upper-case sender, lower-case member email
         msg_txt = 'To: %s\n'\
-                  'From: FROM@example.org\n'\
-                  'Subject: Test' % self.mail_to
+            'From: FROM@example.org\n'\
+            'Subject: Test' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
@@ -90,55 +90,54 @@ class TestInboundMail(TestCase):
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='FROM@example.org'))
         msg_txt = 'To: %s\n'\
-                  'From: from@example.org\n'\
-                  'Subject: Test' % self.mail_to
+            'From: from@example.org\n'\
+            'Subject: Test' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
 
     def test_unknown_destination(self):
         msg_txt = 'To: unknown@example.org\n'\
-                  'From: from@example.org\n'\
-                  'Subject: Test'
+            'From: from@example.org\n'\
+            'Subject: Test'
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('73:Destination does not exist.', view())
 
     def test_mail_creation(self):
         msg_txt = 'To: %s\n'\
-                  'From: from@example.org\n'\
-                  'Subject: Test' % self.mail_to
+            'From: from@example.org\n'\
+            'Subject: Test' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
 
     def test_long_header(self):
         msg_txt = 'To: %s\n'\
-                  'From: from@example.org\n'\
-                  'Subject: A long mail header with more than 78 characters.'\
-                  'Lorem ipsum dolor sit amet, consectetur adipisicing elit,'\
-                  ' sed do eiusmod tempor incididunt ut labore et dolore '\
-                  'magna aliqua.' % self.mail_to
+            'From: from@example.org\n'\
+            'Subject: A long mail header with more than 78 characters.'\
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit,'\
+            ' sed do eiusmod tempor incididunt ut labore et dolore '\
+            'magna aliqua.' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
 
     def test_weird_characters_in_subject(self):
         msg_txt = 'To: %s\n'\
-                  'From: from@example.org\n'\
-                  'Subject: Here comes a tab	and some umlauts \xc3\xa4\xc3\xb6\xc3\xbc' % self.mail_to
+            'From: from@example.org\n'\
+            'Subject: Here comes a tab  and some umlauts \xc3\xa4\xc3\xb6\xc3\xbc' % self.mail_to
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
 
     def test_inbound_view_returns_text_plain(self):
         msg_txt = 'To: %s\n'\
-                  'From: FROM@example.org\n'\
-                  'Subject: Test' % self.mail_to
+            'From: FROM@example.org\n'\
+            'Subject: Test' % self.mail_to
         self.portal.REQUEST.set("mail", msg_txt)
         view = self.portal.restrictedTraverse("mail-inbound")
         view()
         self.assertEquals(
             "text/plain",
             self.portal.REQUEST.response.getHeader('Content-Type'))
-

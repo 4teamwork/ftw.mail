@@ -1,25 +1,29 @@
-from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
-from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager
+from AccessControl import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import setSecurityManager
 from Acquisition import aq_inner
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 from email.Utils import parseaddr
 from ftw.mail import utils
 from ftw.mail.config import EXIT_CODES
-from ftw.mail.interfaces import IMailInbound, IMailSettings
+from ftw.mail.interfaces import IEmailAddress
+from ftw.mail.interfaces import IMailInbound
+from ftw.mail.interfaces import IMailSettings
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import createContent
 from plone.dexterity.utils import iterSchemata
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
 from z3c.form.interfaces import IValue
-from zope.container.interfaces import INameChooser
-from zope.component import getMultiAdapter, getUtility, queryUtility
+from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.component import queryMultiAdapter
+from zope.component import queryUtility
+from zope.container.interfaces import INameChooser
 from zope.interface import implements
-from ftw.mail.interfaces import IEmailAddress
 from zope.schema import getFields
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
@@ -65,15 +69,16 @@ class MailInbound(BrowserView):
 
             # get portal member by sender address
             if sender_email:
-                pas_search = getMultiAdapter((context, self.request), name='pas_search')
+                pas_search = getMultiAdapter((context, self.request),
+                                             name='pas_search')
                 users = pas_search.searchUsers(email=sender_email)
-                if len(users)>0:
-                    portal = getToolByName(context, 'portal_url').getPortalObject()
+                if len(users) > 0:
+                    portal = getToolByName(context, 'portal_url'
+                                           ).getPortalObject()
                     uf = portal.acl_users
                     user = uf.getUserById(users[0].get('userid'))
                     if not hasattr(user, 'aq_base'):
                         user = user.__of__(uf)
-                    #member = mtool.getMemberById(users[0].get('userid'))
 
             if validate_sender and user is None:
                 raise MailInboundException(EXIT_CODES['NOPERM'],
@@ -161,6 +166,7 @@ class MailInbound(BrowserView):
         (recipient_name, recipient_address) = parseaddr(recipient)
         return recipient_address
 
+
 def createMailInContainer(container, message):
     """Add a mail object to a container.
 
@@ -187,8 +193,10 @@ def createMailInContainer(container, message):
         raise Unauthorized("Cannot create %s" % content.portal_type)
 
     # check addable types
-    if container_fti is not None and not container_fti.allowType(content.portal_type):
-        raise ValueError("Disallowed subobject type: %s" % content.portal_type)
+    if container_fti is not None and \
+            not container_fti.allowType(content.portal_type):
+        raise ValueError("Disallowed subobject type: %s" % (
+                content.portal_type))
 
     normalizer = queryUtility(IIDNormalizer)
     normalized_subject = normalizer.normalize(content.title)
@@ -201,6 +209,7 @@ def createMailInContainer(container, message):
     obj = set_defaults(obj)
     obj.reindexObject()
     return obj
+
 
 def set_defaults(obj):
     """set the default value for all fields on the mail object
@@ -231,23 +240,3 @@ def set_defaults(obj):
                         pass
                 field.set(field.interface(obj), default)
     return obj
-
-
-# class DestinationFromLocalPart(grok.Adapter):
-#     """ A destination resolver that
-#     """
-#     grok.provides(IDestinationResolver)
-#     grok.context(IMailInbound)
-#     #grok.name(u'path-from-local-part')
-#
-#     def destination(self):
-#         parts = self.context.recipient().split('@')
-#         path = parts[0].replace('.', '/')
-#         context = aq_inner(self.context.context)
-#         portal_path = getToolByName(context, 'portal_url').getPortalPath()
-#         destination = None
-#         try:
-#             destination = context.unrestrictedTraverse('%s/%s' % (portal_path, path))
-#         except KeyError:
-#             pass
-#         return destination
