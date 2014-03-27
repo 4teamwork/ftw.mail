@@ -3,11 +3,17 @@ from Products.CMFCore.utils import getToolByName
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.mail.interfaces import IEmailAddress
+from ftw.mail.interfaces import IMailSettings
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import logout
 from plone.app.testing import setRoles
+from plone.registry.interfaces import IRegistry
 from unittest2 import TestCase
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.publisher.browser import TestRequest
 import os
 
@@ -34,6 +40,8 @@ class TestInboundMail(TestCase):
 
         emailaddress = IEmailAddress(TestRequest())
         self.mail_to = emailaddress.get_email_for_object(self.folder)
+
+        logout()
 
     def test_no_message(self):
         view = self.portal.restrictedTraverse('@@mail-inbound')
@@ -85,7 +93,9 @@ class TestInboundMail(TestCase):
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
+
         # known lower-case sender, upper-case member email
+        login(self.portal, TEST_USER_NAME)
         mtool = getToolByName(self.portal, 'portal_membership')
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='FROM@example.org'))
@@ -141,3 +151,21 @@ class TestInboundMail(TestCase):
         self.assertEquals(
             "text/plain",
             self.portal.REQUEST.response.getHeader('Content-Type'))
+
+    def test_no_sender_email(self):
+        msg_txt = 'To: %s\n'\
+            'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('77:Unknown sender. Permission denied.', view())
+
+    def test_no_sender_email_validation(self):
+        registry = getUtility(IRegistry)
+        settings = registry.forInterface(IMailSettings)
+        settings.validate_sender = False
+
+        msg_txt = 'To: %s\n'\
+            'Subject: Test' % self.mail_to
+        request = TestRequest(mail=msg_txt)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())

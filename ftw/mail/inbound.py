@@ -92,7 +92,6 @@ class MailInbound(BrowserView):
             msg_txt = msg.as_string()
 
             sm = getSecurityManager()
-            newSecurityManager(self.request, user)
 
             try:
                 destination = self.get_destination()
@@ -101,6 +100,8 @@ class MailInbound(BrowserView):
                 # use the owner of the container to create the mail object
                 if user is None:
                     user = destination.getWrappedOwner()
+
+                newSecurityManager(self.request, user)
 
                 try:
                     createMailInContainer(destination, msg_txt)
