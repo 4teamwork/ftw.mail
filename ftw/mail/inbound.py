@@ -48,37 +48,27 @@ class MailInbound(BrowserView):
             return str(e)
 
     def inbound(self):
-        registry = getUtility(IRegistry)
-        reg_proxy = registry.forInterface(IMailSettings)
-        unwrap_mail = reg_proxy.unwrap_mail
-
         msg = self.msg()
-        # if we find an attached mail, use this instead of the whole one
-        if unwrap_mail:
+        settings = getUtility(IRegistry).forInterface(IMailSettings)
+        if settings.unwrap_mail:
+            # if we find an attached mail, use this instead of the whole one
             msg = utils.unwrap_attached_msg(msg)
 
         user = self.get_user()
-
-        msg_txt = msg.as_string()
-
-        sm = getSecurityManager()
-
-        try:
-            destination = self.get_destination()
-
+        destination = self.get_destination()
+        if user is None:
             # if we couldn't get a member from the sender address,
             # use the owner of the container to create the mail object
-            if user is None:
-                user = destination.getWrappedOwner()
+            user = destination.getWrappedOwner()
 
-            newSecurityManager(self.request, user)
-
-            try:
-                createMailInContainer(destination, msg_txt)
-            except Unauthorized:
-                raise exceptions.PermissionDenied(msg, user)
-            except ValueError:
-                raise exceptions.DisallowedSubobjectType(msg, user)
+        sm = getSecurityManager()
+        newSecurityManager(self.request, user)
+        try:
+            createMailInContainer(destination, msg.as_string())
+        except Unauthorized:
+            raise exceptions.PermissionDenied(self.msg(), user)
+        except ValueError:
+            raise exceptions.DisallowedSubobjectType(self.msg(), user)
         finally:
             setSecurityManager(sm)
 
