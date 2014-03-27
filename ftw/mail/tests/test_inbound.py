@@ -18,6 +18,13 @@ from zope.publisher.browser import TestRequest
 import os
 
 
+def asset(filename):
+    here = os.path.dirname(__file__)
+    path = os.path.join(here, 'mails', filename)
+    with open(path, 'r') as file_:
+        return file_.read()
+
+
 class TestInboundMail(TestCase):
 
     layer = FTW_MAIL_FUNCTIONAL_TESTING
@@ -169,3 +176,31 @@ class TestInboundMail(TestCase):
         request = TestRequest(mail=msg_txt)
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('0:OK', view())
+
+    def test_nested_mail_is_unwrapped(self):
+        create(Builder('user').with_email('fwd.from@example.org'))
+        mail = asset('fwd_attachment.txt')
+        mail = mail.replace('To: fwd.to@example.org', 'To: %s' % self.mail_to)
+
+        request = TestRequest(mail=mail)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())
+
+        obj = self.folder.get('lorem-ipsum')
+        self.assertEquals('Lorem Ipsum', obj.Title())
+
+    def test_nested_mail_no_unwrapping(self):
+        registry = getUtility(IRegistry)
+        settings = registry.forInterface(IMailSettings)
+        settings.unwrap_mail = False
+
+        create(Builder('user').with_email('fwd.from@example.org'))
+        mail = asset('fwd_attachment.txt')
+        mail = mail.replace('To: fwd.to@example.org', 'To: %s' % self.mail_to)
+
+        request = TestRequest(mail=mail)
+        view = getMultiAdapter((self.portal, request), name='mail-inbound')
+        self.assertEquals('0:OK', view())
+
+        obj = self.folder.get('fwd-lorem-ipsum')
+        self.assertEquals('Fwd: Lorem Ipsum', obj.Title())
