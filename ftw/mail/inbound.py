@@ -48,11 +48,8 @@ class MailInbound(BrowserView):
             return str(e)
 
     def inbound(self):
-        context = aq_inner(self.context)
-
         registry = getUtility(IRegistry)
         reg_proxy = registry.forInterface(IMailSettings)
-        validate_sender = reg_proxy.validate_sender
         unwrap_mail = reg_proxy.unwrap_mail
 
         msg = self.msg()
@@ -60,27 +57,7 @@ class MailInbound(BrowserView):
         if unwrap_mail:
             msg = utils.unwrap_attached_msg(msg)
 
-        user = None
-        sender_email = self.sender()
-
-        if validate_sender and not sender_email:
-            raise exceptions.NoSenderFound(msg)
-
-        # get portal member by sender address
-        if sender_email:
-            pas_search = getMultiAdapter((context, self.request),
-                                         name='pas_search')
-            users = pas_search.searchUsers(email=sender_email)
-            if len(users) > 0:
-                portal = getToolByName(context, 'portal_url'
-                                       ).getPortalObject()
-                uf = portal.acl_users
-                user = uf.getUserById(users[0].get('userid'))
-                if not hasattr(user, 'aq_base'):
-                    user = user.__of__(uf)
-
-        if validate_sender and user is None:
-            raise exceptions.UnkownSender(msg)
+        user = self.get_user()
 
         msg_txt = msg.as_string()
 
@@ -104,6 +81,30 @@ class MailInbound(BrowserView):
                 raise exceptions.DisallowedSubobjectType(msg, user)
         finally:
             setSecurityManager(sm)
+
+    def get_user(self):
+        settings = getUtility(IRegistry).forInterface(IMailSettings)
+        sender_email = self.sender()
+
+        if settings.validate_sender and not sender_email:
+            raise exceptions.NoSenderFound(self.msg())
+
+        elif not sender_email:
+            return None
+
+        acl_users = getToolByName(self.context, 'acl_users')
+        pas_search = getMultiAdapter((self.context, self.request),
+                                     name='pas_search')
+        users = pas_search.searchUsers(email=sender_email)
+        if len(users) > 0:
+            user = acl_users.getUserById(users[0].get('userid'))
+            if not hasattr(user, 'aq_base'):
+                user = user.__of__(acl_users)
+            return user
+        elif settings.validate_sender:
+            raise exceptions.UnkownSender(self.msg())
+        else:
+            return None
 
     def get_destination(self):
         emailaddress = IEmailAddress(self.request)
