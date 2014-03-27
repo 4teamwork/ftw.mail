@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import getFSVersionTuple
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from unittest2 import TestCase
+from unittest2 import skipUnless
 import os
 
 
@@ -35,7 +39,19 @@ class TestSearchableText(TestCase):
         searchable_text = catalog_indexdata_of(mail)['SearchableText']
         self.assertIn('tyrannen', searchable_text)
 
-    def test_attached_utf8_encoded_textfile(self):
+    @skipUnless(getFSVersionTuple() < (4, 3), "Plone < 4.3")
+    def test_umlauts_Plone_4_2_and_older(self):
+        # The text contains the umlauts "äöu", which is indexed
+        # as umlauts in Plone < 4.3
+        mail = create(Builder('mail')
+                      .with_message(asset('attachment.txt')))
+        searchable_text = catalog_indexdata_of(mail)['SearchableText']
+        self.assertIn('äöü', searchable_text)
+
+    @skipUnless(getFSVersionTuple() >= (4, 3), "Plone >= 4.3")
+    def test_umlauts_Plone_4_3_and_newer(self):
+        # The text contains the umlauts "äöu", which is indexed
+        # without diacritics (as "aou")  in Plone >= 4.3
         mail = create(Builder('mail')
                       .with_message(asset('attachment.txt')))
         searchable_text = catalog_indexdata_of(mail)['SearchableText']
