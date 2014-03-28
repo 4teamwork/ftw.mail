@@ -68,14 +68,9 @@ class MailInbound(BrowserView):
             setSecurityManager(sm)
 
     def get_user(self):
-        settings = getUtility(IRegistry).forInterface(IMailSettings)
         sender_email = self.sender()
-
-        if settings.validate_sender and not sender_email:
+        if not sender_email:
             raise exceptions.NoSenderFound(self.msg())
-
-        elif not sender_email:
-            return self.get_destination_owner()
 
         acl_users = getToolByName(self.context, 'acl_users')
         pas_search = getMultiAdapter((self.context, self.request),
@@ -86,20 +81,8 @@ class MailInbound(BrowserView):
             if not hasattr(user, 'aq_base'):
                 user = user.__of__(acl_users)
             return user
-        elif settings.validate_sender:
-            raise exceptions.UnknownSender(self.msg())
         else:
-            return self.get_destination_owner()
-
-    def get_destination_owner(self):
-        uuid = self.recipient().split('@')[0]
-        catalog = getToolByName(self.context, 'portal_catalog')
-        brains = catalog.unrestrictedSearchResults(UID=uuid)
-        if not len(brains):
-            raise exceptions.DestinationDoesNotExist(self.recipient())
-
-        obj = self.context.unrestrictedTraverse(brains[0].getPath())
-        return obj.getWrappedOwner()
+            raise exceptions.UnknownSender(self.msg())
 
     def get_destination(self):
         emailaddress = IEmailAddress(self.request)

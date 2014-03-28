@@ -170,17 +170,6 @@ class TestInboundMail(TestCase):
         view = getMultiAdapter((self.portal, request), name='mail-inbound')
         self.assertEquals('77:Could not extract sender email.', view())
 
-    def test_no_sender_email_validation(self):
-        registry = getUtility(IRegistry)
-        settings = registry.forInterface(IMailSettings)
-        settings.validate_sender = False
-
-        msg_txt = 'To: %s\n'\
-            'Subject: Test' % self.mail_to
-        request = TestRequest(mail=msg_txt)
-        view = getMultiAdapter((self.portal, request), name='mail-inbound')
-        self.assertEquals('0:OK', view())
-
     def test_nested_mail_is_unwrapped(self):
         create(Builder('user').with_email('fwd.from@example.org')
                .with_roles('Contributor', on=self.folder))

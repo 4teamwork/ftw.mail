@@ -5,6 +5,10 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- Remove "validate_sender" configuration setting.
+  We always require the sender to be valid.
+  [jone]
+
 - Refactor inbound view so that customization and error-handling
   is easier possible.
   [jone]

@@ -37,13 +37,6 @@ class IEmailAddress(Interface):
 
 class IMailSettings(Interface):
 
-    validate_sender = schema.Bool(
-        title=u'Validate Sender',
-        default=True,
-        description=u'If enabled, inbound mails are only accepted if a '
-                    u'user account with the senders email address exists.'
-    )
-
     unwrap_mail = schema.Bool(
         title=u'Unwrap Forwarded Mails',
         default=True,
