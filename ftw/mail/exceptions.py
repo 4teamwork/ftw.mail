@@ -35,7 +35,7 @@ class NoSenderFound(MailInboundException):
             self, EXIT_CODES['NOPERM'], 'Could not extract sender email.')
 
 
-class UnkownSender(MailInboundException):
+class UnknownSender(MailInboundException):
 
     def __init__(self, mail):
         self.mail = mail

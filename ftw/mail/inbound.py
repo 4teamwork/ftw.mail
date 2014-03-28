@@ -92,7 +92,7 @@ class MailInbound(BrowserView):
                 user = user.__of__(acl_users)
             return user
         elif settings.validate_sender:
-            raise exceptions.UnkownSender(self.msg())
+            raise exceptions.UnknownSender(self.msg())
         else:
             return None
 
