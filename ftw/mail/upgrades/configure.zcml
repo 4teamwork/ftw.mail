@@ -32,4 +32,14 @@
         profile="ftw.mail:default"
         />
 
+    <!-- 2001 -> 2002 -->
+    <genericsetup:upgradeStep
+        title="Remove validate_sender configuration setting."
+        description=""
+        source="2001"
+        destination="2002"
+        handler="ftw.mail.upgrades.to2002.RemoveValidateSender"
+        profile="ftw.mail:default"
+        />
+
 </configure>
