@@ -35,6 +35,10 @@ class TestInboundMail(TestCase):
         self.portal = self.layer['portal']
         setRoles(self.portal, TEST_USER_ID, ['Manager', ])
 
+        wftool = getToolByName(self.portal, 'portal_workflow')
+        wftool.setChainForPortalTypes(('Folder',),
+                                      ('simple_publication_workflow',))
+
         self.folder = create(Builder('folder'))
 
         here = os.path.dirname(__file__)
@@ -178,7 +182,8 @@ class TestInboundMail(TestCase):
         self.assertEquals('0:OK', view())
 
     def test_nested_mail_is_unwrapped(self):
-        create(Builder('user').with_email('fwd.from@example.org'))
+        create(Builder('user').with_email('fwd.from@example.org')
+               .with_roles('Contributor', on=self.folder))
         mail = asset('fwd_attachment.txt')
         mail = mail.replace('To: fwd.to@example.org', 'To: %s' % self.mail_to)
 
@@ -194,7 +199,8 @@ class TestInboundMail(TestCase):
         settings = registry.forInterface(IMailSettings)
         settings.unwrap_mail = False
 
-        create(Builder('user').with_email('fwd.from@example.org'))
+        create(Builder('user').with_email('fwd.from@example.org')
+               .with_roles('Contributor', on=self.folder))
         mail = asset('fwd_attachment.txt')
         mail = mail.replace('To: fwd.to@example.org', 'To: %s' % self.mail_to)
 

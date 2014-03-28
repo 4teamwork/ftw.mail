@@ -1,5 +1,4 @@
 from AccessControl import Unauthorized
-from ftw.mail import exceptions
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
@@ -7,6 +6,7 @@ from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from email.Utils import parseaddr
+from ftw.mail import exceptions
 from ftw.mail import utils
 from ftw.mail.interfaces import IEmailAddress
 from ftw.mail.interfaces import IMailInbound
@@ -55,15 +55,10 @@ class MailInbound(BrowserView):
             msg = utils.unwrap_attached_msg(msg)
 
         user = self.get_user()
-        destination = self.get_destination()
-        if user is None:
-            # if we couldn't get a member from the sender address,
-            # use the owner of the container to create the mail object
-            user = destination.getWrappedOwner()
-
         sm = getSecurityManager()
         newSecurityManager(self.request, user)
         try:
+            destination = self.get_destination()
             createMailInContainer(destination, msg.as_string())
         except Unauthorized:
             raise exceptions.PermissionDenied(self.msg(), user)
@@ -80,7 +75,7 @@ class MailInbound(BrowserView):
             raise exceptions.NoSenderFound(self.msg())
 
         elif not sender_email:
-            return None
+            return self.get_destination_owner()
 
         acl_users = getToolByName(self.context, 'acl_users')
         pas_search = getMultiAdapter((self.context, self.request),
@@ -94,14 +89,24 @@ class MailInbound(BrowserView):
         elif settings.validate_sender:
             raise exceptions.UnknownSender(self.msg())
         else:
-            return None
+            return self.get_destination_owner()
+
+    def get_destination_owner(self):
+        uuid = self.recipient().split('@')[0]
+        catalog = getToolByName(self.context, 'portal_catalog')
+        brains = catalog.unrestrictedSearchResults(UID=uuid)
+        if not len(brains):
+            raise exceptions.DestinationDoesNotExist(self.recipient())
+
+        obj = self.context.unrestrictedTraverse(brains[0].getPath())
+        return obj.getWrappedOwner()
 
     def get_destination(self):
         emailaddress = IEmailAddress(self.request)
         destination = emailaddress.get_object_for_email(self.recipient())
 
         if destination is None:
-            raise exceptions.DestinationDoesNotExist(emailaddress)
+            raise exceptions.DestinationDoesNotExist(self.recipient())
         return destination
 
     @instance.memoize
