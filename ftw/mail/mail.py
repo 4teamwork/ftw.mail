@@ -1,6 +1,9 @@
 from Acquisition import aq_inner
-from collective import dexteritytextindexer
 from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from collective import dexteritytextindexer
 from email.MIMEText import MIMEText
 from ftw.mail import _
 from ftw.mail import utils
@@ -8,9 +11,6 @@ from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 import email
 
@@ -80,15 +80,30 @@ class SearchableTextExtender(object):
         self.context = context
 
     def __call__(self):
-        searchable = []
-        # append some other attributes to the searchableText index
-        # message body
-        html_body = utils.get_body(self.context.msg)
-        msg_body = utils.unwrap_html_body(html_body)
+        transforms = getToolByName(self.context, 'portal_transforms')
 
-        searchable.append(msg_body)
+        def convert_to_text(msg):
+            if msg.is_multipart():
+                result = map(convert_to_text, msg.get_payload())
+                result = filter(None, result)
+                return ' '.join(result)
 
-        return ' '.join(searchable)
+            result = transforms.convertTo('text/plain',
+                                          msg.get_payload(decode=True),
+                                          mimetype=msg.get_content_type(),
+                                          filename=msg.get_filename())
+
+            if not result:
+                return None
+
+            result = result.getData().strip()
+
+            if isinstance(result, unicode):
+                return result.encode('utf-8')
+            else:
+                return result
+
+        return convert_to_text(self.context.msg)
 
 
 class View(BrowserView):

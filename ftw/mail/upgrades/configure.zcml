@@ -22,4 +22,14 @@
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 
+    <!-- 2000 -> 2001 -->
+    <genericsetup:upgradeStep
+        title="Reindex mail searchable text with attachments"
+        description=""
+        source="2000"
+        destination="2001"
+        handler="ftw.mail.upgrades.to2001.ReindexSearchableText"
+        profile="ftw.mail:default"
+        />
+
 </configure>
