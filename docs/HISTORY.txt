@@ -5,6 +5,9 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
+- Made primary field also for dexterity-1 installations working.
+  [phgross]
+
 - Added French translation by I. Anthenien.
   [lknoepfel]
 

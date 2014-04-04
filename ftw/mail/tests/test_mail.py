@@ -5,6 +5,7 @@ from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.rfc822.interfaces import IPrimaryFieldInfo
 from unittest2 import TestCase
 from zExceptions import NotFound
 from zope.component import createObject
@@ -88,6 +89,9 @@ class TestMailIntegration(TestCase):
         mail.title = "New Title"
         self.assertEquals(u'no_subject', mail.title)
 
+    def test_message_field_is_marked_as_primary_field(self):
+        mail = create(Builder('mail'))
+        self.assertEquals(IMail['message'], IPrimaryFieldInfo(mail).field)
 
     # def test_special(self):
     #     here = os.path.dirname(__file__)

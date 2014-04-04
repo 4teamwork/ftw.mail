@@ -11,6 +11,8 @@ from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
+from plone.rfc822.interfaces import IPrimaryField
+from zope.interface import alsoProvides
 from zope.interface import implements
 import email
 
@@ -21,10 +23,14 @@ class IMail(form.Schema):
 
     form.primary('message')
     message = field.NamedBlobFile(
-        title = _(u"label_raw_message", default=u"Raw Message"),
-        description = _(u"help_raw_message", default=u""),
-        required = False,
+        title=_(u"label_raw_message", default=u"Raw Message"),
+        description=_(u"help_raw_message", default=u""),
+        required=False,
     )
+
+
+# necessary for dexterity 1 installations
+alsoProvides(IMail['message'], IPrimaryField)
 
 
 class Mail(Item):
