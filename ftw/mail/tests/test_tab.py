@@ -54,18 +54,3 @@ class TestMailTab(TestCase):
         request.form['tableType'] = 'extjs'
         view = self.portal.restrictedTraverse('tabbedview_view-mails')
         return json.loads(view())
-
-
-class TestNoMailTab(TestCase):
-
-    layer = FTW_MAIL_FUNCTIONAL_TESTING
-
-    def setUp(self):
-        super(TestNoMailTab, self).setUp()
-
-        self.portal = self.layer.get('portal')
-
-    def test_mail_tab_is_not_available(self):
-
-        self.assertRaises(KeyError,
-            self.portal.restrictedTraverse, 'tabbedview_view-mails')
