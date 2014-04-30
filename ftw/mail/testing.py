@@ -1,4 +1,6 @@
 from ftw.builder.testing import BUILDER_LAYER
+from ftw.builder.testing import functional_session_factory
+from ftw.builder.testing import set_builder_session_factory
 from ftw.mail.tests import builders
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PLONE_FIXTURE
@@ -38,4 +40,6 @@ class FtwMailLayer(PloneSandboxLayer):
 
 FTW_MAIL_LAYER = FtwMailLayer()
 FTW_MAIL_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(FTW_MAIL_LAYER, ), name="ftw.mail:functional")
+    bases=(FTW_MAIL_LAYER,
+           set_builder_session_factory(functional_session_factory)),
+    name="ftw.mail:functional")
