@@ -6,9 +6,12 @@ from BeautifulSoup import BeautifulSoup
 import re
 from ftw.mail import config
 
+
 # a regular expression that matches src attributes of img tags containing a cid
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
 BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
+APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*)"( <.*>)$')
+
 
 def safe_decode_header(value):
     """ Handles rfc 2047 encoded header with non-ascii characters.
@@ -22,6 +25,17 @@ def safe_decode_header(value):
         value = value.encode('utf-8')
 
     new_value = []
+
+    # When sending mails with Apple Mail, which have umlauts in
+    # From-/To-/Cc-Headers, it encodes the name of the person but it
+    # wraps it into quotes.
+    # The python email module does not support this wrapping, so we
+    # remove the quotes in this situation.
+    # Example:
+    # From: "=?iso-8859-1?Q?Boss_H=FCgo?=" <hugo@boss.com>
+    apple_partial_encoding = APPLE_PARTIAL_ENCODING_RE.match(value)
+    if apple_partial_encoding:
+        value = ''.join(apple_partial_encoding.groups())
 
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):

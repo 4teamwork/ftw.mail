@@ -5,6 +5,7 @@ version = '2.1.1.dev0'
 
 tests_require = [
     'ftw.builder',
+    'ftw.testbrowser',
     'ftw.workspace',
     'plone.app.testing',
     ]
