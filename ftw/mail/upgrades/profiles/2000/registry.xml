@@ -1,5 +1,3 @@
 <registry>
-    <records interface="ftw.mail.interfaces.IMailSettings">
-        <value key="mail_domain">example.org</value>
-    </records>
+    <records interface="ftw.mail.interfaces.IMailSettings" />
 </registry>
