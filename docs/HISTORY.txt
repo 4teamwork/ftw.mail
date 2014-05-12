@@ -5,6 +5,13 @@ Changelog
 2.1.2 (unreleased)
 ------------------
 
+- Performance improvements:
+
+  - Store the title from the mail subject on the object, so that
+    we don't have to read the message for retreiving the title on access.
+
+  [jone]
+
 - Make sure only a *default* value will be set for IMailSettings.mail_domain,
   but an existing value won't be overwritten when running the upgrade step twice.
   [lgraf]

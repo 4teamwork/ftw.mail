@@ -38,15 +38,8 @@ class Mail(Item):
 
     @property
     def title(self):
-        """get title from subject
-        """
-        subject = utils.get_header(self.msg, 'Subject')
-        if subject:
-            # long headers may contain line breaks with tabs.
-            # replace these by a space.
-            subject = subject.replace('\n\t', ' ')
-            return subject.decode('utf8')
-        return _(u'no_subject', default=u'[No Subject]')
+        default_title = _(u'no_subject', default=u'[No Subject]')
+        return getattr(self, '_title', default_title)
 
     @title.setter
     def title(self, value):
@@ -57,6 +50,23 @@ class Mail(Item):
         created content object.
         """
         pass
+
+    def _update_title_from_message_subject(self):
+        subject = utils.get_header(self.msg, 'Subject')
+        if subject:
+            # long headers may contain line breaks with tabs.
+            # replace these by a space.
+            subject = subject.replace('\n\t', ' ')
+            self._title = subject.decode('utf8')
+
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, message):
+        self._message = message
+        self._update_title_from_message_subject()
 
     @property
     def msg(self):
