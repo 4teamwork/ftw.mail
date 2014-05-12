@@ -11,6 +11,10 @@ Changelog
 2.1.1 (2014-05-12)
 ------------------
 
+- Make sure only a *default* value will be set for IMailSettings.mail_domain,
+  but an existing value won't be overwritten when running the upgrade step twice.
+  [lgraf]
+
 - Fix From-/To-/Cc-Header encoding problem with Apple Mail.
   [jone]
 
