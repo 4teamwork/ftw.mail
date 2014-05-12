@@ -5,7 +5,9 @@ Changelog
 2.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make sure only a *default* value will be set for IMailSettings.mail_domain,
+  but an existing value won't be overwritten when running the upgrade step twice.
+  [lgraf]
 
 
 2.1.1 (2014-05-12)
