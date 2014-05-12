@@ -49,6 +49,38 @@ class TestMailIntegration(TestCase):
         self.failUnless(IMail.providedBy(new_object))
         self.assertEquals(u'no_subject', new_object.title)
 
+    def test_attachment_info(self):
+        mail = create(Builder('mail')
+                      .with_message(self.msg_txt_attachment))
+
+        self.assertEquals(
+            ({'position': 1,
+              'size': 7,
+              'content-type': 'text/plain',
+              'filename': 'B\xc3\xbccher.txt'}, ),
+            mail.attachment_infos)
+
+    def test_attachment_info_dict_mutations_are_not_stored(self):
+        mail = create(Builder('mail')
+                      .with_message(self.msg_txt_attachment))
+
+        infos = mail.attachment_infos
+        self.assertEquals(
+            ({'position': 1,
+              'size': 7,
+              'content-type': 'text/plain',
+              'filename': 'B\xc3\xbccher.txt'}, ),
+            infos)
+        infos[0]['FOO'] = 'BAR'
+        infos[0]['filename'] = 'BAZ'
+
+        self.assertEquals(
+            ({'position': 1,
+              'size': 7,
+              'content-type': 'text/plain',
+              'filename': 'B\xc3\xbccher.txt'}, ),
+            mail.attachment_infos)
+
     def test_view(self):
         mail = create(Builder('mail'))
 

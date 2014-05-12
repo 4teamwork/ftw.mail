@@ -67,6 +67,7 @@ class Mail(Item):
     def message(self, message):
         self._message = message
         self._update_title_from_message_subject()
+        self._update_attachment_infos()
 
     @property
     def msg(self):
@@ -82,6 +83,25 @@ class Mail(Item):
                 data = data.replace(temp_msg['Subject'], fixed_subject)
             return email.message_from_string(data)
         return MIMEText('')
+
+    @property
+    def attachment_infos(self):
+        """A tuple of all attachment, each containing a dict of informations
+        for the attachment.
+
+        Example:
+        {'position': 4,
+        'size': 137588,
+        'content-type': 'image/jpg',
+        'filename': '1703693_0412c29a4f.jpg'}
+        """
+        infos = getattr(self, '_attachment_infos', ())
+        # Make a copy of each info dict, so that users cannot modify
+        # our persistent cache.
+        return tuple(map(dict, infos))
+
+    def _update_attachment_infos(self):
+        self._attachment_infos = tuple(utils.get_attachments(self.msg))
 
 
 # SearchableText
@@ -150,7 +170,7 @@ class View(BrowserView):
     @instance.memoize
     def attachments(self):
         context = aq_inner(self.context)
-        attachments = utils.get_attachments(context.msg)
+        attachments = list(self.context.attachment_infos)
         mtr = getToolByName(context, 'mimetypes_registry')
         for attachment in attachments:
             icon = 'file_icon.gif'
