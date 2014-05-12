@@ -42,4 +42,14 @@
         profile="ftw.mail:default"
         />
 
+    <!-- 2002 -> 2100 -->
+    <genericsetup:upgradeStep
+        title="Update new persistent caches."
+        description=""
+        source="2002"
+        destination="2100"
+        handler="ftw.mail.upgrades.to2100.UpdatePersistentCaches"
+        profile="ftw.mail:default"
+        />
+
 </configure>
