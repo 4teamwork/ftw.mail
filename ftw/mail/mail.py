@@ -7,6 +7,7 @@ from collective import dexteritytextindexer
 from email.MIMEText import MIMEText
 from ftw.mail import _
 from ftw.mail import utils
+from persistent.mapping import PersistentMapping
 from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
@@ -68,6 +69,7 @@ class Mail(Item):
         self._message = message
         self._update_title_from_message_subject()
         self._update_attachment_infos()
+        self._reset_header_cache()
 
     @property
     def msg(self):
@@ -102,6 +104,22 @@ class Mail(Item):
 
     def _update_attachment_infos(self):
         self._attachment_infos = tuple(utils.get_attachments(self.msg))
+
+    def get_header(self, name):
+        """Returns a header value from the mail message.
+        This method caches the retrieved values.
+        """
+
+        if getattr(self, '_header_cache', None) is None:
+            self._reset_header_cache()
+
+        if name not in self._header_cache:
+            self._header_cache[name] = utils.get_header(self.msg, name)
+
+        return self._header_cache[name]
+
+    def _reset_header_cache(self):
+        self._header_cache = PersistentMapping()
 
 
 # SearchableText

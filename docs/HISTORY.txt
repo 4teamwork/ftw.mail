@@ -10,6 +10,7 @@ Changelog
   - Store the title from the mail subject on the object, so that
     we don't have to read the message for retreiving the title on access.
   - Cache attachment infos on mail object.
+  - Cache headers for tabbed view.
 
   [jone]
 
