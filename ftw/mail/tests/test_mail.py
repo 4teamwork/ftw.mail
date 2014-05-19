@@ -5,6 +5,7 @@ from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.namedfile import NamedBlobFile
 from plone.rfc822.interfaces import IPrimaryFieldInfo
 from unittest2 import TestCase
 from zExceptions import NotFound
@@ -26,6 +27,8 @@ class TestMailIntegration(TestCase):
         here = os.path.dirname(__file__)
         self.msg_txt_attachment = open(
             os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
+        self.msg_utf8 = open(
+            os.path.join(here, 'mails', 'utf8.txt'), 'r').read()
 
     def test_adding(self):
         mail = create(Builder('mail'))
@@ -48,6 +51,38 @@ class TestMailIntegration(TestCase):
         new_object = createObject(factory)
         self.failUnless(IMail.providedBy(new_object))
         self.assertEquals(u'no_subject', new_object.title)
+
+    def test_attachment_info(self):
+        mail = create(Builder('mail')
+                      .with_message(self.msg_txt_attachment))
+
+        self.assertEquals(
+            ({'position': 1,
+              'size': 7,
+              'content-type': 'text/plain',
+              'filename': 'B\xc3\xbccher.txt'}, ),
+            mail.attachment_infos)
+
+    def test_attachment_info_dict_mutations_are_not_stored(self):
+        mail = create(Builder('mail')
+                      .with_message(self.msg_txt_attachment))
+
+        infos = mail.attachment_infos
+        self.assertEquals(
+            ({'position': 1,
+              'size': 7,
+              'content-type': 'text/plain',
+              'filename': 'B\xc3\xbccher.txt'}, ),
+            infos)
+        infos[0]['FOO'] = 'BAR'
+        infos[0]['filename'] = 'BAZ'
+
+        self.assertEquals(
+            ({'position': 1,
+              'size': 7,
+              'content-type': 'text/plain',
+              'filename': 'B\xc3\xbccher.txt'}, ),
+            mail.attachment_infos)
 
     def test_view(self):
         mail = create(Builder('mail'))
@@ -92,6 +127,19 @@ class TestMailIntegration(TestCase):
     def test_message_field_is_marked_as_primary_field(self):
         mail = create(Builder('mail'))
         self.assertEquals(IMail['message'], IPrimaryFieldInfo(mail).field)
+
+    def test_header_cache_is_invalidated(self):
+        mail = create(Builder('mail')
+                      .with_message(self.msg_txt_attachment))
+        self.assertEquals('Attachment Test',
+                          mail.get_header('Subject'))
+
+        mail.message = NamedBlobFile(
+            data=self.msg_utf8,
+            contentType='message/rfc822',
+            filename=u'message.eml')
+        self.assertEquals('Die B\xc3\xbcrgschaft',
+                          mail.get_header('Subject'))
 
     # def test_special(self):
     #     here = os.path.dirname(__file__)

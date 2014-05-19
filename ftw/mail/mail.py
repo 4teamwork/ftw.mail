@@ -7,6 +7,7 @@ from collective import dexteritytextindexer
 from email.MIMEText import MIMEText
 from ftw.mail import _
 from ftw.mail import utils
+from persistent.mapping import PersistentMapping
 from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
@@ -38,15 +39,8 @@ class Mail(Item):
 
     @property
     def title(self):
-        """get title from subject
-        """
-        subject = utils.get_header(self.msg, 'Subject')
-        if subject:
-            # long headers may contain line breaks with tabs.
-            # replace these by a space.
-            subject = subject.replace('\n\t', ' ')
-            return subject.decode('utf8')
-        return _(u'no_subject', default=u'[No Subject]')
+        default_title = _(u'no_subject', default=u'[No Subject]')
+        return getattr(self, '_title', default_title)
 
     @title.setter
     def title(self, value):
@@ -57,6 +51,25 @@ class Mail(Item):
         created content object.
         """
         pass
+
+    def _update_title_from_message_subject(self):
+        subject = utils.get_header(self.msg, 'Subject')
+        if subject:
+            # long headers may contain line breaks with tabs.
+            # replace these by a space.
+            subject = subject.replace('\n\t', ' ')
+            self._title = subject.decode('utf8')
+
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, message):
+        self._message = message
+        self._update_title_from_message_subject()
+        self._update_attachment_infos()
+        self._reset_header_cache()
 
     @property
     def msg(self):
@@ -72,6 +85,41 @@ class Mail(Item):
                 data = data.replace(temp_msg['Subject'], fixed_subject)
             return email.message_from_string(data)
         return MIMEText('')
+
+    @property
+    def attachment_infos(self):
+        """A tuple of all attachment, each containing a dict of informations
+        for the attachment.
+
+        Example:
+        {'position': 4,
+        'size': 137588,
+        'content-type': 'image/jpg',
+        'filename': '1703693_0412c29a4f.jpg'}
+        """
+        infos = getattr(self, '_attachment_infos', ())
+        # Make a copy of each info dict, so that users cannot modify
+        # our persistent cache.
+        return tuple(map(dict, infos))
+
+    def _update_attachment_infos(self):
+        self._attachment_infos = tuple(utils.get_attachments(self.msg))
+
+    def get_header(self, name):
+        """Returns a header value from the mail message.
+        This method caches the retrieved values.
+        """
+
+        if getattr(self, '_header_cache', None) is None:
+            self._reset_header_cache()
+
+        if name not in self._header_cache:
+            self._header_cache[name] = utils.get_header(self.msg, name)
+
+        return self._header_cache[name]
+
+    def _reset_header_cache(self):
+        self._header_cache = PersistentMapping()
 
 
 # SearchableText
@@ -140,7 +188,7 @@ class View(BrowserView):
     @instance.memoize
     def attachments(self):
         context = aq_inner(self.context)
-        attachments = utils.get_attachments(context.msg)
+        attachments = list(self.context.attachment_infos)
         mtr = getToolByName(context, 'mimetypes_registry')
         for attachment in attachments:
             icon = 'file_icon.gif'

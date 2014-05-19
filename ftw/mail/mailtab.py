@@ -15,10 +15,9 @@ def get_mail_header(field=None, isdate=False):
             return ''
 
         obj = item.getObject()
-        view = obj.restrictedTraverse('@@view')
 
         if isdate:
-            raw_date = view.get_header(field)
+            raw_date = obj.get_header(field)
             raw_date = re.sub(r'\((.*)\)', '\g<1>', raw_date)
             try:
                 date = DateTime(raw_date)
@@ -33,10 +32,10 @@ def get_mail_header(field=None, isdate=False):
                 translate(_(u'attachment_icon_alt_text',
                            default=u'Attachment'),
                           context=obj.REQUEST),
-                len(view.attachments()))
+                len(obj.attachment_infos))
 
         else:
-            return view.get_header(field)
+            return obj.get_header(field)
 
     return _helper
 
