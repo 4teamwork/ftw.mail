@@ -7,4 +7,5 @@ class UpdatePersistentCaches(UpgradeStep):
         query = {'object_provides': ['ftw.mail.mail.IMail']}
         for mail in self.objects(query, 'Update mail caches'):
             # reset the message to trigger updating of all caches
-            mail.message = mail.message
+            mail.Title()  # Fucking caches.
+            mail.message = vars(mail).get('message')
