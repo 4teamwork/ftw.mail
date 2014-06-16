@@ -33,6 +33,7 @@ class TestInboundMail(TestCase):
         super(TestInboundMail, self).setUp()
 
         self.portal = self.layer['portal']
+
         setRoles(self.portal, TEST_USER_ID, ['Manager', ])
 
         wftool = getToolByName(self.portal, 'portal_workflow')
@@ -48,6 +49,9 @@ class TestInboundMail(TestCase):
         mtool = getToolByName(self.portal, 'portal_membership')
         user = mtool.getAuthenticatedMember()
         user.setMemberProperties(dict(email='from@example.org'))
+
+        ttool = getToolByName(self.portal, 'portal_types')
+        ttool.get('ftw.mail.mail').global_allow = True
 
         emailaddress = IEmailAddress(TestRequest())
         self.mail_to = emailaddress.get_email_for_object(self.folder)

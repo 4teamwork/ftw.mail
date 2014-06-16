@@ -5,7 +5,8 @@ Changelog
 2.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix global allowing ftw.mail.mail type.
+  [elioschmutz]
 
 
 2.2.1 (2014-05-30)
