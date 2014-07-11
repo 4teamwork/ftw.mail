@@ -1,10 +1,9 @@
-from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
+from Acquisition import aq_base
 from Acquisition import aq_inner
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
 from email.Utils import parseaddr
 from ftw.mail import exceptions
 from ftw.mail import utils
@@ -17,6 +16,8 @@ from plone.dexterity.utils import iterSchemata
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 from z3c.form.interfaces import IValue
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -169,25 +170,26 @@ def createMailInContainer(container, message):
 
     newName = container._setObject(name, content)
     obj = container._getOb(newName)
-    obj = set_defaults(obj)
+    obj = set_defaults(obj, container)
     obj.reindexObject()
     return obj
 
 
-def set_defaults(obj):
+def set_defaults(obj, container):
     """set the default value for all fields on the mail object
     (including additional behaviors)"""
 
-    for schemata in iterSchemata(obj):
-        for name, field in getFieldsInOrder(schemata):
-            if field.get(field.interface(obj)) == field.missing_value \
-                or field.get(field.interface(obj)) is None:
-
+    for schema in iterSchemata(obj):
+        for name, field in getFieldsInOrder(schema):
+            # Remove acquisition wrapper when getting field value so
+            # determining if a field is already set works as expected
+            value = field.get(field.interface(aq_base(obj)))
+            if value == field.missing_value or value is None:
                 # No value is set, so we try to set the default value
                 # otherwise we set the missing value
                 default = queryMultiAdapter((
-                        obj,
-                        obj.REQUEST,  # request
+                        container,
+                        container.REQUEST,  # request
                         None,  # form
                         field,
                         None,  # Widget
