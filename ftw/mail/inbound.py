@@ -1,10 +1,8 @@
-from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
 from Acquisition import aq_inner
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
 from email.Utils import parseaddr
 from ftw.mail import exceptions
 from ftw.mail import utils
@@ -17,6 +15,8 @@ from plone.dexterity.utils import iterSchemata
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 from z3c.form.interfaces import IValue
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -178,8 +178,8 @@ def set_defaults(obj):
     """set the default value for all fields on the mail object
     (including additional behaviors)"""
 
-    for schemata in iterSchemata(obj):
-        for name, field in getFieldsInOrder(schemata):
+    for schema in iterSchemata(obj):
+        for name, field in getFieldsInOrder(schema):
             if field.get(field.interface(obj)) == field.missing_value \
                 or field.get(field.interface(obj)) is None:
 
