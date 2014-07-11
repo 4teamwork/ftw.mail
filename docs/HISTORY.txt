@@ -5,6 +5,10 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
+- Inbound view: Adapt container as the context instead of content when
+  looking up default value adapter.
+  [lgraf]
+
 - Inbound view: Remove AQ wrapper when setting default values for newly
   created objects, in order to not get bogus results (due to acquisition)
   when checking whether a field is already present on the object.

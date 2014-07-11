@@ -170,12 +170,12 @@ def createMailInContainer(container, message):
 
     newName = container._setObject(name, content)
     obj = container._getOb(newName)
-    obj = set_defaults(obj)
+    obj = set_defaults(obj, container)
     obj.reindexObject()
     return obj
 
 
-def set_defaults(obj):
+def set_defaults(obj, container):
     """set the default value for all fields on the mail object
     (including additional behaviors)"""
 
@@ -188,8 +188,8 @@ def set_defaults(obj):
                 # No value is set, so we try to set the default value
                 # otherwise we set the missing value
                 default = queryMultiAdapter((
-                        obj,
-                        obj.REQUEST,  # request
+                        container,
+                        container.REQUEST,  # request
                         None,  # form
                         field,
                         None,  # Widget
