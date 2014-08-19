@@ -48,6 +48,12 @@ class TestSearchableText(TestCase):
         searchable_text = catalog_indexdata_of(mail)['SearchableText']
         self.assertIn('äöü', searchable_text)
 
+        # Now test with a latin1 encoded message part
+        mail = create(Builder('mail')
+                      .with_message(asset('latin1_multipart.txt')))
+        searchable_text = catalog_indexdata_of(mail)['SearchableText']
+        self.assertIn('b\xc3\xbcrost\xc3\xbchle', searchable_text)
+
     @skipUnless(getFSVersionTuple() >= (4, 3), "Plone >= 4.3")
     def test_umlauts_Plone_4_3_and_newer(self):
         # The text contains the umlauts "äöu", which is indexed
@@ -56,6 +62,12 @@ class TestSearchableText(TestCase):
                       .with_message(asset('attachment.txt')))
         searchable_text = catalog_indexdata_of(mail)['SearchableText']
         self.assertIn('aou', searchable_text)
+
+        # Now test with a latin1 encoded message part
+        mail = create(Builder('mail')
+                      .with_message(asset('latin1_multipart.txt')))
+        searchable_text = catalog_indexdata_of(mail)['SearchableText']
+        self.assertIn('burostuhle', searchable_text)
 
     def test_attached_email(self):
         mail = create(Builder('mail')

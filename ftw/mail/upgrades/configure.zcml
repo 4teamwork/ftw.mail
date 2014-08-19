@@ -52,4 +52,14 @@
         profile="ftw.mail:default"
         />
 
+    <!-- 2100 -> 2101 -->
+    <genericsetup:upgradeStep
+        title="Reindex mail searchable text with correctly decoded attachments"
+        description=""
+        source="2100"
+        destination="2101"
+        handler="ftw.mail.upgrades.to2101.ReindexSearchableText"
+        profile="ftw.mail:default"
+        />
+
 </configure>
