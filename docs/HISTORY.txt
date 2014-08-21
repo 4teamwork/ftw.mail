@@ -5,7 +5,9 @@ Changelog
 2.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- SearchableTextExtender: Don't just decode the Content-Transfer-Encoding,
+  but also decode the actual content itself with the declared charset.
+  [lgraf]
 
 
 2.2.1 (2014-05-30)

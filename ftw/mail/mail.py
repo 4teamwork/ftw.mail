@@ -142,8 +142,23 @@ class SearchableTextExtender(object):
                 result = filter(None, result)
                 return ' '.join(result)
 
+            # Decode the Content-Transfer-Encoding (QP or base64)
+            payload_data = msg.get_payload(decode=True)
+
+            # Decode the actual content
+            charset = msg.get_content_charset()
+            if charset is not None:
+                payload_data = payload_data.decode(charset)
+            else:
+                # No content charset declared - decode with utf-8
+                # and hope for the best, ignoring any decoding errors
+                payload_data = payload_data.decode('utf-8', 'ignore')
+
+            # Finally encode it to UTF-8 (transforms require bytestrings)
+            payload_data = payload_data.encode('utf-8')
+
             result = transforms.convertTo('text/plain',
-                                          msg.get_payload(decode=True),
+                                          payload_data,
                                           mimetype=msg.get_content_type(),
                                           filename=msg.get_filename())
 
