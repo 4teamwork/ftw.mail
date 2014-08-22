@@ -5,6 +5,10 @@ Changelog
 2.2.2 (unreleased)
 ------------------
 
+- SearchableTextExtender: For mails with incorrectly declared charset,
+  try decoding them as latin1 as a last resort, ignoring all errors.
+  [lgraf]
+
 - SearchableTextExtender: Don't just decode the Content-Transfer-Encoding,
   but also decode the actual content itself with the declared charset.
   [lgraf]
