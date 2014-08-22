@@ -148,7 +148,12 @@ class SearchableTextExtender(object):
             # Decode the actual content
             charset = msg.get_content_charset()
             if charset is not None:
-                payload_data = payload_data.decode(charset)
+                try:
+                    payload_data = payload_data.decode(charset)
+                except UnicodeDecodeError:
+                    # Wrong charset declared. Try decoding with latin1
+                    # as a last resort, and ignore any errors
+                    payload_data = payload_data.decode('latin1', 'ignore')
             else:
                 # No content charset declared - decode with utf-8
                 # and hope for the best, ignoring any decoding errors
