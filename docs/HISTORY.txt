@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.2.2 (unreleased)
+2.2.2 (2014-08-28)
 ------------------
 
 - SearchableTextExtender: For mails with incorrectly declared charset,
