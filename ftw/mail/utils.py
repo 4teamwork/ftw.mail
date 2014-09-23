@@ -198,24 +198,28 @@ def get_text_payloads(msg):
 
 def adjust_image_tags(html, msg, url_prefix):
     """Adjust image tags of the given HTML string which reference an image by
-    Content-Id. The src attribute is set to the attachment of the given message."""
+    Content-Id. The src attribute is set to the attachment of the given
+    message.
 
+    """
     matches = IMG_SRC_RE.findall(html)
     for m in matches:
         pos = get_position_for_cid(msg, m)
-        html = html.replace('cid:' + m, '%s/get_attachment?position=%s' % (url_prefix, pos))
+        if pos:
+            download_url = '%s/get_attachment?position=%s' % (url_prefix, pos)
+            html = html.replace('cid:' + m, download_url)
     return html
 
 
 def get_position_for_cid(msg, cid):
-    """Return the position of the message part with the given Content-Id"""
+    """Return the position of the message part with the given Content-Id."""
     position = -1
     cid = '<' + cid + '>'
     for part in msg.walk():
         position += 1
         if part.get('Content-Id', None) == cid:
             return position
-        return position
+    return None
 
 
 def get_filename(msg):

@@ -4,10 +4,10 @@ from email.MIMEText import MIMEText
 from ftw.mail import utils
 import email
 import os
-import unittest
+import unittest2
 
 
-class TestUtils(unittest.TestCase):
+class TestUtils(unittest2.TestCase):
     """Unit test for the Program type
     """
     def setUp(self):
@@ -26,6 +26,9 @@ class TestUtils(unittest.TestCase):
         self.msg_fwd_attachment = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'nested_attachments.txt'), 'r').read()
         self.msg_nested_attachments = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'nested_referenced_image_attachment.txt'),
+                       'r').read()
+        self.nested_referenced_image_attachment = email.message_from_string(msg_txt)
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -214,6 +217,21 @@ Content-Transfer-Encoding: base64
         msg = utils.unwrap_attached_msg(self.msg_fwd_attachment)
         self.assertEquals(msg.get('Subject'), 'Lorem Ipsum')
 
+    def test_get_position_for_cid(self):
+        self.assertEqual(4, utils.get_position_for_cid(
+            self.nested_referenced_image_attachment,
+            'BB5DB00F-5C9A-4866-894D-8468D4B320F8'))
+
+    def test_adjust_image_tags_generates_correct_links(self):
+        html = ''.join(
+            utils.get_text_payloads(self.nested_referenced_image_attachment))
+
+        self.assertNotIn('get_attachment?position=4', html)
+        html = utils.adjust_image_tags(html,
+                                       self.nested_referenced_image_attachment,
+                                       'foo')
+        self.assertIn('get_attachment?position=4', html)
+
 
 def test_suite():
-    return unittest.defaultTestLoader.loadTestsFromName(__name__)
+    return unittest2.defaultTestLoader.loadTestsFromName(__name__)
