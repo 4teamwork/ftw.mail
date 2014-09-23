@@ -1,10 +1,10 @@
 # various utility methods for handling e-mail messages
+from BeautifulSoup import BeautifulSoup
+from DocumentTemplate.DT_Util import html_quote
 from email.header import decode_header
 from email.Utils import mktime_tz, parsedate_tz
-from DocumentTemplate.DT_Util import html_quote
-from BeautifulSoup import BeautifulSoup
-import re
 from ftw.mail import config
+import re
 
 
 # a regular expression that matches src attributes of img tags containing a cid
@@ -57,6 +57,7 @@ def get_header(msg, name):
         value = safe_decode_header(msg.get(name))
     return value
 
+
 def get_date_header(msg, name):
     """ Returns an UTC timestamp from a header field containing a date.
     Compensates for the timezone difference if the header contains
@@ -69,6 +70,7 @@ def get_date_header(msg, name):
     except TypeError:
         pass
     return ts
+
 
 def get_payload(msg):
     """Get the decoded message payload as utf-8 string"""
@@ -84,6 +86,7 @@ def get_payload(msg):
     payload = payload.encode('utf-8')
     return payload
 
+
 def get_body(msg, url_prefix=''):
     """Returns the mail body as HTML string. All text parts of a multipart
     message are returned."""
@@ -93,6 +96,7 @@ def get_body(msg, url_prefix=''):
         html += part
     html = adjust_image_tags(html, msg, url_prefix)
     return html
+
 
 def get_attachments(msg):
     """ Returns a list describing the attachements. Only attachments with
@@ -115,6 +119,7 @@ def get_attachments(msg):
                                 'size': size,
                                 'position': position})
     return attachments
+
 
 def remove_attachments(msg, positions):
     """Remove all attachments which have position listed in `positions`
@@ -160,6 +165,7 @@ def remove_attachments(msg, positions):
     # do it
     return _recursive_remove_parts(msg)
 
+
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all
     text parts in HTML format"""
@@ -189,25 +195,32 @@ def get_text_payloads(msg):
                 parts.append(text2html(payload))
     return parts
 
+
 def adjust_image_tags(html, msg, url_prefix):
     """Adjust image tags of the given HTML string which reference an image by
-    Content-Id. The src attribute is set to the attachment of the given message."""
+    Content-Id. The src attribute is set to the attachment of the given
+    message.
 
+    """
     matches = IMG_SRC_RE.findall(html)
     for m in matches:
         pos = get_position_for_cid(msg, m)
-        html = html.replace('cid:' + m, '%s/get_attachment?position=%s' % (url_prefix, pos))
+        if pos:
+            download_url = '%s/get_attachment?position=%s' % (url_prefix, pos)
+            html = html.replace('cid:' + m, download_url)
     return html
 
+
 def get_position_for_cid(msg, cid):
-    """Return the position of the message part with the given Content-Id"""
+    """Return the position of the message part with the given Content-Id."""
     position = -1
     cid = '<' + cid + '>'
     for part in msg.walk():
         position += 1
         if part.get('Content-Id', None) == cid:
             return position
-        return position
+    return None
+
 
 def get_filename(msg):
     """Get the filename of a message (part)
@@ -230,6 +243,7 @@ def get_filename(msg):
 
     return filename
 
+
 def get_best_alternative(alternatives):
     """Get the index of the most preferred alternative in the given list of
     alternatives.
@@ -239,10 +253,12 @@ def get_best_alternative(alternatives):
             return alternatives.index(content_type)
     return 0
 
+
 def text2html(text):
     """Replaces all line breaks with a br tag, and wraps it in a p tag.
     """
     return '<p>%s</p>' % html_quote(text.strip()).replace('\n', '<br />')
+
 
 def unwrap_html_body(html, css_class=None):
     """ Return the content of the body tag for inline display in another
@@ -259,6 +275,7 @@ def unwrap_html_body(html, css_class=None):
         body_soup.div['style'] = body_style
     return body_soup.renderContents()
 
+
 def unwrap_attached_msg(msg):
     """ If a msg contains an attachmed message return the attached one.
     """
@@ -268,6 +285,7 @@ def unwrap_attached_msg(msg):
             if content_type == 'message/rfc822':
                 return part.get_payload(0)
     return msg
+
 
 def safe_utf8(text):
     """Returns an utf-8 encoded version of the given string with unknown

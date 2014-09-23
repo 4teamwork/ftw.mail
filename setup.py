@@ -27,7 +27,7 @@ setup(name='ftw.mail',
         ],
 
       keywords='',
-      author='4teamwork GmbH',
+      author='4teamwork AG',
       author_email='mailto:info@4teamwork.ch',
       url='https://github.com/4teamwork/ftw.mail',
       license='GPL2',

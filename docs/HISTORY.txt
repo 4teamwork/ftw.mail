@@ -5,7 +5,8 @@ Changelog
 2.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix an issue while generating links to image-attachments in mails.
+  [deiferni]
 
 
 2.2.2 (2014-08-28)
