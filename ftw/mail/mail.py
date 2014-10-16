@@ -1,18 +1,19 @@
 from Acquisition import aq_inner
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from collective import dexteritytextindexer
+from DateTime import DateTime
 from email.MIMEText import MIMEText
 from ftw.mail import _
 from ftw.mail import utils
 from persistent.mapping import PersistentMapping
+from plone import api
 from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
 from plone.rfc822.interfaces import IPrimaryField
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import alsoProvides
 from zope.interface import implements
 import email
@@ -199,6 +200,10 @@ class View(BrowserView):
         context = aq_inner(self.context)
         html_body = utils.get_body(self.msg(), context.absolute_url())
         return utils.unwrap_html_body(html_body, 'mailBody')
+
+    def html_safe_body(self):
+        transformer = api.portal.get_tool('portal_transforms')
+        return transformer.convertTo('text/x-html-safe', self.body()).getData()
 
     @instance.memoize
     def msg(self):

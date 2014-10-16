@@ -88,3 +88,21 @@ class TestMailView(TestCase):
             ['1703693_0412c29a4f.jpg file 134.4 kb',
              '3512536451_e1310bf568.jpg file 218.3 kb'],
             map(str.lower, browser.css('.mailAttachment').text))
+
+    @browsing
+    def test_mail_body_is_html_safe(self, browser):
+        mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
+        browser.login().visit(mail)
+
+        self.assertNotIn("alert('hello')", browser.contents,
+                         "Javascript gets not removed by the mail view.")
+
+    @browsing
+    def test_style_attributes_are_not_removed_by_transformation(self, browser):
+        mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
+        browser.login().visit(mail)
+
+        self.assertIn('<div style="color:#014cff;">Styled text&nbsp;</div>',
+                      browser.contents,
+                      'style attributes of the mail text gets removed by '
+                      'the safe_html transform.')
