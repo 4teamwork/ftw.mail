@@ -12,8 +12,11 @@ from plone.memoize import instance
 from plone.namedfile import field
 from plone.rfc822.interfaces import IPrimaryField
 from Products.CMFCore.utils import getToolByName
+from Products.CMFDefault.utils import bodyfinder
+from Products.CMFDefault.utils import IllegalHTML
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.PortalTransforms.transforms.safe_html import scrubHTML
 from zope.interface import alsoProvides
 from zope.interface import implements
 import email
@@ -202,8 +205,40 @@ class View(BrowserView):
         return utils.unwrap_html_body(html_body, 'mailBody')
 
     def html_safe_body(self):
-        transformer = api.portal.get_tool('portal_transforms')
-        return transformer.convertTo('text/x-html-safe', self.body()).getData()
+        """Converts the mail body to a html safe variant by using the
+        `safe_html` transform.
+
+        To avoid broking the mail specific styling we mark the <style>
+        tags
+        """
+
+        transform = api.portal.get_tool('portal_transforms').safe_html
+
+        valid_tags = transform.get_parameter_value('valid_tags')
+        nasty_tags = transform.get_parameter_value('nasty_tags')
+        remove_javascript = transform.get_parameter_value('remove_javascript')
+
+        # Allow the <style> tag
+        nasty_tags.pop('style')
+        valid_tags['style'] = 1
+
+        orig = self.body()
+        body = None
+        for repeat in range(2):
+            try:
+                safe = scrubHTML(bodyfinder(orig),
+                                 valid=valid_tags,
+                                 nasty=nasty_tags,
+                                 remove_javascript=remove_javascript,
+                                 raise_error=False)
+            except IllegalHTML, inst:
+                # not sure what we wanna do
+                break
+            else:
+                body = safe
+                orig = body
+
+        return orig
 
     @instance.memoize
     def msg(self):
