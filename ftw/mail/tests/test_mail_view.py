@@ -98,21 +98,14 @@ class TestMailView(TestCase):
                          "Javascript gets not removed by the mail view.")
 
     @browsing
-    def test_style_attributes_are_not_removed_by_transformation(self, browser):
+    def test_style_blocks_get_parsed(self, browser):
         mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
         browser.login().visit(mail)
 
-        self.assertIn('<div style="color:#014cff;">Styled text&nbsp;</div>',
-                      browser.contents,
-                      'style attributes of the mail text gets removed by '
-                      'the safe_html transform.')
+        self.assertEquals(
+            'color:red; size:18px',
+            browser.css('.mailBody h1').first.get('style'))
 
-    @browsing
-    def test_style_is_not_removed_by_safe_html_transformation(self, browser):
-        mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
-        browser.login().visit(mail)
-
-        self.assertIn(
-            '<style>h1 {color:red; size:18px;}</style>',
-            browser.contents,
-            '<style> tags gets wrongly removed by the safe_html transform.')
+        self.assertNotIn(
+            '<style>', browser.contents,
+            '<style> tags gets not wrapped correctly with the wrapper class.')

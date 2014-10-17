@@ -50,6 +50,7 @@ setup(name='ftw.mail',
         'collective.dexteritytextindexer',
         'plone.directives.form',
         'ftw.upgrade',
+        'premailer',
         ],
 
       tests_require=tests_require,

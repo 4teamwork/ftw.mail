@@ -11,12 +11,10 @@ from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
 from plone.rfc822.interfaces import IPrimaryField
+from premailer import transform as premailer_transform
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDefault.utils import bodyfinder
-from Products.CMFDefault.utils import IllegalHTML
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.PortalTransforms.transforms.safe_html import scrubHTML
 from zope.interface import alsoProvides
 from zope.interface import implements
 import email
@@ -199,46 +197,39 @@ class View(BrowserView):
     def get_date_header(self, name):
         return DateTime(utils.get_date_header(self.msg(), name))
 
-    def body(self):
+    def plain_body(self):
         context = aq_inner(self.context)
-        html_body = utils.get_body(self.msg(), context.absolute_url())
-        return utils.unwrap_html_body(html_body, 'mailBody')
+        return utils.get_body(self.msg(), context.absolute_url())
+
+    def body(self):
+        return utils.unwrap_html_body(self.plain_body(), 'mailBody')
+
+    def rewrite_css_styles(self, body):
+        """Rewrites CSS rules in <style /> tags to `style="..."` attributes.
+        This is because <style /> tags will be removed by the `text/x-html-safe`
+        transform, and leaving them in would mean that styles in a mail message could
+        overstyle page elements outside the mail content area.
+        """
+        return premailer_transform(body.decode('utf-8'))
+
+    def transfrom_safe_html(self, body):
+        transformer = api.portal.get_tool('portal_transforms')
+        return transformer.convertTo('text/x-html-safe', body).getData()
 
     def html_safe_body(self):
         """Converts the mail body to a html safe variant by using the
-        `safe_html` transform.
-
-        To avoid broking the mail specific styling we mark the <style>
-        tags
+        following transforms:
+         - the premailer css parser.
+         - The `safe_html` PortalTranforms
         """
+        body = self.plain_body()
+        if not body:
+            return body
 
-        transform = api.portal.get_tool('portal_transforms').safe_html
+        body = self.rewrite_css_styles(body)
+        body = self.transfrom_safe_html(body)
 
-        valid_tags = transform.get_parameter_value('valid_tags')
-        nasty_tags = transform.get_parameter_value('nasty_tags')
-        remove_javascript = transform.get_parameter_value('remove_javascript')
-
-        # Allow the <style> tag
-        nasty_tags.pop('style')
-        valid_tags['style'] = 1
-
-        orig = self.body()
-        body = None
-        for repeat in range(2):
-            try:
-                safe = scrubHTML(bodyfinder(orig),
-                                 valid=valid_tags,
-                                 nasty=nasty_tags,
-                                 remove_javascript=remove_javascript,
-                                 raise_error=False)
-            except IllegalHTML, inst:
-                # not sure what we wanna do
-                break
-            else:
-                body = safe
-                orig = body
-
-        return orig
+        return utils.unwrap_html_body(body, 'mailBody')
 
     @instance.memoize
     def msg(self):
