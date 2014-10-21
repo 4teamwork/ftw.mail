@@ -38,6 +38,7 @@ setup(name='ftw.mail',
       zip_safe=False,
 
       install_requires=[
+        'plone.api',
         'plone.registry',
         'plone.dexterity',
         'setuptools',
@@ -49,6 +50,7 @@ setup(name='ftw.mail',
         'collective.dexteritytextindexer',
         'plone.directives.form',
         'ftw.upgrade',
+        'premailer',
         ],
 
       tests_require=tests_require,

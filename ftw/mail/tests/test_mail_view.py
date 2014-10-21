@@ -88,3 +88,24 @@ class TestMailView(TestCase):
             ['1703693_0412c29a4f.jpg file 134.4 kb',
              '3512536451_e1310bf568.jpg file 218.3 kb'],
             map(str.lower, browser.css('.mailAttachment').text))
+
+    @browsing
+    def test_mail_body_is_html_safe(self, browser):
+        mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
+        browser.login().visit(mail)
+
+        self.assertNotIn("alert('hello')", browser.contents,
+                         "Javascript gets not removed by the mail view.")
+
+    @browsing
+    def test_style_blocks_get_parsed(self, browser):
+        mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
+        browser.login().visit(mail)
+
+        self.assertEquals(
+            'color:red; size:18px',
+            browser.css('.mailBody h1').first.get('style'))
+
+        self.assertNotIn(
+            '<style>', browser.contents,
+            '<style> tags gets not wrapped correctly with the wrapper class.')

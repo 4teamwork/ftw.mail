@@ -1,18 +1,20 @@
 from Acquisition import aq_inner
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from collective import dexteritytextindexer
+from DateTime import DateTime
 from email.MIMEText import MIMEText
 from ftw.mail import _
 from ftw.mail import utils
 from persistent.mapping import PersistentMapping
+from plone import api
 from plone.dexterity.content import Item
 from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
 from plone.rfc822.interfaces import IPrimaryField
+from premailer import transform as premailer_transform
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import alsoProvides
 from zope.interface import implements
 import email
@@ -195,10 +197,39 @@ class View(BrowserView):
     def get_date_header(self, name):
         return DateTime(utils.get_date_header(self.msg(), name))
 
-    def body(self):
+    def plain_body(self):
         context = aq_inner(self.context)
-        html_body = utils.get_body(self.msg(), context.absolute_url())
-        return utils.unwrap_html_body(html_body, 'mailBody')
+        return utils.get_body(self.msg(), context.absolute_url())
+
+    def body(self):
+        return utils.unwrap_html_body(self.plain_body(), 'mailBody')
+
+    def rewrite_css_styles(self, body):
+        """Rewrites CSS rules in <style /> tags to `style="..."` attributes.
+        This is because <style /> tags will be removed by the `text/x-html-safe`
+        transform, and leaving them in would mean that styles in a mail message could
+        overstyle page elements outside the mail content area.
+        """
+        return premailer_transform(body.decode('utf-8'))
+
+    def transfrom_safe_html(self, body):
+        transformer = api.portal.get_tool('portal_transforms')
+        return transformer.convertTo('text/x-html-safe', body).getData()
+
+    def html_safe_body(self):
+        """Converts the mail body to a html safe variant by using the
+        following transforms:
+         - the premailer css parser.
+         - The `safe_html` PortalTranforms
+        """
+        body = self.plain_body()
+        if not body:
+            return body
+
+        body = self.rewrite_css_styles(body)
+        body = self.transfrom_safe_html(body)
+
+        return utils.unwrap_html_body(body, 'mailBody')
 
     @instance.memoize
     def msg(self):

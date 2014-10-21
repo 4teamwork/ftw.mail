@@ -5,6 +5,12 @@ Changelog
 2.2.3 (unreleased)
 ------------------
 
+- Parse <style> tags inside the mail using the `premailer` transform.
+  [phgross]
+
+- Made mail view XSS-save using the safe-html transform for the mail-body display.
+  [phgross]
+
 - Fix an issue while generating links to image-attachments in mails.
   [deiferni]
 
