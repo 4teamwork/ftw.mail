@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.2.3 (unreleased)
+2.2.3 (2014-10-24)
 ------------------
 
 - Parse <style> tags inside the mail using the `premailer` transform.
