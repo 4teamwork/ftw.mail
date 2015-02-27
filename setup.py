@@ -49,7 +49,7 @@ setup(name='ftw.mail',
         'collective.autopermission',
         'collective.dexteritytextindexer',
         'plone.directives.form',
-        'ftw.upgrade',
+        'ftw.upgrade >= 1.11.0',
         'premailer',
         ],
 

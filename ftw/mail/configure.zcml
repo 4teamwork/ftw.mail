@@ -7,7 +7,6 @@
     i18n_domain="ftw.mail">
 
     <include file="permissions.zcml" />
-    <include package=".upgrades" />
 
 	<i18n:registerTranslations directory="locales" />
 
@@ -24,6 +23,7 @@
         directory="profiles/default"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
+    <include package=".upgrades" />
 
 
     <!-- Attachment view -->
