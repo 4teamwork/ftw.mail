@@ -5,7 +5,8 @@ Changelog
 2.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Enable referencablebehavior for mails.
+  [jone]
 
 
 2.2.3 (2014-10-24)
