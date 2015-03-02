@@ -2,11 +2,12 @@ from ftw.builder import Builder
 from ftw.builder import create
 from ftw.mail.mail import IMail
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
-from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile import NamedBlobFile
 from plone.rfc822.interfaces import IPrimaryFieldInfo
+from plone.uuid.interfaces import IUUID
 from unittest2 import TestCase
 from zExceptions import NotFound
 from zope.component import createObject
@@ -140,6 +141,11 @@ class TestMailIntegration(TestCase):
             filename=u'message.eml')
         self.assertEquals('Die B\xc3\xbcrgschaft',
                           mail.get_header('Subject'))
+
+    def test_referenceing_mails_from_archetypes_objects(self):
+        mail = create(Builder('mail'))
+        page = create(Builder('page').having(relatedItems=[IUUID(mail)]))
+        self.assertTrue(page)
 
     # def test_special(self):
     #     here = os.path.dirname(__file__)
