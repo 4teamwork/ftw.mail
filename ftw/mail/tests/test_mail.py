@@ -93,7 +93,7 @@ class TestMailIntegration(TestCase):
         view()
 
         self.assertEquals('', view.get_header('Subject'))
-        self.assertEquals('<div class="mailBody"></div>', view.body())
+        self.assertEquals('', view.html_safe_body())
 
     def test_attachments(self):
         mail = create(Builder('mail')

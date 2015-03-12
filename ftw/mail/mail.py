@@ -15,6 +15,7 @@ from premailer import transform as premailer_transform
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.deprecation import deprecate
 from zope.interface import alsoProvides
 from zope.interface import implements
 import email
@@ -197,12 +198,9 @@ class View(BrowserView):
     def get_date_header(self, name):
         return DateTime(utils.get_date_header(self.msg(), name))
 
-    def plain_body(self):
-        context = aq_inner(self.context)
-        return utils.get_body(self.msg(), context.absolute_url())
-
+    @deprecate('use .html_safe_body() instead of .body()')
     def body(self):
-        return utils.unwrap_html_body(self.plain_body(), 'mailBody')
+        return self.html_safe_body()
 
     def rewrite_css_styles(self, body):
         """Rewrites CSS rules in <style /> tags to `style="..."` attributes.
@@ -222,14 +220,19 @@ class View(BrowserView):
          - the premailer css parser.
          - The `safe_html` PortalTranforms
         """
-        body = self.plain_body()
-        if not body:
-            return body
+        context = aq_inner(self.context)
+        parts = utils.get_body(self.msg(), context.absolute_url())
+        if not parts:
+            return ''
 
-        body = self.rewrite_css_styles(body)
-        body = self.transfrom_safe_html(body)
+        result = []
+        for body in parts:
+            body = self.rewrite_css_styles(body)
+            body = utils.unwrap_html_body(body, 'mailBody-part')
+            body = self.transfrom_safe_html(body)
+            result.append(body)
 
-        return utils.unwrap_html_body(body, 'mailBody')
+        return '\n'.join(result)
 
     @instance.memoize
     def msg(self):
