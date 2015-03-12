@@ -29,6 +29,8 @@ class TestUtils(unittest2.TestCase):
         msg_txt = open(os.path.join(here, 'mails', 'nested_referenced_image_attachment.txt'),
                        'r').read()
         self.nested_referenced_image_attachment = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'multiple_html_parts.txt'), 'r').read()
+        self.msg_multiple_html_parts = email.message_from_string(msg_txt)
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -73,8 +75,16 @@ class TestUtils(unittest2.TestCase):
         self.assertEquals(1, len(utils.get_text_payloads(self.msg_ascii)))
 
     def test_get_body(self):
-        self.assertEquals('', utils.get_body(self.msg_empty))
-        self.assertEquals('<p>Lorem ipsum', utils.get_body(self.msg_ascii)[:14])
+        self.assertEquals(0, len(utils.get_body(self.msg_empty)))
+        self.assertEquals('<p>Lorem ipsum', utils.get_body(self.msg_ascii)[0][:14])
+
+    def test_get_body_returns_each_html_document_separately(self):
+        parts = utils.get_body(self.msg_multiple_html_parts)
+        self.assertEquals(2, len(parts), 'Expected two html parts.')
+        first, second = parts
+
+        self.assertIn('Hello', first)
+        self.assertIn('World', second)
 
     def test_get_filename(self):
         msg_txt = \

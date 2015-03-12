@@ -90,12 +90,10 @@ def get_payload(msg):
 def get_body(msg, url_prefix=''):
     """Returns the mail body as HTML string. All text parts of a multipart
     message are returned."""
-    html = ''
-    parts = get_text_payloads(msg)
-    for part in parts:
-        html += part
-    html = adjust_image_tags(html, msg, url_prefix)
-    return html
+    result = []
+    for part in get_text_payloads(msg):
+        result.append(adjust_image_tags(part, msg, url_prefix))
+    return result
 
 
 def get_attachments(msg):

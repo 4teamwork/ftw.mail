@@ -98,6 +98,15 @@ class TestMailView(TestCase):
                          "Javascript gets not removed by the mail view.")
 
     @browsing
+    def test_mail_body_contains_all_html_parts(self, browser):
+        """Regression:
+        """
+        mail = create(Builder('mail').with_message(mail_asset('multiple_html_parts')))
+        browser.login().visit(mail)
+        self.assertEquals('Hello World',
+                          browser.css('.mailBody').first.text)
+
+    @browsing
     def test_style_blocks_get_parsed(self, browser):
         mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
         browser.login().visit(mail)

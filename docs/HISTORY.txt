@@ -5,7 +5,8 @@ Changelog
 2.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Refactor mail view to include all HTML parts.
+  [jone]
 
 
 2.3.0 (2015-03-02)
