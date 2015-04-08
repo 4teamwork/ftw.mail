@@ -3,7 +3,9 @@ from ftw.builder import create
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
 from ftw.mail.tests.test_mail_view import mail_asset
 from ftw.testbrowser import browsing
+from StringIO import StringIO
 from unittest2 import TestCase
+from zipfile import ZipFile
 
 
 class TestMailView(TestCase):
@@ -14,6 +16,12 @@ class TestMailView(TestCase):
 
     @browsing
     def test_zipexport_works_on_mail(self, browser):
-
         browser.login().visit(self.mail, view='zip_export')
-        self.assertIn('message.eml', browser.contents)
+        self.assertEquals('application/zip', browser.headers['Content-Type'])
+        self.assertEquals('inline; filename="Die B\xc3\xbcrgschaft.zip"',
+                          browser.headers['Content-Disposition'])
+
+        zipfile = ZipFile(StringIO(browser.contents))
+        self.assertEquals(['message.eml'], zipfile.namelist())
+        self.assertMultiLineEqual(mail_asset('latin1').read(),
+                                  zipfile.read('message.eml'))
