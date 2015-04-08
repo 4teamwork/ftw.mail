@@ -36,6 +36,7 @@ class FtwMailLayer(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'ftw.mail:default')
         applyProfile(portal, 'ftw.workspace:default')
+        applyProfile(portal, 'ftw.zipexport:default')
 
 
 FTW_MAIL_LAYER = FtwMailLayer()
