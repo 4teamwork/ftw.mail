@@ -10,7 +10,7 @@ import re
 # a regular expression that matches src attributes of img tags containing a cid
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
 BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
-APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*)"( <.*>)$')
+APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
 
 
 def safe_decode_header(value):
