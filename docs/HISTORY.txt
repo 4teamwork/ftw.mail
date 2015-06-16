@@ -5,6 +5,10 @@ Changelog
 2.3.2 (unreleased)
 ------------------
 
+- Make RegEx for Apple Partial Encoding regex more specific so we don't
+  accidentally remove quotes around header parts that need them.
+  [lgraf]
+
 - Added test for zip export.
   [lknoepfel]
 
