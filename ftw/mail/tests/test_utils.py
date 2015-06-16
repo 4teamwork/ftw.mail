@@ -31,6 +31,8 @@ class TestUtils(unittest2.TestCase):
         self.nested_referenced_image_attachment = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'multiple_html_parts.txt'), 'r').read()
         self.msg_multiple_html_parts = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'from_header.txt'), 'r').read()
+        self.msg_from_header = email.message_from_string(msg_txt)
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -44,6 +46,15 @@ class TestUtils(unittest2.TestCase):
                           utils.get_header(self.msg_utf8, 'Subject'))
         self.assertEquals('Friedrich H\xc3\xb6lderlin <to@example.org>',
                           utils.get_header(self.msg_utf8, 'To'))
+
+    def test_get_from_header(self):
+        self.assertEquals(
+            '"Mueller-Valser, Gabriela" <gabriela.mueller@example.org>',
+            self.msg_from_header['From'])
+
+        self.assertEquals(
+            '"Mueller-Valser, Gabriela" <gabriela.mueller@example.org>',
+            utils.get_header(self.msg_from_header, 'From'))
 
     def test_get_date_header(self):
         # a date header
