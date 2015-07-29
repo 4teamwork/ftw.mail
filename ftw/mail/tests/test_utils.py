@@ -33,6 +33,8 @@ class TestUtils(unittest2.TestCase):
         self.msg_multiple_html_parts = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'from_header_with_quotes.txt'), 'r').read()
         self.from_header_with_quotes = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'encoded_word_without_lwsp.txt'), 'r').read()
+        self.encoded_word_without_lwsp = email.message_from_string(msg_txt)
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -55,6 +57,16 @@ class TestUtils(unittest2.TestCase):
         self.assertEquals(
             '"Mueller-Valser, Gabriela" <gabriela.mueller@example.org>',
             utils.get_header(self.from_header_with_quotes, 'From'))
+
+    def test_get_header_fixes_encoded_words_without_lwsp(self):
+        self.assertEquals(
+            'B\xc3\xa4rengraben <to@example.org>',
+            utils.get_header(self.encoded_word_without_lwsp, 'To'))
+
+        # Should not insert additional whitespace between encoded words
+        self.assertEquals(
+            'B\xc3\xa4rengrabenB\xc3\xa4rengraben <from@example.org>',
+            utils.get_header(self.encoded_word_without_lwsp, 'From'))
 
     def test_get_date_header(self):
         # a date header

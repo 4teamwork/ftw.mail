@@ -11,6 +11,7 @@ import re
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
 BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
+ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(=\?.*?\?=)(\r\n)([ \t])')
 
 
 def safe_decode_header(value):
@@ -36,6 +37,16 @@ def safe_decode_header(value):
     apple_partial_encoding = APPLE_PARTIAL_ENCODING_RE.match(value)
     if apple_partial_encoding:
         value = ''.join(apple_partial_encoding.groups())
+
+    # Fix up RFC 2047 encoded words separated by 'CRLF LWSP' (which is fine
+    # according to the RFC) by replacing the CRLF with a SPACE so
+    # decode_header can parse them correctly.
+    # This works around a bug in decode_header that has been fixed in 3.3.
+    # See http://bugs.python.org/issue4491 and its duplicate.
+    # Example:
+    # From: =?utf-8?Q?B=C3=A4rengraben?=\r\n <from@example.org>
+    if ENCODED_WORD_WITHOUT_LWSP.match(value):
+        value = re.sub(ENCODED_WORD_WITHOUT_LWSP, '\\1 \\3', value)
 
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):
