@@ -5,7 +5,12 @@ Changelog
 2.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- get_header(): Fix up RFC 2047 encoded words separated by 'CRLF LWSP'
+  (which is fine according to the RFC) by replacing the CRLF with a
+  SPACE so decode_header can parse them correctly.
+  This works around a bug in decode_header that has been fixed in 3.3.
+  See http://bugs.python.org/issue4491 and its duplicate.
+  [lgraf]
 
 
 2.3.2 (2015-06-30)
