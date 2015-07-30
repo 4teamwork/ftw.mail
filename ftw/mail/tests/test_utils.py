@@ -68,6 +68,12 @@ class TestUtils(unittest2.TestCase):
             'B\xc3\xa4rengrabenB\xc3\xa4rengraben <from@example.org>',
             utils.get_header(self.encoded_word_without_lwsp, 'From'))
 
+    def test_safe_decode_header_fixes_encoded_words_without_lwsp_in_middle(self):
+        header = 'Foo =?utf-8?Q?B=C3=A4rengraben?=\r\n <from@example.org>'
+        self.assertEquals(
+            'Foo B\xc3\xa4rengraben <from@example.org>',
+            utils.safe_decode_header(header))
+
     def test_get_date_header(self):
         # a date header
         msg_txt = 'Date: Thu, 01 Jan 1970 01:00:00 +0100'

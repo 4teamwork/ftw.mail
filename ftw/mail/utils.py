@@ -45,8 +45,7 @@ def safe_decode_header(value):
     # See http://bugs.python.org/issue4491 and its duplicate.
     # Example:
     # From: =?utf-8?Q?B=C3=A4rengraben?=\r\n <from@example.org>
-    if ENCODED_WORD_WITHOUT_LWSP.match(value):
-        value = re.sub(ENCODED_WORD_WITHOUT_LWSP, '\\1 \\3', value)
+    value = re.sub(ENCODED_WORD_WITHOUT_LWSP, '\\1 \\3', value)
 
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):
