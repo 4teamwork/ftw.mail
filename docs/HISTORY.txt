@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.3.3 (unreleased)
+2.3.3 (2015-08-03)
 ------------------
 
 - get_header(): Fix up RFC 2047 encoded words separated by 'CRLF LWSP'
