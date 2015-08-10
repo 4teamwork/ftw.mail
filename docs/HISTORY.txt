@@ -5,7 +5,10 @@ Changelog
 2.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make sure message.contentType is stored as `str`, not `unicode`. Otherwise
+  this will result in "Wrong contained type" when trying to save the object
+  again. Includes Upgrade-Step to fix existing objects.
+  [lgraf]
 
 
 2.3.3 (2015-08-03)
