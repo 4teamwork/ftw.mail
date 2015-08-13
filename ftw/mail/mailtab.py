@@ -46,8 +46,8 @@ class MailsTab(listing.CatalogListingView):
 
     types = ('ftw.mail.mail',)
 
-    sort_on = 'modified'
-
+    sort_on = 'Date'
+    sort_reverse = True
     show_selects = False
     show_menu = False
 
