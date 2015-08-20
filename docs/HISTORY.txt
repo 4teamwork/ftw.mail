@@ -5,7 +5,9 @@ Changelog
 2.3.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make upgrade step to fix `message.contentType` more defensive to avoid
+  trouble during upgrades caused by caching weirdness.
+  [lgraf]
 
 
 2.3.4 (2015-08-19)
