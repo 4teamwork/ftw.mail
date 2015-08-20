@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.3.5 (unreleased)
+2.3.5 (2015-08-20)
 ------------------
 
 - Make upgrade step to fix `message.contentType` more defensive to avoid
