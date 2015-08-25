@@ -19,6 +19,9 @@ Changelog
 2.3.4 (2015-08-19)
 ------------------
 
+- Sort Mailtab so the newest Mail is the first Item.
+  [tschanzt]
+
 - Make sure message.contentType is stored as `str`, not `unicode`. Otherwise
   this will result in "Wrong contained type" when trying to save the object
   again. Includes Upgrade-Step to fix existing objects.
