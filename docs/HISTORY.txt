@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.3.6 (unreleased)
+2.3.6 (2015-09-02)
 ------------------
 
 - Sort Mailtab so the newest Mail is the first Item.
