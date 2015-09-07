@@ -13,6 +13,14 @@ BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
 ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(=\?.*?\?=)(\r\n)([ \t])')
 
+# Used to fix broken meta tags that confuse TAL
+# Largely copied from zope.pagetemplate.pagetemplatefile, adjusted for the
+# missing semicolon between mimetype and charset declaration
+broken_meta_pattern = re.compile(
+    r'\s*<meta\s+http-equiv=["\']?Content-Type["\']?'
+    r'\s+content=["\']?([^;]+)\s*charset=([^"\']+)["\']?\s*/?\s*>\s*',
+    re.IGNORECASE)
+
 
 def safe_decode_header(value):
     """ Handles rfc 2047 encoded header with non-ascii characters.
@@ -282,6 +290,38 @@ def unwrap_html_body(html, css_class=None):
     if body_style:
         body_soup.div['style'] = body_style
     return body_soup.renderContents()
+
+
+def fix_broken_meta_tags(html):
+    """Fix broken <meta /> tags in HTML MIME parts.
+
+    text/html MIME parts of a multipart message may include <meta /> tags that
+    declare a charset that differs from the encoding that is used for the page
+    template that part is inserted into.
+
+    zope.pagetemplate attempts to handle meta tags when inserting markup
+    with 'structure', by re-encoding the inserted markup and adjusting the
+    rewriting the meta tag's charset.
+
+    If however the <meta /> tag is broken and doesn't match zope.pt's regex,
+    the re-encoding doesn't take place and TAL / zope.pt chokes on the
+    resulting mojibake, omitting parts of the document.
+
+    This addresses one specific case seen in the wild in a message created
+    with Apple Mail (2.2104), where the semicolon (;) is missing between the
+    MIME type and the charset declaration. Example:
+
+    <meta http-equiv="Content-Type" content="text/html charset=us-ascii">
+    """
+    match = broken_meta_pattern.search(html)
+
+    if match:
+        mimetype, charset = [g.strip() for g in match.groups()]
+        fixed_tag = '\n<meta http-equiv="Content-Type" '\
+                    'content="%s; charset=%s">\n' % (mimetype, charset)
+        return re.sub(broken_meta_pattern, fixed_tag, html)
+
+    return html
 
 
 def unwrap_attached_msg(msg):
