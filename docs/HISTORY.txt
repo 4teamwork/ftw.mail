@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.3.7 (unreleased)
+2.3.7 (2015-09-08)
 ------------------
 
 - Fix broken <meta /> tags in text/html MIME parts.
