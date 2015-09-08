@@ -228,6 +228,7 @@ class View(BrowserView):
         result = []
         for body in parts:
             body = self.rewrite_css_styles(body)
+            body = utils.fix_broken_meta_tags(body)
             body = utils.unwrap_html_body(body, 'mailBody-part')
             body = self.transfrom_safe_html(body)
             result.append(body)

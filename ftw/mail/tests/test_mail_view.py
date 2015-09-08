@@ -118,3 +118,22 @@ class TestMailView(TestCase):
         self.assertNotIn(
             '<style>', browser.contents,
             '<style> tags gets not wrapped correctly with the wrapper class.')
+
+    @browsing
+    def test_fixes_broken_meta_tags(self, browser):
+        mail = create(Builder('mail')
+                      .with_message(mail_asset('broken_meta_tags')))
+        browser.login().visit(mail)
+
+        # This part is latin1 encoded, as declared by the MIME part's
+        # Content-Type as well as a broken <meta /> tag with a charset
+        latin1_encoded_part = browser.css('.mailBody-part')[2]
+
+        self.assertIn(
+            u'B\xe4rengraben', latin1_encoded_part.text,
+            'The latin1 encoded text/html part should be properly re-encoded')
+
+        meta = latin1_encoded_part.xpath('meta').first
+        self.assertEquals(
+            'text/html; charset=utf-8', meta.attrib['content'],
+            '<meta /> tag should have been rewritten by zope.pagetemplate')
