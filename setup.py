@@ -9,6 +9,7 @@ tests_require = [
     'ftw.workspace',
     'ftw.zipexport',
     'plone.app.testing',
+    'unittest2',
     ]
 
 setup(name='ftw.mail',
