@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-29 12:25+0000\n"
+"POT-Creation-Date: 2016-06-21 09:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -10,6 +10,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 "Preferred-Encodings: utf-8 latin1\n"
+
+#: ./ftw/mail/configure.zcml:25
+msgid "A product for receiving and storing mails in Plone"
+msgstr ""
 
 #: ./ftw/mail/mail_templates/view.pt:58
 msgid "Attachments"
@@ -23,9 +27,13 @@ msgstr "Datum:"
 msgid "From:"
 msgstr "Von:"
 
+#: ./ftw/mail/configure.zcml:84
+msgid "Installs the mail tab for ftw.workspace"
+msgstr ""
+
 #: ./ftw/mail/profiles/default/types/ftw.mail.mail.xml
 msgid "Mail"
-msgstr ""
+msgstr "E-Mail"
 
 #: ./ftw/mail/mail_templates/view.pt:30
 msgid "Subject:"
@@ -36,11 +44,23 @@ msgid "To:"
 msgstr "An:"
 
 #. Default: "Attachment"
-#: ./ftw/mail/mailtab.py:26
+#: ./ftw/mail/mailtab.py:32
 msgid "attachment_icon_alt_text"
 msgstr "Anhänge"
 
-#: ./ftw/mail/mail.py:25
+#: ./ftw/mail/configure.zcml:25
+msgid "ftw.mail"
+msgstr ""
+
+#: ./ftw/mail/upgrades/configure.zcml:24
+msgid "ftw.mail.upgrades.2000"
+msgstr ""
+
+#: ./ftw/mail/configure.zcml:84
+msgid "ftw.mail: Mail tab for ftw.workspace"
+msgstr ""
+
+#: ./ftw/mail/mail.py:31
 msgid "help_raw_message"
 msgstr ""
 
@@ -50,42 +70,42 @@ msgid "label_mailin"
 msgstr "Mail-In Adresse:"
 
 #. Default: "Attachments"
-#: ./ftw/mail/mailtab.py:71
+#: ./ftw/mail/mailtab.py:80
 msgid "label_mailstab_attachments"
 msgstr "Anhänge"
 
 #. Default: "Creator"
-#: ./ftw/mail/mailtab.py:76
+#: ./ftw/mail/mailtab.py:86
 msgid "label_mailstab_creator"
 msgstr "Ersteller"
 
 #. Default: "Date Received"
-#: ./ftw/mail/mailtab.py:66
+#: ./ftw/mail/mailtab.py:74
 msgid "label_mailstab_date"
 msgstr "Empfangen"
 
 #. Default: "From"
-#: ./ftw/mail/mailtab.py:56
+#: ./ftw/mail/mailtab.py:62
 msgid "label_mailstab_from"
 msgstr "Von"
 
 #. Default: "To"
-#: ./ftw/mail/mailtab.py:61
+#: ./ftw/mail/mailtab.py:68
 msgid "label_mailstab_to"
 msgstr "Empfänger"
 
 #. Default: "Subject"
-#: ./ftw/mail/mailtab.py:51
+#: ./ftw/mail/mailtab.py:57
 msgid "label_mailtab_subject"
 msgstr "Betreff"
 
 #. Default: "Raw Message"
-#: ./ftw/mail/mail.py:24
+#: ./ftw/mail/mail.py:30
 msgid "label_raw_message"
 msgstr "Orginalnachricht"
 
 #. Default: "[No Subject]"
-#: ./ftw/mail/mail.py:43
+#: ./ftw/mail/mail.py:45
 msgid "no_subject"
 msgstr "[Kein Betreff]"
 
