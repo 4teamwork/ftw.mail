@@ -5,7 +5,8 @@ Changelog
 2.3.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix German and French FTI title of "ftw.mail.mail".
+  [mbaechtold]
 
 
 2.3.7 (2015-09-08)
