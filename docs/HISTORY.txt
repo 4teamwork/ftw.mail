@@ -5,6 +5,9 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- Mark inbound request with a marker interface.
+  [phgross]
+
 - Drop Plone 4.1 support.
   [phgross]
 

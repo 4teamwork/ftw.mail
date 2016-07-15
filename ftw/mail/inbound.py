@@ -8,6 +8,7 @@ from email.Utils import parseaddr
 from ftw.mail import exceptions
 from ftw.mail import utils
 from ftw.mail.interfaces import IEmailAddress
+from ftw.mail.interfaces import IInboundRequest
 from ftw.mail.interfaces import IMailInbound
 from ftw.mail.interfaces import IMailSettings
 from plone.dexterity.interfaces import IDexterityFTI
@@ -24,7 +25,9 @@ from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
 from zope.container.interfaces import INameChooser
+from zope.interface import alsoProvides
 from zope.interface import implements
+from zope.interface import noLongerProvides
 from zope.schema import getFields
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import IPermission
@@ -38,7 +41,10 @@ class MailInbound(BrowserView):
     implements(IMailInbound)
 
     def __call__(self):
-        return self.render()
+        alsoProvides(self.request, IInboundRequest)
+        result = self.render()
+        noLongerProvides(self.request, IInboundRequest)
+        return result
 
     def render(self):
         self.request.response.setHeader('Content-Type', 'text/plain')
