@@ -20,6 +20,11 @@ class IMailInbound(Interface):
         """
 
 
+class IInboundRequest(Interface):
+    """Marker interface for mail inbound requests.
+    """
+
+
 class IEmailAddress(Interface):
     """ Returns the email address for an object or the object an email
     email address
