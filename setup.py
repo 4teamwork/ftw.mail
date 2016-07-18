@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '2.3.8.dev0'
+version = '2.4.0.dev0'
 
 tests_require = [
     'ftw.builder',
@@ -21,7 +21,6 @@ setup(name='ftw.mail',
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         'Framework :: Plone',
-        'Framework :: Plone :: 4.1',
         'Framework :: Plone :: 4.2',
         'Framework :: Plone :: 4.3',
         'Intended Audience :: Developers',

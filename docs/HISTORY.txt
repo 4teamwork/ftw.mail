@@ -2,8 +2,11 @@ Changelog
 =========
 
 
-2.3.8 (unreleased)
+2.4.0 (unreleased)
 ------------------
+
+- Drop Plone 4.1 support.
+  [phgross]
 
 - Fix German and French FTI title of "ftw.mail.mail".
   [mbaechtold]
