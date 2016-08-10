@@ -15,23 +15,30 @@ class FtwMailLayer(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE, BUILDER_LAYER)
 
     def setUpZope(self, app, configurationContext):
-        import z3c.autoinclude
-        xmlconfig.file('meta.zcml', z3c.autoinclude,
-                       context=configurationContext)
         xmlconfig.string(
             '<configure xmlns="http://namespaces.zope.org/zope">'
+            '  <include package="z3c.autoinclude" file="meta.zcml" />'
             '  <includePlugins package="plone" />'
+            '  <includePluginsOverrides package="plone" />'
             '</configure>',
             context=configurationContext)
 
-        import ftw.mail
-        xmlconfig.file('configure.zcml', ftw.mail,
+        import Products.CMFPlacefulWorkflow
+        xmlconfig.file('configure.zcml', Products.CMFPlacefulWorkflow,
                        context=configurationContext)
 
+        try:
+            # Plone >= 4.3.x
+            import Products.DataGridField
+            xmlconfig.file('configure.zcml', Products.DataGridField,
+                           context=configurationContext)
+        except:
+            pass
+
+        z2.installProduct(app, 'ftw.file')
+        z2.installProduct(app, 'ftw.meeting')
+        z2.installProduct(app, 'ftw.mail')
         z2.installProduct(app, 'ftw.workspace')
-        import ftw.workspace
-        xmlconfig.file('configure.zcml', ftw.workspace,
-                       context=configurationContext)
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'ftw.mail:default')
