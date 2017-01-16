@@ -191,6 +191,9 @@ def set_defaults(obj, container):
             # determining if a field is already set works as expected
             value = field.get(field.interface(aq_base(obj)))
             if value == field.missing_value or value is None:
+                # bind the field for choices with named vocabularies
+                field = field.bind(obj)
+
                 # No value is set, so we try to set the default value
                 # otherwise we set the missing value
                 default = queryMultiAdapter((

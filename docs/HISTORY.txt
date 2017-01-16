@@ -5,7 +5,8 @@ Changelog
 2.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix setting defaults for choices with named vocabularies on inbound mails.
+  [phgross]
 
 
 2.4.0 (2016-07-19)
