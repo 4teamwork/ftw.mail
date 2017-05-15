@@ -42,6 +42,12 @@
         permission="zope2.View"
         />
 
+    <!-- Mail object creator -->
+    <adapter
+        for="*
+             zope.publisher.interfaces.browser.IBrowserRequest"
+        factory=".create.CreateMailInContainer" />
+
     <!-- Mail-in viewlet - shows the mail in link -->
     <browser:viewlet
         for="Products.CMFCore.interfaces.IFolderish"
@@ -50,7 +56,6 @@
         class=".mailin.MailIn"
         permission="ftw.mail.AddInboundMail"
         />
-
 
     <!-- UUID resolver -->
     <adapter
