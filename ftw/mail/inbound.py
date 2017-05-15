@@ -2,35 +2,23 @@ from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
-from Acquisition import aq_base
-from Acquisition import aq_inner
 from email.Utils import parseaddr
 from ftw.mail import exceptions
 from ftw.mail import utils
+from ftw.mail.interfaces import ICreateMailInContainer
 from ftw.mail.interfaces import IEmailAddress
 from ftw.mail.interfaces import IInboundRequest
 from ftw.mail.interfaces import IMailInbound
 from ftw.mail.interfaces import IMailSettings
-from plone.dexterity.interfaces import IDexterityFTI
-from plone.dexterity.utils import createContent
-from plone.dexterity.utils import iterSchemata
-from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize import instance
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
-from z3c.form.interfaces import IValue
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-from zope.component import queryMultiAdapter
-from zope.component import queryUtility
-from zope.container.interfaces import INameChooser
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
-from zope.schema import getFields
-from zope.schema import getFieldsInOrder
-from zope.security.interfaces import IPermission
 import email
 
 
@@ -142,75 +130,6 @@ def createMailInContainer(container, message):
 
     The new object, wrapped in its new acquisition context, is returned.
     """
-
-    # lookup the type of the 'message' field and create an instance
-    fti = getUtility(IDexterityFTI, name='ftw.mail.mail')
-    schema = fti.lookupSchema()
-    field_type = getFields(schema)['message']._type
-    message_value = field_type(data=message,
-                       contentType='message/rfc822', filename=u'message.eml')
-    # create mail object
-    content = createContent('ftw.mail.mail', message=message_value)
-
-    container = aq_inner(container)
-    container_fti = container.getTypeInfo()
-
-    # check permission
-    permission = queryUtility(IPermission, name='ftw.mail.AddInboundMail')
-    if permission is None:
-        raise Unauthorized("Cannot create %s" % content.portal_type)
-    if not getSecurityManager().checkPermission(permission.title, container):
-        raise Unauthorized("Cannot create %s" % content.portal_type)
-
-    # check addable types
-    if container_fti is not None and \
-            not container_fti.allowType(content.portal_type):
-        raise ValueError("Disallowed subobject type: %s" % (
-                content.portal_type))
-
-    normalizer = queryUtility(IIDNormalizer)
-    normalized_subject = normalizer.normalize(content.title)
-
-    name = INameChooser(container).chooseName(normalized_subject, content)
-    content.id = name
-
-    newName = container._setObject(name, content)
-    obj = container._getOb(newName)
-    obj = set_defaults(obj, container)
-    obj.reindexObject()
-    return obj
-
-
-def set_defaults(obj, container):
-    """set the default value for all fields on the mail object
-    (including additional behaviors)"""
-
-    for schema in iterSchemata(obj):
-        for name, field in getFieldsInOrder(schema):
-            # Remove acquisition wrapper when getting field value so
-            # determining if a field is already set works as expected
-            value = field.get(field.interface(aq_base(obj)))
-            if value == field.missing_value or value is None:
-                # bind the field for choices with named vocabularies
-                field = field.bind(obj)
-
-                # No value is set, so we try to set the default value
-                # otherwise we set the missing value
-                default = queryMultiAdapter((
-                        container,
-                        container.REQUEST,  # request
-                        None,  # form
-                        field,
-                        None,  # Widget
-                        ), IValue, name='default')
-                if default is not None:
-                    default = default.get()
-                if default is None:
-                    default = getattr(field, 'default', None)
-                if default is None:
-                    try:
-                        default = field.missing_value
-                    except:
-                        pass
-                field.set(field.interface(obj), default)
-    return obj
+    creator = getMultiAdapter((container, container.REQUEST),
+                              ICreateMailInContainer)
+    return creator.create_mail(message)

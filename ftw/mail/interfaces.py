@@ -54,3 +54,10 @@ class IMailSettings(Interface):
         description=u'Enter the mail domain which will be used \
 for sending mails into this site.',
         default=u'example.org')
+
+
+class ICreateMailInContainer(Interface):
+    """Create mail content object in a container."""
+
+    def create_mail(message):
+        """Create the mail content object given the message data."""
