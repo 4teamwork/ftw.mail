@@ -5,6 +5,12 @@ Changelog
 2.4.1 (unreleased)
 ------------------
 
+- Remove newlines from headers, even inside encoded words.
+  decode_header from the email module splits the header before parsing
+  which breaks up encoded words and prevents them from being decoded.
+  https://github.com/python/cpython/blob/2.7/Lib/email/header.py#L78
+  [lknoepfel]
+
 - Move functionality to create mailed-in mails to an adapter to allow
   easier customization. [deiferni]
 
