@@ -11,7 +11,7 @@ import re
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
 BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
-ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(=\?.*?\?=)(\r\n)([ \t])')
+ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(.*?)([\r\n]+)([ \t])')
 
 # Used to fix broken meta tags that confuse TAL
 # Largely copied from zope.pagetemplate.pagetemplatefile, adjusted for the
@@ -49,6 +49,8 @@ def safe_decode_header(value):
     # Fix up RFC 2047 encoded words separated by 'CRLF LWSP' (which is fine
     # according to the RFC) by replacing the CRLF with a SPACE so
     # decode_header can parse them correctly.
+    # Update: Remove CRLF and LF inside encoded words too, because decode_header
+    # splits lines before parsing the words.
     # This works around a bug in decode_header that has been fixed in 3.3.
     # See http://bugs.python.org/issue4491 and its duplicate.
     # Example:

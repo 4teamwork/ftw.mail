@@ -35,6 +35,8 @@ class TestUtils(unittest2.TestCase):
         self.from_header_with_quotes = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'encoded_word_without_lwsp.txt'), 'r').read()
         self.encoded_word_without_lwsp = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'newline_in_header.txt'), 'r').read()
+        self.newline_in_header = email.message_from_string(msg_txt)
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -67,6 +69,12 @@ class TestUtils(unittest2.TestCase):
         self.assertEquals(
             'B\xc3\xa4rengrabenB\xc3\xa4rengraben <from@example.org>',
             utils.get_header(self.encoded_word_without_lwsp, 'From'))
+
+        # Also match mails with only \n newlines
+        self.assertEquals(
+            'Email: QP B\xc3\xbcschelisheimat   / Aktennotiz vom 27.02.2017',
+            utils.get_header(self.newline_in_header, 'Subject')
+        )
 
     def test_safe_decode_header_fixes_encoded_words_without_lwsp_in_middle(self):
         header = 'Foo =?utf-8?Q?B=C3=A4rengraben?=\r\n <from@example.org>'
