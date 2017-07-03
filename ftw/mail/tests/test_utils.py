@@ -70,7 +70,7 @@ class TestUtils(unittest2.TestCase):
             'B\xc3\xa4rengrabenB\xc3\xa4rengraben <from@example.org>',
             utils.get_header(self.encoded_word_without_lwsp, 'From'))
 
-        # Also match mails with only \n newlines
+    def test_get_header_fixes_encoded_words_with_newlines(self):
         self.assertEquals(
             'Email: QP B\xc3\xbcschelisheimat   / Aktennotiz vom 27.02.2017',
             utils.get_header(self.newline_in_header, 'Subject')

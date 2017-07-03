@@ -5,7 +5,8 @@ Changelog
 2.5.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Cleanup: Revert LWSP regex and move changes from v2.5.1 into
+  a separate regex since they solve different issues.
 
 
 2.5.1 (2017-05-23)

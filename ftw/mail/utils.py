@@ -11,7 +11,8 @@ import re
 IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
 BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
 APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
-ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(.*?)([\r\n]+)([ \t])')
+ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(=\?.*?\?=)(\r\n)([ \t])')
+ENCODED_WORD_WITHOUT_NEWLINES = re.compile(r'(=\?.*?\?[BQ]\?.*?)([\r\n])(.*?\?=)')
 
 # Used to fix broken meta tags that confuse TAL
 # Largely copied from zope.pagetemplate.pagetemplatefile, adjusted for the
@@ -49,13 +50,17 @@ def safe_decode_header(value):
     # Fix up RFC 2047 encoded words separated by 'CRLF LWSP' (which is fine
     # according to the RFC) by replacing the CRLF with a SPACE so
     # decode_header can parse them correctly.
-    # Update: Remove CRLF and LF inside encoded words too, because decode_header
-    # splits lines before parsing the words.
     # This works around a bug in decode_header that has been fixed in 3.3.
     # See http://bugs.python.org/issue4491 and its duplicate.
     # Example:
     # From: =?utf-8?Q?B=C3=A4rengraben?=\r\n <from@example.org>
     value = re.sub(ENCODED_WORD_WITHOUT_LWSP, '\\1 \\3', value)
+
+    # Despite being allowed by RFC 1342, newlines inside encoded words will
+    # break the python 2.7 decode_header.
+    # https://github.com/python/cpython/blob/2.7/Lib/email/header.py#L78
+    # This workaround removes newlines only from valid encoded words.
+    value = re.sub(ENCODED_WORD_WITHOUT_NEWLINES, '\\1 \\3', value)
 
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):
