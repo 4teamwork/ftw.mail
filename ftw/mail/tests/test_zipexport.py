@@ -18,7 +18,7 @@ class TestMailView(TestCase):
     def test_zipexport_works_on_mail(self, browser):
         browser.login().visit(self.mail, view='zip_export')
         self.assertEquals('application/zip', browser.headers['Content-Type'])
-        self.assertEquals('inline; filename="Die B\xc3\xbcrgschaft.zip"',
+        self.assertEquals("attachment; filename*=utf-8''Die%20B%C3%BCrgschaft.zip",
                           browser.headers['Content-Disposition'])
 
         zipfile = ZipFile(StringIO(browser.contents))
