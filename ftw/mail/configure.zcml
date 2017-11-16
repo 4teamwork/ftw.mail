@@ -69,6 +69,8 @@
         factory=".mail.SearchableTextExtender"
         />
 
+    <!-- Email date index -->
+    <adapter name="Date" factory=".indexers.Date" />
 
     <!-- ftw.mail.Mail default view -->
     <browser:page

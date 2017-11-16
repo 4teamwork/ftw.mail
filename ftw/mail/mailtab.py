@@ -25,7 +25,7 @@ def get_mail_header(field=None, isdate=False):
             return '<img src="%s" alt="%s" /> %s' % (
                 imgpath,
                 translate(_(u'attachment_icon_alt_text',
-                           default=u'Attachment'),
+                            default=u'Attachment'),
                           context=obj.REQUEST),
                 len(obj.attachment_infos))
 
@@ -68,8 +68,8 @@ class MailsTab(listing.CatalogListingView):
         {'column': 'Date',
          'column_title': _(u'label_mailstab_date',
                            default=u'Date Received'),
-         'transform': get_mail_header(field='Date', isdate=True),
-         'sortable': False},
+         'transform': helper.readable_date_time_text,
+         'sortable': True},
 
         {'column': 'Attachments',
          'column_title': _(u'label_mailstab_attachments',
@@ -81,4 +81,4 @@ class MailsTab(listing.CatalogListingView):
          'column_title': _(u'label_mailstab_creator',
                            default=u'Creator'),
          'transform': readable_author},
-        )
+    )
