@@ -17,12 +17,7 @@ def get_mail_header(field=None, isdate=False):
         obj = item.getObject()
 
         if isdate:
-            raw_date = obj.get_header(field)
-            raw_date = re.sub(r'\((.*)\)', '\g<1>', raw_date)
-            try:
-                date = DateTime(raw_date)
-            except SyntaxError:
-                return ''
+            date = obj.get_header(field, isdate)
             return helper.readable_date_time_text(item, date)
 
         elif field == 'attachments':

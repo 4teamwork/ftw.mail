@@ -108,8 +108,9 @@ class Mail(Item):
     def _update_attachment_infos(self):
         self._attachment_infos = tuple(utils.get_attachments(self.msg))
 
-    def get_header(self, name):
+    def get_header(self, name, isdate=False):
         """Returns a header value from the mail message.
+        If it is a date, it returns a DateTime.
         This method caches the retrieved values.
         """
 
@@ -117,7 +118,11 @@ class Mail(Item):
             self._reset_header_cache()
 
         if name not in self._header_cache:
-            self._header_cache[name] = utils.get_header(self.msg, name)
+            if isdate:
+                ts = utils.get_date_header(self.msg, name)
+                self._header_cache[name] = DateTime(ts)
+            else:
+                self._header_cache[name] = utils.get_header(self.msg, name)
 
         return self._header_cache[name]
 
