@@ -89,7 +89,7 @@ def get_date_header(msg, name):
     timezone information.
     """
     value = get_header(msg, name)
-    ts = 0.0
+    ts = None
     try:
         ts = mktime_tz(parsedate_tz(value))
     except TypeError:

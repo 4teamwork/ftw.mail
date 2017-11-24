@@ -94,7 +94,7 @@ class TestUtils(unittest2.TestCase):
         # an unparsable date header
         msg_txt = 'Date: at any time ...'
         msg = email.message_from_string(msg_txt)
-        self.assertEqual(0.0, utils.get_date_header(msg, 'Date'))
+        self.assertEqual(None, utils.get_date_header(msg, 'Date'))
 
     def test_get_payload(self):
         self.assertEquals('', utils.get_payload(self.msg_empty))

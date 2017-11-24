@@ -1,3 +1,4 @@
+from DateTime import DateTime
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.mail.mail import IMail
@@ -30,6 +31,10 @@ class TestMailIntegration(TestCase):
             os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
         self.msg_utf8 = open(
             os.path.join(here, 'mails', 'utf8.txt'), 'r').read()
+        self.msg_invalid_date = open(
+            os.path.join(here, 'mails', 'invalid_date.txt'), 'r').read()
+        self.msg_timezone_date = open(
+            os.path.join(here, 'mails', 'time_zone_dates.txt'), 'r').read()
 
     def test_adding(self):
         mail = create(Builder('mail'))
@@ -146,6 +151,13 @@ class TestMailIntegration(TestCase):
         mail = create(Builder('mail'))
         page = create(Builder('page').having(relatedItems=[IUUID(mail)]))
         self.assertTrue(page)
+
+    def test_date_parsing(self):
+        mail = create(Builder('mail').with_message(self.msg_invalid_date))
+        self.assertEquals("", mail.get_header('Date', True))
+        mail = create(Builder('mail').with_message(self.msg_timezone_date))
+        self.assertEquals(DateTime('28.08.2010 18:50:04 GMT+2'),
+                          mail.get_header('Date', True))
 
     # def test_special(self):
     #     here = os.path.dirname(__file__)

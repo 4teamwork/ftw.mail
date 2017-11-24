@@ -5,7 +5,7 @@ Changelog
 2.5.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix treatment of invalid mail dates [njohner] 
 
 
 2.5.3 (2017-11-23)
