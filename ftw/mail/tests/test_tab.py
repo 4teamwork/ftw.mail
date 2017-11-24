@@ -1,6 +1,7 @@
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
+from ftw.table import helper
 from ftw.workspace.interfaces import IWorkspaceLayer
 from plone.registry.interfaces import IRegistry
 from unittest2 import TestCase
@@ -36,10 +37,11 @@ class TestMailTab(TestCase):
         mail_row = self.get_mails_tab_data().get('rows')[0]
         self.assertEquals('01.01.1970 01:00', mail_row.get('Date'))
 
-    def test_mail_invalid_date_results_in_empty_string(self):
-        create(Builder('mail').with_message(mail_asset('invalid_date')))
+    def test_mail_invalid_date_results_in_creation_date(self):
+        mail = create(Builder('mail').with_message(mail_asset('invalid_date')))
         mail_row = self.get_mails_tab_data().get('rows')[0]
-        self.assertEquals('', mail_row.get('Date'))
+        created = helper.readable_date_time_text(mail, mail.created())
+        self.assertEquals(created, mail_row.get('Date'))
 
     def test_mail_date_parsing_with_time_zone(self):
         create(Builder('mail').with_message(mail_asset('time_zone_dates')))

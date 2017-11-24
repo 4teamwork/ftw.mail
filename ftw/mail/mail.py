@@ -120,7 +120,10 @@ class Mail(Item):
         if name not in self._header_cache:
             if isdate:
                 ts = utils.get_date_header(self.msg, name)
-                self._header_cache[name] = DateTime(ts)
+                if ts is not None:
+                    self._header_cache[name] = DateTime(ts)
+                else:
+                    self._header_cache[name] = ""
             else:
                 self._header_cache[name] = utils.get_header(self.msg, name)
 

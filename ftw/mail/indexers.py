@@ -1,7 +1,5 @@
 from ftw.mail.mail import IMail
-from ftw.mail.utils import get_date_header
 from plone.indexer.decorator import indexer
-from DateTime import DateTime
 
 
 @indexer(IMail)
