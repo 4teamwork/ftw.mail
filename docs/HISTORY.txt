@@ -10,6 +10,7 @@ Changelog
     - Remove IReferencablebehavior, referencing AT contentypes no longer supported.
     - Drop support for ftw.workspace:
       Remove ftw.workspace specific profiles and views.
+    - Drop Plone 4.2 support.
 
  [phgross]
 
