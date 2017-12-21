@@ -147,11 +147,6 @@ class TestMailIntegration(TestCase):
         self.assertEquals('Die B\xc3\xbcrgschaft',
                           mail.get_header('Subject'))
 
-    def test_referenceing_mails_from_archetypes_objects(self):
-        mail = create(Builder('mail'))
-        page = create(Builder('page').having(relatedItems=[IUUID(mail)]))
-        self.assertTrue(page)
-
     def test_date_parsing(self):
         mail = create(Builder('mail').with_message(self.msg_invalid_date))
         self.assertEquals("", mail.get_header('Date', True))
