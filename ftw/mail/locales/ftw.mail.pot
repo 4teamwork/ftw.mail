@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-06-21 09:58+0000\n"
+"POT-Creation-Date: 2017-12-21 13:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,10 +30,6 @@ msgstr ""
 msgid "From:"
 msgstr ""
 
-#: ./ftw/mail/configure.zcml:84
-msgid "Installs the mail tab for ftw.workspace"
-msgstr ""
-
 #: ./ftw/mail/profiles/default/types/ftw.mail.mail.xml
 msgid "Mail"
 msgstr ""
@@ -47,7 +43,7 @@ msgid "To:"
 msgstr ""
 
 #. Default: "Attachment"
-#: ./ftw/mail/mailtab.py:32
+#: ./ftw/mail/mailtab.py:27
 msgid "attachment_icon_alt_text"
 msgstr ""
 
@@ -57,10 +53,6 @@ msgstr ""
 
 #: ./ftw/mail/upgrades/configure.zcml:24
 msgid "ftw.mail.upgrades.2000"
-msgstr ""
-
-#: ./ftw/mail/configure.zcml:84
-msgid "ftw.mail: Mail tab for ftw.workspace"
 msgstr ""
 
 #: ./ftw/mail/mail.py:31
@@ -73,32 +65,32 @@ msgid "label_mailin"
 msgstr ""
 
 #. Default: "Attachments"
-#: ./ftw/mail/mailtab.py:80
+#: ./ftw/mail/mailtab.py:75
 msgid "label_mailstab_attachments"
 msgstr ""
 
 #. Default: "Creator"
-#: ./ftw/mail/mailtab.py:86
+#: ./ftw/mail/mailtab.py:81
 msgid "label_mailstab_creator"
 msgstr ""
 
 #. Default: "Date Received"
-#: ./ftw/mail/mailtab.py:74
+#: ./ftw/mail/mailtab.py:69
 msgid "label_mailstab_date"
 msgstr ""
 
 #. Default: "From"
-#: ./ftw/mail/mailtab.py:62
+#: ./ftw/mail/mailtab.py:57
 msgid "label_mailstab_from"
 msgstr ""
 
 #. Default: "To"
-#: ./ftw/mail/mailtab.py:68
+#: ./ftw/mail/mailtab.py:63
 msgid "label_mailstab_to"
 msgstr ""
 
 #. Default: "Subject"
-#: ./ftw/mail/mailtab.py:57
+#: ./ftw/mail/mailtab.py:52
 msgid "label_mailtab_subject"
 msgstr ""
 

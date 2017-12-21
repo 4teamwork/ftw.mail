@@ -38,11 +38,9 @@ class FtwMailLayer(PloneSandboxLayer):
         z2.installProduct(app, 'ftw.file')
         z2.installProduct(app, 'ftw.meeting')
         z2.installProduct(app, 'ftw.mail')
-        z2.installProduct(app, 'ftw.workspace')
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'ftw.mail:default')
-        applyProfile(portal, 'ftw.workspace:default')
         applyProfile(portal, 'ftw.zipexport:default')
 
 

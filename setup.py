@@ -1,12 +1,11 @@
 from setuptools import setup, find_packages
 import os
 
-version = '2.5.5.dev0'
+version = '3.0.0.dev0'
 
 tests_require = [
     'ftw.builder',
     'ftw.testbrowser',
-    'ftw.workspace',
     'ftw.zipexport',
     'plone.app.testing',
     'unittest2',
