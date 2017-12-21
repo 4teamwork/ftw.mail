@@ -1,14 +1,16 @@
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.mail.testing import FTW_MAIL_FUNCTIONAL_TESTING
+from ftw.mail.testing import IS_PLONE_5
 from ftw.testbrowser import browsing
 from ftw.testbrowser.pages import plone
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
 from unittest2 import TestCase
 import os.path
+import unittest
 
 
 def mail_asset(name, ext='txt'):
@@ -106,6 +108,8 @@ class TestMailView(TestCase):
         self.assertEquals('Hello World',
                           browser.css('.mailBody').first.text)
 
+    @unittest.skipIf(
+        IS_PLONE_5, 'The safe_html transform of plone 5, remove style tags.')
     @browsing
     def test_style_blocks_get_parsed(self, browser):
         mail = create(Builder('mail').with_message(mail_asset('xxs_mail')))
@@ -119,6 +123,8 @@ class TestMailView(TestCase):
             '<style>', browser.contents,
             '<style> tags gets not wrapped correctly with the wrapper class.')
 
+    @unittest.skipIf(
+        IS_PLONE_5, 'The safe_html transform of plone 5, remove meta tags.')
     @browsing
     def test_fixes_broken_meta_tags(self, browser):
         mail = create(Builder('mail')
