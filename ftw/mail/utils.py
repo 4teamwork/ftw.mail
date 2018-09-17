@@ -8,8 +8,8 @@ import re
 
 
 # a regular expression that matches src attributes of img tags containing a cid
-IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE|re.DOTALL)
-BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE|re.DOTALL)
+IMG_SRC_RE = re.compile(r'<img[^>]*?src="cid:([^"]*)', re.IGNORECASE | re.DOTALL)
+BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE | re.DOTALL)
 APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
 ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(=\?.*?\?=)(\r\n)([ \t])')
 ENCODED_WORD_WITHOUT_NEWLINES = re.compile(r'(=\?.*?\?[BQ]\?.*?)([\r\n])(.*?\?=)')
@@ -24,10 +24,9 @@ broken_meta_pattern = re.compile(
 
 
 def safe_decode_header(value):
-    """ Handles rfc 2047 encoded header with non-ascii characters.
+    """Handles rfc 2047 encoded header with non-ascii characters.
     Always returns an utf-8 encoded string.
     """
-
     if value is None:
         return None
 
@@ -78,13 +77,13 @@ def get_header(msg, name):
     Always returns an utf-8 encoded string.
     """
     value = ''
-    if msg is not None and msg.has_key(name):
+    if msg is not None and name in msg:
         value = safe_decode_header(msg.get(name))
     return value
 
 
 def get_date_header(msg, name):
-    """ Returns an UTC timestamp from a header field containing a date.
+    """Returns an UTC timestamp from a header field containing a date.
     Compensates for the timezone difference if the header contains
     timezone information.
     """
@@ -98,8 +97,7 @@ def get_date_header(msg, name):
 
 
 def get_payload(msg):
-    """Get the decoded message payload as utf-8 string"""
-
+    """Get the decoded message payload as utf-8 string."""
     # get encoding for the msg object, use utf-8 as fallback encoding
     # for msg objects without a correct charset information
     encoding = msg.get_content_charset('utf-8')
@@ -114,50 +112,72 @@ def get_payload(msg):
 
 def get_body(msg, url_prefix=''):
     """Returns the mail body as HTML string. All text parts of a multipart
-    message are returned."""
+    message are returned.
+    """
     result = []
     for part in get_text_payloads(msg):
         result.append(adjust_image_tags(part, msg, url_prefix))
     return result
 
 
+def get_part_size(content_type, part):
+    if content_type == 'message/rfc822':
+        return len(part.as_string())
+
+    payload = part.get_payload(decode=1) or part.get_payload()
+    if isinstance(payload, str):
+        return len(payload)
+
+    if not payload:
+        return 0
+
+    return sum(get_part_size(content_type, part) for part in payload)
+
+
+def parse_part(part):
+    content_type = part.get_content_type()
+    filename = get_filename(part)
+    size = get_part_size(content_type, part)
+    return content_type, filename, size
+
+
 def get_attachments(msg):
-    """ Returns a list describing the attachements. Only attachments with
-    a filename are returned."""
+    """Returns a list describing the attachements. Only attachments with
+    a filename are returned.
+    """
     attachments = []
+
     if msg is not None and msg.is_multipart():
-        for position,part in enumerate(msg.walk()):
-            content_type = part.get_content_type()
-            filename = get_filename(part)
+        for position, part in enumerate(msg.walk()):
+            content_type, filename, size = parse_part(part)
+
             if filename is None:
                 continue
-            # determine size
-            size = 0
-            if content_type == 'message/rfc822':
-                size = len(part.as_string())
-            else:
-                size = len(part.get_payload(decode=1))
-            attachments.append({'filename': filename,
-                                'content-type': content_type,
-                                'size': size,
-                                'position': position})
+
+            attachments.append({
+                'filename': filename,
+                'content-type': content_type,
+                'size': size,
+                'position': position,
+            })
+
     return attachments
 
 
 def remove_attachments(msg, positions):
     """Remove all attachments which have position listed in `positions`
     from the email Message `msg`.
-    Returns the same email Message object without attachments.
-    If `clone` is True, the message will be copied first
-    """
 
+    Returns the same email Message object without attachments.
+    If `clone` is True, the message will be copied first.
+    """
     if msg is None:
         raise ValueError('Cannot delete attachments from email message None')
 
     if 0 in positions:
         raise ValueError('Cannot delete the message itself (position 0)')
 
-    if len(positions) == 0:
+    if not positions:
         # no attachments should be removed - so just skip
         return msg
 
@@ -166,8 +186,7 @@ def remove_attachments(msg, positions):
                          'no attachments.')
 
     # get the parts to delete filtering the position
-    parts_to_delete = [part for pos, part in enumerate(msg.walk())
-                           if pos in positions]
+    parts_to_delete = [part for pos, part in enumerate(msg.walk()) if pos in positions]
 
     if len(positions) != len(parts_to_delete):
         raise ValueError('One or more attachments could not be found.')
@@ -191,7 +210,8 @@ def remove_attachments(msg, positions):
 
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all
-    text parts in HTML format"""
+    text parts in HTML format.
+    """
     if msg is None:
         return []
     parts = []
@@ -284,7 +304,7 @@ def text2html(text):
 
 
 def unwrap_html_body(html, css_class=None):
-    """ Return the content of the body tag for inline display in another
+    """Return the content of the body tag for inline display in another
     html document.
     """
     soup = BeautifulSoup(html, fromEncoding='utf8')
@@ -332,8 +352,7 @@ def fix_broken_meta_tags(html):
 
 
 def unwrap_attached_msg(msg):
-    """ If a msg contains an attachmed message return the attached one.
-    """
+    """If a msg contains an attachmed message return the attached one."""
     if msg.is_multipart():
         for part in msg.walk():
             content_type = part.get_content_type()
