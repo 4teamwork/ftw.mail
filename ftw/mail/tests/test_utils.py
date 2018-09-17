@@ -8,8 +8,7 @@ import unittest2
 
 
 class TestUtils(unittest2.TestCase):
-    """Unit test for the Program type
-    """
+    """Unit test for the Program type."""
     def setUp(self):
         # setup some test mails
         self.msg_empty = MIMEText('')
@@ -31,6 +30,8 @@ class TestUtils(unittest2.TestCase):
         self.nested_referenced_image_attachment = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'multiple_html_parts.txt'), 'r').read()
         self.msg_multiple_html_parts = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'multipart_encoded_with_attachments.txt'), 'r').read()
+        self.multipart_encoded_with_attachments = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'from_header_with_quotes.txt'), 'r').read()
         self.from_header_with_quotes = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'encoded_word_without_lwsp.txt'), 'r').read()
@@ -118,10 +119,18 @@ class TestUtils(unittest2.TestCase):
     def test_get_body_returns_each_html_document_separately(self):
         parts = utils.get_body(self.msg_multiple_html_parts)
         self.assertEquals(2, len(parts), 'Expected two html parts.')
-        first, second = parts
+        self.assertIn('Hello', parts[0])
+        self.assertIn('World', parts[1])
 
-        self.assertIn('Hello', first)
-        self.assertIn('World', second)
+    def test_can_decode_encoded_multipart_attachments(self):
+        expected_attachments = [{
+            'content-type': 'message/delivery-status',
+            'filename': 'ATT74209.txt',
+            'position': 4,
+            'size': 0,
+            }]
+        attachments = utils.get_attachments(self.multipart_encoded_with_attachments)
+        self.assertEqual(expected_attachments, attachments)
 
     def test_get_filename(self):
         msg_txt = \
@@ -231,8 +240,7 @@ Content-Transfer-Encoding: base64
         <body style="color: #666; font-size: 12px;">Body</body>
         </html>
         """
-        body ='<div class="mailBody" style="color: #666; font-size: 12px;">'\
-            'Body</div>'
+        body = '<div class="mailBody" style="color: #666; font-size: 12px;">Body</div>'
         self.assertEquals(body, utils.unwrap_html_body(html, 'mailBody'))
         html = '<p>Body</p>'
         body = '<div class="mailBody"><p>Body</p></div>'

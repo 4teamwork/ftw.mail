@@ -5,13 +5,13 @@ Changelog
 2.5.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Recurse the sizes of nested multipart attachments. [Rotonen]
 
 
 2.5.4 (2017-11-24)
 ------------------
 
-- Fix treatment of invalid mail dates [njohner] 
+- Fix treatment of invalid mail dates [njohner]
 
 
 2.5.3 (2017-11-23)
