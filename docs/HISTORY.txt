@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.5.5 (unreleased)
+2.5.5 (2018-09-21)
 ------------------
 
 - Recurse the sizes of nested multipart attachments. [Rotonen]
