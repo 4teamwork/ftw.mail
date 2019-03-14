@@ -80,7 +80,7 @@ in a console and paste the raw mail to `STDIN`:
 Compatibility
 -------------
 
-Runs with `Plone <http://www.plone.org/>`_ `4.2` or `4.3`.
+Runs with `Plone <http://www.plone.org/>`_ `4.3`.
 
 
 Links
