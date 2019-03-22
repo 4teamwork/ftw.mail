@@ -20,6 +20,10 @@ from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
 import email
+import logging
+
+
+log = logging.getLogger('ftw.mail.inbound')
 
 
 class MailInbound(BrowserView):
@@ -40,6 +44,7 @@ class MailInbound(BrowserView):
             self.inbound()
             return '0:OK'
         except exceptions.MailInboundException, e:
+            log.warn('Rejected inbound mail attempt: %r' % str(e))
             return str(e)
 
     def inbound(self):
@@ -56,8 +61,13 @@ class MailInbound(BrowserView):
             destination = self.get_destination()
             createMailInContainer(destination, msg.as_string())
         except Unauthorized:
+            log.warn('User %r is not allowed to create mail '
+                     'in %r' % (user, destination))
             raise exceptions.PermissionDenied(self.msg(), user)
         except ValueError:
+            # ValueError can also be caused by non-intid destination address
+            if 'destination' in locals():
+                log.warn('Attempt to create mail in %r' % destination)
             raise exceptions.DisallowedSubobjectType(self.msg(), user)
         finally:
             setSecurityManager(sm)
@@ -65,6 +75,7 @@ class MailInbound(BrowserView):
     def get_user(self):
         sender_email = self.sender()
         if not sender_email:
+            log.warn("No sender found in 'Resent-From' or 'From' headers")
             raise exceptions.NoSenderFound(self.msg())
 
         acl_users = getToolByName(self.context, 'acl_users')
@@ -77,6 +88,8 @@ class MailInbound(BrowserView):
                 user = user.__of__(acl_users)
             return user
         else:
+            log.warn('Sender address: %r' % sender_email)
+            log.warn('No users found in %r for that address.' % acl_users)
             raise exceptions.UnknownSender(self.msg())
 
     def get_destination(self):
@@ -84,6 +97,7 @@ class MailInbound(BrowserView):
         destination = emailaddress.get_object_for_email(self.recipient())
 
         if destination is None:
+            log.warn('Destination not found: %r' % self.recipient())
             raise exceptions.DestinationDoesNotExist(self.recipient())
         return destination
 
@@ -107,6 +121,9 @@ class MailInbound(BrowserView):
         sender = utils.get_header(self.msg(), 'Resent-From')
         if not sender:
             sender = utils.get_header(self.msg(), 'From')
+            log.info("Picked sender from 'From' header")
+        else:
+            log.info("Picked sender from 'Resent-From' header")
         (sender_name, sender_address) = parseaddr(sender)
         return sender_address
 
