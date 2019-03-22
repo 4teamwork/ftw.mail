@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.6.0 (unreleased)
+2.6.0 (2019-03-22)
 ------------------
 
 - Drop support for Plone 4.2. [lgraf]
