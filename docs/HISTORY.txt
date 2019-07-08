@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.6.1 (unreleased)
+2.6.1 (2019-07-08)
 ------------------
 
 - Fix upgrade when uninitialized header chaches are present. [deiferni]
