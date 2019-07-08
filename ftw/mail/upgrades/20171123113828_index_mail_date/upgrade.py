@@ -10,6 +10,6 @@ class IndexMailDate(UpgradeStep):
         query = {'portal_type': 'ftw.mail.mail'}
         msg = 'Update E-mail cache.'
         for mail in self.objects(query, msg):
-            if "Date" in mail._header_cache:
+            if hasattr(mail, "_header_cache") and "Date" in mail._header_cache:
                 del mail._header_cache["Date"]
         self.catalog_reindex_objects(query, idxs=['Date'])
