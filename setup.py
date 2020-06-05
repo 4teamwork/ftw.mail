@@ -1,5 +1,7 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 import os
+
 
 version = '2.6.2.dev0'
 
@@ -51,7 +53,7 @@ setup(name='ftw.mail',
         'collective.dexteritytextindexer',
         'plone.directives.form',
         'ftw.upgrade >= 1.11.0',
-        'premailer',
+        'premailer < 3.7.0',
         ],
 
       tests_require=tests_require,
