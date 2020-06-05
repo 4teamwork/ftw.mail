@@ -38,6 +38,8 @@ class TestUtils(unittest2.TestCase):
         self.encoded_word_without_lwsp = email.message_from_string(msg_txt)
         msg_txt = open(os.path.join(here, 'mails', 'newline_in_header.txt'), 'r').read()
         self.newline_in_header = email.message_from_string(msg_txt)
+        msg_txt = open(os.path.join(here, 'mails', 'encoded_word_not_separated_by_lwsp.txt'), 'r').read()
+        self.sticky_encoded_words_in_subject = email.message_from_string(msg_txt)
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
@@ -82,6 +84,11 @@ class TestUtils(unittest2.TestCase):
         self.assertEquals(
             'Foo B\xc3\xa4rengraben <from@example.org>',
             utils.safe_decode_header(header))
+
+    def test_get_subject_header_with_sticky_encoded_words(self):
+        self.assertEquals(
+            'Bärengraben',
+            utils.get_header(self.sticky_encoded_words_in_subject, 'Subject'))
 
     def test_get_date_header(self):
         # a date header
