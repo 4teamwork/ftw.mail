@@ -5,7 +5,7 @@ Changelog
 2.6.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Improve header decoding when encoded words are not separated by whitespace. [mbaechtold]
 
 
 2.6.1 (2019-07-08)

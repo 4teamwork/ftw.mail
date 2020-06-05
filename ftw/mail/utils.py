@@ -2,7 +2,8 @@
 from BeautifulSoup import BeautifulSoup
 from DocumentTemplate.DT_Util import html_quote
 from email.header import decode_header
-from email.Utils import mktime_tz, parsedate_tz
+from email.Utils import mktime_tz
+from email.Utils import parsedate_tz
 from ftw.mail import config
 import re
 
@@ -13,6 +14,7 @@ BODY_RE = re.compile(r'<body>(.*)</body>', re.IGNORECASE | re.DOTALL)
 APPLE_PARTIAL_ENCODING_RE = re.compile(r'^"(.*=\?.*\?=.*)"( <.*>)$')
 ENCODED_WORD_WITHOUT_LWSP = re.compile(r'(=\?.*?\?=)(\r\n)([ \t])')
 ENCODED_WORD_WITHOUT_NEWLINES = re.compile(r'(=\?.*?\?[BQ]\?.*?)([\r\n])(.*?\?=)')
+STICKY_ENCODED_WORDS = re.compile(r'(\?=)(=\?.*?\?[BQ]\?)')
 
 # Used to fix broken meta tags that confuse TAL
 # Largely copied from zope.pagetemplate.pagetemplatefile, adjusted for the
@@ -60,6 +62,20 @@ def safe_decode_header(value):
     # https://github.com/python/cpython/blob/2.7/Lib/email/header.py#L78
     # This workaround removes newlines only from valid encoded words.
     value = re.sub(ENCODED_WORD_WITHOUT_NEWLINES, '\\1 \\3', value)
+
+    # Normally the encoded words are separated by a space. But we have
+    # seen cases in the wild where two encoded words "sticked" together, i.e.
+    # were not separated by a space. The prefix of the encoded word
+    # (=?charset?encoding?) then remained in the header which does not look nice
+    # for humans.
+    # Example: =?utf-8?Q?some?==?utf-8?Q?thing?=
+    # Should be: =?utf-8?Q?some?= =?utf-8?Q?thing?=
+    # We fix this by separating those "sticky" encoded words with a space.
+    # The regex used to do this is based on the following idea: if the end
+    # of an encoded word (?=) is followed by the beginning of an encoded word
+    # (=?charset?encoding?) without a whitespace between them, we need to
+    # separate them.
+    value = re.sub(STICKY_ENCODED_WORDS, '\\1 \\2', value)
 
     for data, charset in decode_header(value):
         if charset is not None and charset not in ('utf-8', 'utf8'):
