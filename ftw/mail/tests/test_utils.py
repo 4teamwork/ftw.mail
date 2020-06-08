@@ -8,7 +8,7 @@ import unittest2
 
 
 class TestUtils(unittest2.TestCase):
-    """Unit test for the Program type."""
+
     def setUp(self):
         # setup some test mails
         self.msg_empty = MIMEText('')
