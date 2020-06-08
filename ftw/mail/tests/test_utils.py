@@ -2,8 +2,8 @@
 from copy import deepcopy
 from email.MIMEText import MIMEText
 from ftw.mail import utils
+from ftw.mail.tests import mails
 import email
-import os
 import unittest2
 
 
@@ -12,34 +12,32 @@ class TestUtils(unittest2.TestCase):
     def setUp(self):
         # setup some test mails
         self.msg_empty = MIMEText('')
-        here = os.path.dirname(__file__)
-        msg_txt = open(os.path.join(here, 'mails', 'ascii_7bit.txt'), 'r').read()
-        self.msg_ascii = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'latin1.txt'), 'r').read()
-        self.msg_latin1 = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'utf8.txt'), 'r').read()
-        self.msg_utf8 = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
-        self.msg_attachment = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
-        self.msg_fwd_attachment = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'nested_attachments.txt'), 'r').read()
-        self.msg_nested_attachments = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'nested_referenced_image_attachment.txt'),
-                       'r').read()
-        self.nested_referenced_image_attachment = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'multiple_html_parts.txt'), 'r').read()
-        self.msg_multiple_html_parts = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'multipart_encoded_with_attachments.txt'), 'r').read()
-        self.multipart_encoded_with_attachments = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'from_header_with_quotes.txt'), 'r').read()
-        self.from_header_with_quotes = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'encoded_word_without_lwsp.txt'), 'r').read()
-        self.encoded_word_without_lwsp = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'newline_in_header.txt'), 'r').read()
-        self.newline_in_header = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'encoded_word_not_separated_by_lwsp.txt'), 'r').read()
-        self.sticky_encoded_words_in_subject = email.message_from_string(msg_txt)
+        self.msg_ascii = mails.load_mail(
+            'ascii_7bit.txt')
+        self.msg_latin1 = mails.load_mail(
+            'latin1.txt')
+        self.msg_utf8 = mails.load_mail(
+            'utf8.txt')
+        self.msg_attachment = mails.load_mail(
+            'attachment.txt')
+        self.msg_fwd_attachment = mails.load_mail(
+            'fwd_attachment.txt')
+        self.msg_nested_attachments = mails.load_mail(
+            'nested_attachments.txt')
+        self.nested_referenced_image_attachment = mails.load_mail(
+            'nested_referenced_image_attachment.txt')
+        self.msg_multiple_html_parts = mails.load_mail(
+            'multiple_html_parts.txt')
+        self.multipart_encoded_with_attachments = mails.load_mail(
+            'multipart_encoded_with_attachments.txt')
+        self.from_header_with_quotes = mails.load_mail(
+            'from_header_with_quotes.txt')
+        self.encoded_word_without_lwsp = mails.load_mail(
+            'encoded_word_without_lwsp.txt')
+        self.newline_in_header = mails.load_mail(
+            'newline_in_header.txt')
+        self.sticky_encoded_words_in_subject = mails.load_mail(
+            'encoded_word_not_separated_by_lwsp.txt')
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))
