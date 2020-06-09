@@ -2,10 +2,10 @@ Changelog
 =========
 
 
-2.6.3 (unreleased)
+2.7.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add special handling for signed/multipart message attachments. [deiferni]
 
 
 2.6.2 (2020-06-08)

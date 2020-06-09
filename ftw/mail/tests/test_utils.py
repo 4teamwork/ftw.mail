@@ -2,44 +2,184 @@
 from copy import deepcopy
 from email.MIMEText import MIMEText
 from ftw.mail import utils
+from ftw.mail.tests import mails
 import email
-import os
 import unittest2
 
 
+def pop_size(attachments):
+    """Pop fs/os dependent size from attachment metadata dict.
+    """
+    for each in attachments:
+        each.pop('size', None)
+    return attachments
+
+
 class TestUtils(unittest2.TestCase):
-    """Unit test for the Program type."""
+
+    maxDiff = None
+
     def setUp(self):
         # setup some test mails
         self.msg_empty = MIMEText('')
-        here = os.path.dirname(__file__)
-        msg_txt = open(os.path.join(here, 'mails', 'ascii_7bit.txt'), 'r').read()
-        self.msg_ascii = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'latin1.txt'), 'r').read()
-        self.msg_latin1 = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'utf8.txt'), 'r').read()
-        self.msg_utf8 = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'attachment.txt'), 'r').read()
-        self.msg_attachment = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
-        self.msg_fwd_attachment = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'nested_attachments.txt'), 'r').read()
-        self.msg_nested_attachments = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'nested_referenced_image_attachment.txt'),
-                       'r').read()
-        self.nested_referenced_image_attachment = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'multiple_html_parts.txt'), 'r').read()
-        self.msg_multiple_html_parts = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'multipart_encoded_with_attachments.txt'), 'r').read()
-        self.multipart_encoded_with_attachments = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'from_header_with_quotes.txt'), 'r').read()
-        self.from_header_with_quotes = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'encoded_word_without_lwsp.txt'), 'r').read()
-        self.encoded_word_without_lwsp = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'newline_in_header.txt'), 'r').read()
-        self.newline_in_header = email.message_from_string(msg_txt)
-        msg_txt = open(os.path.join(here, 'mails', 'encoded_word_not_separated_by_lwsp.txt'), 'r').read()
-        self.sticky_encoded_words_in_subject = email.message_from_string(msg_txt)
+        self.msg_ascii = mails.load_mail(
+            'ascii_7bit.txt')
+        self.msg_latin1 = mails.load_mail(
+            'latin1.txt')
+        self.msg_utf8 = mails.load_mail(
+            'utf8.txt')
+        self.msg_attachment = mails.load_mail(
+            'attachment.txt')
+        self.msg_fwd_attachment = mails.load_mail(
+            'fwd_attachment.txt')
+        self.msg_nested_attachments = mails.load_mail(
+            'nested_attachments.txt')
+        self.nested_referenced_image_attachment = mails.load_mail(
+            'nested_referenced_image_attachment.txt')
+        self.msg_multiple_html_parts = mails.load_mail(
+            'multiple_html_parts.txt')
+        self.multipart_encoded_with_attachments = mails.load_mail(
+            'multipart_encoded_with_attachments.txt')
+        self.from_header_with_quotes = mails.load_mail(
+            'from_header_with_quotes.txt')
+        self.encoded_word_without_lwsp = mails.load_mail(
+            'encoded_word_without_lwsp.txt')
+        self.newline_in_header = mails.load_mail(
+            'newline_in_header.txt')
+        self.sticky_encoded_words_in_subject = mails.load_mail(
+            'encoded_word_not_separated_by_lwsp.txt')
+
+    def test_walk_signed(self):
+        msg = mails.load_mail('signed.eml')
+        parts = list(utils.walk(msg))
+
+        self.assertEqual(7, len(parts))
+        self.assertEqual(
+            ['multipart/mixed', 'text/plain', 'multipart/signed',
+             'multipart/signed', 'multipart/mixed', 'text/plain',
+             'application/x-pkcs7-signature'],
+            [each.get_content_type() for each in parts])
+
+    def test_get_attachments_signed(self):
+        msg = mails.load_mail('signed.eml')
+        self.assertEquals(
+            [{'position': 2,
+            'content-type': 'multipart/signed',
+            'filename': 'smime.p7m'},
+            {'position': 6,
+             'content-type':
+             'application/x-pkcs7-signature',
+             'filename': 'smime.p7s'}],
+            pop_size(utils.get_attachments(msg)))
+
+    def test_get_attachments_signed_with_attachments(self):
+        msg = mails.load_mail('signed_with_attachments.eml')
+        self.assertEquals(
+           [{'position': 4,
+            'content-type': 'multipart/signed',
+            'filename': 'smime.p7m'},
+           {'position': 8,
+            'content-type': 'application/pdf',
+            'filename': 'Testdatei.pdf'},
+           {'position': 9,
+            'content-type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'filename': 'Testdatei.docx'},
+           {'position': 10,
+            'content-type': 'application/pkcs7-signature',
+            'filename': 'smime.p7s'}],
+           pop_size(utils.get_attachments(msg)))
+
+    def test_walk_signed_with_attachments(self):
+        msg = mails.load_mail('signed_with_attachments.eml')
+        parts = list(utils.walk(msg))
+
+        self.assertEqual(11, len(parts))
+        self.assertEqual(
+            ['multipart/mixed', 'multipart/alternative', 'text/plain',
+             'application/rtf', 'multipart/signed', 'multipart/signed',
+             'multipart/mixed', 'text/plain', 'application/pdf',
+             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+             'application/pkcs7-signature'],
+            [each.get_content_type() for each in parts])
+
+    def test_get_attachments_signed_nested_with_attachments(self):
+        msg = mails.load_mail('signed_nested_with_attachments.eml')
+        self.assertEquals(
+            [{'position': 4,
+              'content-type': 'multipart/signed',
+              'filename': 'smime.p7m'},
+             {'position': 12,
+              'content-type': 'application/pdf',
+              'filename': 'Testdatei.pdf'},
+             {'position': 13,
+              'content-type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              'filename': 'Testdatei.docx'},
+             {'position': 14,
+              'content-type': 'application/pkcs7-signature',
+              'filename': 'smime.p7s'},
+             {'position': 15,
+              'content-type': 'application/pkcs7-signature',
+              'filename': 'smime.p7s'}],
+            pop_size(utils.get_attachments(msg)))
+
+    def test_walk_signed_nested_with_attachments(self):
+        msg = mails.load_mail('signed_nested_with_attachments.eml')
+        parts = list(utils.walk(msg))
+
+        self.assertEqual(16, len(parts))
+        self.assertEqual(
+            ['multipart/mixed', 'multipart/alternative', 'text/plain',
+             'application/rtf', 'multipart/signed', 'multipart/signed',
+             'multipart/mixed', 'text/plain', 'message/rfc822',
+             'multipart/signed', 'multipart/mixed', 'text/plain',
+             'application/pdf',
+             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+             'application/pkcs7-signature', 'application/pkcs7-signature'],
+            [each.get_content_type() for each in parts])
+
+    def test_walk_util_and_walk_yield_same_for_non_signed_multipart(self):
+        self.assertEqual(
+            list(self.msg_empty.walk()),
+            list(utils.walk(self.msg_empty)))
+        self.assertEqual(
+            list(self.msg_ascii.walk()),
+            list(utils.walk(self.msg_ascii)))
+        self.assertEqual(
+            list(self.msg_latin1.walk()),
+            list(utils.walk(self.msg_latin1)))
+        self.assertEqual(
+            list(self.msg_utf8.walk()),
+            list(utils.walk(self.msg_utf8)))
+        self.assertEqual(
+            list(self.msg_attachment.walk()),
+            list(utils.walk(self.msg_attachment)))
+        self.assertEqual(
+            list(self.msg_fwd_attachment.walk()),
+            list(utils.walk(self.msg_fwd_attachment)))
+        self.assertEqual(
+            list(self.msg_nested_attachments.walk()),
+            list(utils.walk(self.msg_nested_attachments)))
+        self.assertEqual(
+            list(self.nested_referenced_image_attachment.walk()),
+            list(utils.walk(self.nested_referenced_image_attachment)))
+        self.assertEqual(
+            list(self.msg_multiple_html_parts.walk()),
+            list(utils.walk(self.msg_multiple_html_parts)))
+        self.assertEqual(
+            list(self.multipart_encoded_with_attachments.walk()),
+            list(utils.walk(self.multipart_encoded_with_attachments)))
+        self.assertEqual(
+            list(self.from_header_with_quotes.walk()),
+            list(utils.walk(self.from_header_with_quotes)))
+        self.assertEqual(
+            list(self.encoded_word_without_lwsp.walk()),
+            list(utils.walk(self.encoded_word_without_lwsp)))
+        self.assertEqual(
+            list(self.newline_in_header.walk()),
+            list(utils.walk(self.newline_in_header)))
+        self.assertEqual(
+            list(self.sticky_encoded_words_in_subject.walk()),
+            list(utils.walk(self.sticky_encoded_words_in_subject)))
 
     def test_get_header(self):
         self.assertEquals('', utils.get_header(self.msg_empty, 'Subject'))

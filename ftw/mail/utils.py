@@ -6,6 +6,7 @@ from email.Utils import mktime_tz
 from email.Utils import parsedate_tz
 from ftw.mail import config
 import re
+import email
 
 
 # a regular expression that matches src attributes of img tags containing a cid
@@ -164,7 +165,7 @@ def get_attachments(msg):
     attachments = []
 
     if msg is not None and msg.is_multipart():
-        for position, part in enumerate(msg.walk()):
+        for position, part in enumerate(walk(msg)):
             content_type, filename, size = parse_part(part)
 
             if filename is None:
@@ -202,7 +203,7 @@ def remove_attachments(msg, positions):
                          'no attachments.')
 
     # get the parts to delete filtering the position
-    parts_to_delete = [part for pos, part in enumerate(msg.walk()) if pos in positions]
+    parts_to_delete = [part for pos, part in enumerate(walk(msg)) if pos in positions]
 
     if len(positions) != len(parts_to_delete):
         raise ValueError('One or more attachments could not be found.')
@@ -274,7 +275,7 @@ def get_position_for_cid(msg, cid):
     """Return the position of the message part with the given Content-Id."""
     position = -1
     cid = '<' + cid + '>'
-    for part in msg.walk():
+    for part in walk(msg):
         position += 1
         if part.get('Content-Id', None) == cid:
             return position
@@ -370,7 +371,7 @@ def fix_broken_meta_tags(html):
 def unwrap_attached_msg(msg):
     """If a msg contains an attachmed message return the attached one."""
     if msg.is_multipart():
-        for part in msg.walk():
+        for part in walk(msg):
             content_type = part.get_content_type()
             if content_type == 'message/rfc822':
                 return part.get_payload(0)
@@ -389,3 +390,20 @@ def safe_utf8(text):
         except UnicodeDecodeError:
             pass
     return text.decode('ascii', 'replace').encode('utf8')
+
+
+def walk(message):
+    """Walk and recursively yield a message's parts in depth-first order.
+
+    Also add special handling to yield parts of multipart/signed messages where
+    one level needs to be unwrapped to correctly parse the message.
+    """
+    for part in message.walk():
+        yield part
+        content_type = part.get_content_type()
+        if content_type == 'multipart/signed':
+            payload = part.get_payload()
+            if isinstance(payload, basestring):
+                unwrapped = email.message_from_string(payload)
+                for subpart in walk(unwrapped):
+                    yield subpart
