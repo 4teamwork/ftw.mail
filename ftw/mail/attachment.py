@@ -39,7 +39,7 @@ class AttachmentView(BrowserView):
 
         if attachment is not None:
             content_type = attachment.get_content_type()
-            filename = utils.get_filename(attachment)
+            filename = utils.get_filename(attachment, content_type)
             if filename is None:
                 raise NotFound
             # make sure we have a unicode string

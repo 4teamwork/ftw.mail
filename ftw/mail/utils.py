@@ -153,7 +153,7 @@ def get_part_size(content_type, part):
 
 def parse_part(part):
     content_type = part.get_content_type()
-    filename = get_filename(part)
+    filename = get_filename(part, content_type)
     size = get_part_size(content_type, part)
     return content_type, filename, size
 
@@ -282,13 +282,20 @@ def get_position_for_cid(msg, cid):
     return None
 
 
-def get_filename(msg):
+def get_filename(msg, content_type=None):
     """Get the filename of a message (part)
     """
     filename = msg.get_filename(None)
 
     if filename is None:
         filename = msg.get_param('Name', None)
+
+    if filename is None:
+        # Outlook does not set filename for attached eml files
+        if content_type is None:
+            content_type = msg.get_content_type()
+        if content_type == "message/rfc822":
+            filename = "attachment.eml"
 
     # if the value is already decoded or another tuple
     # we just take the value and use the decode_header function

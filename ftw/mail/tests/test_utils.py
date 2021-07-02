@@ -108,6 +108,9 @@ class TestUtils(unittest2.TestCase):
             [{'position': 4,
               'content-type': 'multipart/signed',
               'filename': 'smime.p7m'},
+             {'content-type': 'message/rfc822',
+              'filename': 'attachment.eml',
+              'position': 8},
              {'position': 12,
               'content-type': 'application/pdf',
               'filename': 'Testdatei.pdf'},
@@ -270,12 +273,16 @@ class TestUtils(unittest2.TestCase):
         self.assertIn('World', parts[1])
 
     def test_can_decode_encoded_multipart_attachments(self):
-        expected_attachments = [{
-            'content-type': 'message/delivery-status',
-            'filename': 'ATT74209.txt',
-            'position': 4,
-            'size': 0,
-            }]
+        expected_attachments = [
+            {'content-type': 'message/delivery-status',
+             'filename': 'ATT74209.txt',
+             'position': 4,
+             'size': 0},
+            {'content-type': 'message/rfc822',
+             'filename': 'attachment.eml',
+             'position': 10,
+             'size': 1783}
+            ]
         attachments = utils.get_attachments(self.multipart_encoded_with_attachments)
         self.assertEqual(expected_attachments, attachments)
 
