@@ -5,7 +5,7 @@ Changelog
 2.7.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Handle missing filename for EML attachments. [njohner]
 
 
 2.7.0 (2020-06-09)
