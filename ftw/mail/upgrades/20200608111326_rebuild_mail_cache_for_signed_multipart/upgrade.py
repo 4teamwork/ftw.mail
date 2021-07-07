@@ -15,5 +15,7 @@ class RebuildMailCacheForSignedMultipart(UpgradeStep):
     def maybe_rebuild_attachment_infos(self, mail):
         for info in mail.attachment_infos:
             if info.get('content-type') == 'multipart/signed':
+                # In the future it should be avoided to overwrite the permanent
+                # attachment info cache. Gever uses it to store additional data.
                 mail._update_attachment_infos()
                 return
