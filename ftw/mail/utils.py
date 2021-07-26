@@ -5,8 +5,9 @@ from email.header import decode_header
 from email.Utils import mktime_tz
 from email.Utils import parsedate_tz
 from ftw.mail import config
-import re
+from zExceptions import NotFound
 import email
+import re
 
 
 # a regular expression that matches src attributes of img tags containing a cid
@@ -237,7 +238,7 @@ def get_attachment_data(msg, pos):
             break
 
     if not attachment:
-        return None, '', ''
+        raise NotFound
 
     # decode when it's necessary
     filename = get_filename(attachment)
