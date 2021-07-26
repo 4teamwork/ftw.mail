@@ -295,7 +295,12 @@ def get_filename(msg, content_type=None):
         if content_type is None:
             content_type = msg.get_content_type()
         if content_type == "message/rfc822":
-            filename = "attachment.eml"
+            unwrapped = unwrap_attached_msg(msg)
+            subject = get_header(unwrapped, "Subject") or "attachment"
+            # long headers may contain line breaks with tabs.
+            # replace these by a space.
+            subject = subject.replace('\n\t', ' ')
+            filename = subject + ".eml"
 
     # if the value is already decoded or another tuple
     # we just take the value and use the decode_header function

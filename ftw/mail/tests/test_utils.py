@@ -109,7 +109,7 @@ class TestUtils(unittest2.TestCase):
               'content-type': 'multipart/signed',
               'filename': 'smime.p7m'},
              {'content-type': 'message/rfc822',
-              'filename': 'attachment.eml',
+              'filename': 'Test signiert.eml',
               'position': 8},
              {'position': 12,
               'content-type': 'application/pdf',
@@ -279,7 +279,7 @@ class TestUtils(unittest2.TestCase):
              'position': 4,
              'size': 0},
             {'content-type': 'message/rfc822',
-             'filename': 'attachment.eml',
+             'filename': 'Status Report.eml',
              'position': 10,
              'size': 1783}
             ]
