@@ -240,13 +240,6 @@ def get_attachment_data(msg, pos):
     if not attachment:
         raise NotFound
 
-    # decode when it's necessary
-    filename = get_filename(attachment)
-    if not isinstance(filename, unicode):
-        filename = filename.decode('utf-8')
-    # remove line breaks from the filename
-    filename = re.sub(r'\s{1,}', ' ', filename)
-
     content_type = attachment.get_content_type()
     if content_type == 'message/rfc822':
         nested_messages = attachment.get_payload()
@@ -256,6 +249,13 @@ def get_attachment_data(msg, pos):
         data = nested_messages[0].as_string()
     else:
         data = attachment.get_payload(decode=1)
+
+    # decode when it's necessary
+    filename = get_filename(attachment, content_type)
+    if not isinstance(filename, unicode):
+        filename = filename.decode('utf-8')
+    # remove line breaks from the filename
+    filename = re.sub(r'\s{1,}', ' ', filename)
 
     return data, content_type, filename
 
