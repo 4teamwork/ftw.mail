@@ -225,6 +225,40 @@ def remove_attachments(msg, positions):
     return _recursive_remove_parts(msg)
 
 
+def get_attachment_data(msg, pos):
+    """Return a tuple: file-data, content-type and filename extracted from
+    the attachment at position `pos`.
+    """
+    # get attachment at position pos
+    attachment = None
+    for i, part in enumerate(walk(msg)):
+        if i == pos:
+            attachment = part
+            break
+
+    if not attachment:
+        return None, '', ''
+
+    # decode when it's necessary
+    filename = get_filename(attachment)
+    if not isinstance(filename, unicode):
+        filename = filename.decode('utf-8')
+    # remove line breaks from the filename
+    filename = re.sub(r'\s{1,}', ' ', filename)
+
+    content_type = attachment.get_content_type()
+    if content_type == 'message/rfc822':
+        nested_messages = attachment.get_payload()
+        assert len(nested_messages) == 1, (
+            'we expect that attachments with messages only contain one '
+            'message per attachment.')
+        data = nested_messages[0].as_string()
+    else:
+        data = attachment.get_payload(decode=1)
+
+    return data, content_type, filename
+
+
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all
     text parts in HTML format.
