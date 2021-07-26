@@ -3,6 +3,7 @@ from copy import deepcopy
 from email.MIMEText import MIMEText
 from ftw.mail import utils
 from ftw.mail.tests import mails
+from zExceptions import NotFound
 import email
 import unittest2
 
@@ -440,6 +441,25 @@ Content-Transfer-Encoding: base64
                                        self.nested_referenced_image_attachment,
                                        'foo')
         self.assertIn('get_attachment?position=4', html)
+
+    def test_get_attachment_data_for_missing_attachment(self):
+        with self.assertRaises(NotFound):
+            utils.get_attachment_data(self.msg_fwd_attachment, 10)
+
+    def test_get_attachment_data_for_simple_attachment(self):
+        data, content_type, filename = utils.get_attachment_data(
+            self.msg_attachment, 1)
+        self.assertEqual(u'B\xfccher.txt', filename)
+        self.assertEqual('text/plain', content_type)
+        self.assertEqual('\xc3\xa4\xc3\xb6\xc3\x9c\n', data)
+
+    def test_get_attachment_data_for_attached_eml(self):
+        data, content_type, filename = utils.get_attachment_data(
+            self.msg_fwd_attachment, 2)
+        mail = email.message_from_string(data)
+        self.assertEqual('from@example.org', mail.get("from"))
+        self.assertEqual('to@example.org', mail.get("to"))
+        self.assertEqual('Lorem Ipsum', mail.get("Subject"))
 
 
 def test_suite():
