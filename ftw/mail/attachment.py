@@ -40,6 +40,12 @@ class AttachmentView(BrowserView):
         except UnicodeEncodeError:
             filename = filename.encode('utf-8', 'ignore')
 
-        self.request.response.setHeader('Content-Type', content_type)
-        self.request.response.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
+        self.set_content_type(content_type, filename)
+        self.set_content_disposition(content_type, filename)
         return data
+
+    def set_content_type(self, content_type, filename):
+        self.request.response.setHeader('Content-Type', content_type)
+
+    def set_content_disposition(self, content_type, filename):
+        self.request.response.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
