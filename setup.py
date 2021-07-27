@@ -3,7 +3,7 @@ from setuptools import setup
 import os
 
 
-version = '2.7.2'
+version = '2.7.3.dev0'
 
 tests_require = [
     'ftw.builder',
