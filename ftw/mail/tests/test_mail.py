@@ -13,6 +13,7 @@ from unittest2 import TestCase
 from zExceptions import NotFound
 from zope.component import createObject
 from zope.component import queryUtility
+import email
 import os
 
 
@@ -35,6 +36,8 @@ class TestMailIntegration(TestCase):
             os.path.join(here, 'mails', 'invalid_date.txt'), 'r').read()
         self.msg_timezone_date = open(
             os.path.join(here, 'mails', 'time_zone_dates.txt'), 'r').read()
+        self.msg_fwd_attachment = open(
+            os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
 
     def test_adding(self):
         mail = create(Builder('mail'))
@@ -112,11 +115,27 @@ class TestMailIntegration(TestCase):
         self.assertEquals(1, len(attachments))
         self.failUnless('icon' in attachments[0])
 
-    def test_get_attachment(self):
+    def test_get_missing_attachment(self):
         mail = create(Builder('mail'))
 
         view = mail.restrictedTraverse('@@get_attachment')
         self.assertRaises(NotFound, view)
+
+    def test_get_eml_attachment(self):
+        mail = create(Builder('mail')
+                      .with_message(self.msg_fwd_attachment))
+
+        mail.REQUEST.set('position', '2')
+        view = mail.restrictedTraverse('@@get_attachment')
+        data = view()
+        response = mail.REQUEST.response
+        self.assertEqual('inline; filename=Lorem Ipsum.eml',
+                         response.getHeader("Content-Disposition"))
+        self.assertEqual('message/rfc822', response.getHeader('Content-Type'))
+        mail = email.message_from_string(data)
+        self.assertEqual('from@example.org', mail.get("from"))
+        self.assertEqual('to@example.org', mail.get("to"))
+        self.assertEqual('Lorem Ipsum', mail.get("Subject"))
 
     def test_setting_title(self):
         # Try setting the title property

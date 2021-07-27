@@ -4,9 +4,13 @@ from DocumentTemplate.DT_Util import html_quote
 from email.header import decode_header
 from email.Utils import mktime_tz
 from email.Utils import parsedate_tz
+from ftw.mail import _
 from ftw.mail import config
-import re
+from zExceptions import NotFound
+from zope.globalrequest import getRequest
+from zope.i18n import translate
 import email
+import re
 
 
 # a regular expression that matches src attributes of img tags containing a cid
@@ -225,6 +229,40 @@ def remove_attachments(msg, positions):
     return _recursive_remove_parts(msg)
 
 
+def get_attachment_data(msg, pos):
+    """Return a tuple: file-data, content-type and filename extracted from
+    the attachment at position `pos`.
+    """
+    # get attachment at position pos
+    attachment = None
+    for i, part in enumerate(walk(msg)):
+        if i == pos:
+            attachment = part
+            break
+
+    if not attachment:
+        raise NotFound
+
+    content_type = attachment.get_content_type()
+    if content_type == 'message/rfc822':
+        nested_messages = attachment.get_payload()
+        assert len(nested_messages) == 1, (
+            'we expect that attachments with messages only contain one '
+            'message per attachment.')
+        data = nested_messages[0].as_string()
+    else:
+        data = attachment.get_payload(decode=1)
+
+    # decode when it's necessary
+    filename = get_filename(attachment, content_type)
+    if not isinstance(filename, unicode):
+        filename = filename.decode('utf-8')
+    # remove line breaks from the filename
+    filename = re.sub(r'\s{1,}', ' ', filename)
+
+    return data, content_type, filename
+
+
 def get_text_payloads(msg):
     """Go recursivly through the message parts and return a list of all
     text parts in HTML format.
@@ -295,7 +333,15 @@ def get_filename(msg, content_type=None):
         if content_type is None:
             content_type = msg.get_content_type()
         if content_type == "message/rfc822":
-            filename = "attachment.eml"
+            unwrapped = unwrap_attached_msg(msg)
+            default_subject = translate(
+                _(u'no_subject', default=u'[No Subject]'),
+                context=getRequest())
+            subject = get_header(unwrapped, "Subject") or default_subject
+            # long headers may contain line breaks with tabs.
+            # replace these by a space.
+            subject = subject.replace('\n\t', ' ')
+            filename = subject + ".eml"
 
     # if the value is already decoded or another tuple
     # we just take the value and use the decode_header function

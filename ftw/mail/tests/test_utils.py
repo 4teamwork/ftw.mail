@@ -3,6 +3,7 @@ from copy import deepcopy
 from email.MIMEText import MIMEText
 from ftw.mail import utils
 from ftw.mail.tests import mails
+from zExceptions import NotFound
 import email
 import unittest2
 
@@ -32,6 +33,8 @@ class TestUtils(unittest2.TestCase):
             'attachment.txt')
         self.msg_fwd_attachment = mails.load_mail(
             'fwd_attachment.txt')
+        self.fwd_attachment_missing_filename = mails.load_mail(
+            'fwd_attachment_missing_filename.txt')
         self.msg_nested_attachments = mails.load_mail(
             'nested_attachments.txt')
         self.nested_referenced_image_attachment = mails.load_mail(
@@ -109,7 +112,7 @@ class TestUtils(unittest2.TestCase):
               'content-type': 'multipart/signed',
               'filename': 'smime.p7m'},
              {'content-type': 'message/rfc822',
-              'filename': 'attachment.eml',
+              'filename': 'Test signiert.eml',
               'position': 8},
              {'position': 12,
               'content-type': 'application/pdf',
@@ -279,7 +282,7 @@ class TestUtils(unittest2.TestCase):
              'position': 4,
              'size': 0},
             {'content-type': 'message/rfc822',
-             'filename': 'attachment.eml',
+             'filename': 'Status Report.eml',
              'position': 10,
              'size': 1783}
             ]
@@ -440,6 +443,35 @@ Content-Transfer-Encoding: base64
                                        self.nested_referenced_image_attachment,
                                        'foo')
         self.assertIn('get_attachment?position=4', html)
+
+    def test_get_attachment_data_for_missing_attachment(self):
+        with self.assertRaises(NotFound):
+            utils.get_attachment_data(self.msg_fwd_attachment, 10)
+
+    def test_get_attachment_data_for_simple_attachment(self):
+        data, content_type, filename = utils.get_attachment_data(
+            self.msg_attachment, 1)
+        self.assertEqual(u'B\xfccher.txt', filename)
+        self.assertEqual('text/plain', content_type)
+        self.assertEqual('\xc3\xa4\xc3\xb6\xc3\x9c\n', data)
+
+    def test_get_attachment_data_for_attached_eml(self):
+        data, content_type, filename = utils.get_attachment_data(
+            self.msg_fwd_attachment, 2)
+        mail = email.message_from_string(data)
+        self.assertEqual('from@example.org', mail.get("from"))
+        self.assertEqual('to@example.org', mail.get("to"))
+        self.assertEqual('Lorem Ipsum', mail.get("Subject"))
+
+    def test_get_attachment_data_for_attached_eml_with_missing_filename(self):
+        data, content_type, filename = utils.get_attachment_data(
+            self.fwd_attachment_missing_filename, 2)
+        self.assertEqual(u'[No Subject].eml', filename)
+        self.assertEqual('message/rfc822', content_type)
+
+        mail = email.message_from_string(data)
+        self.assertEqual('from@example.org', mail.get("from"))
+        self.assertEqual('to@example.org', mail.get("to"))
 
 
 def test_suite():

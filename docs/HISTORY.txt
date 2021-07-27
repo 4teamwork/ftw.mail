@@ -5,7 +5,8 @@ Changelog
 2.7.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix download of mail attached to mail. [njohner]
+- Use mail subject as filename for eml attachments with missing filename. [njohner]
 
 
 2.7.1 (2021-07-07)
