@@ -4,8 +4,11 @@ from DocumentTemplate.DT_Util import html_quote
 from email.header import decode_header
 from email.Utils import mktime_tz
 from email.Utils import parsedate_tz
+from ftw.mail import _
 from ftw.mail import config
 from zExceptions import NotFound
+from zope.globalrequest import getRequest
+from zope.i18n import translate
 import email
 import re
 
@@ -331,7 +334,10 @@ def get_filename(msg, content_type=None):
             content_type = msg.get_content_type()
         if content_type == "message/rfc822":
             unwrapped = unwrap_attached_msg(msg)
-            subject = get_header(unwrapped, "Subject") or "attachment"
+            default_subject = translate(
+                _(u'no_subject', default=u'[No Subject]'),
+                context=getRequest())
+            subject = get_header(unwrapped, "Subject") or default_subject
             # long headers may contain line breaks with tabs.
             # replace these by a space.
             subject = subject.replace('\n\t', ' ')

@@ -33,6 +33,8 @@ class TestUtils(unittest2.TestCase):
             'attachment.txt')
         self.msg_fwd_attachment = mails.load_mail(
             'fwd_attachment.txt')
+        self.fwd_attachment_missing_filename = mails.load_mail(
+            'fwd_attachment_missing_filename.txt')
         self.msg_nested_attachments = mails.load_mail(
             'nested_attachments.txt')
         self.nested_referenced_image_attachment = mails.load_mail(
@@ -460,6 +462,16 @@ Content-Transfer-Encoding: base64
         self.assertEqual('from@example.org', mail.get("from"))
         self.assertEqual('to@example.org', mail.get("to"))
         self.assertEqual('Lorem Ipsum', mail.get("Subject"))
+
+    def test_get_attachment_data_for_attached_eml_with_missing_filename(self):
+        data, content_type, filename = utils.get_attachment_data(
+            self.fwd_attachment_missing_filename, 2)
+        self.assertEqual(u'[No Subject].eml', filename)
+        self.assertEqual('message/rfc822', content_type)
+
+        mail = email.message_from_string(data)
+        self.assertEqual('from@example.org', mail.get("from"))
+        self.assertEqual('to@example.org', mail.get("to"))
 
 
 def test_suite():
