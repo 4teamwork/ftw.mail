@@ -38,6 +38,8 @@ class TestMailIntegration(TestCase):
             os.path.join(here, 'mails', 'time_zone_dates.txt'), 'r').read()
         self.msg_fwd_attachment = open(
             os.path.join(here, 'mails', 'fwd_attachment.txt'), 'r').read()
+        self.msg_subject_encoding = open(
+            os.path.join(here, 'mails', 'msg_subject_encoding.txt'), 'r').read()
 
     def test_adding(self):
         mail = create(Builder('mail'))
@@ -177,6 +179,12 @@ class TestMailIntegration(TestCase):
         mail = create(Builder('mail').with_message(self.msg_timezone_date))
         self.assertEquals(DateTime('28.08.2010 18:50:04 GMT+2'),
                           mail.get_header('Date', True))
+
+    def test_replace_invalid_characters_from_the_subject_when_setting_the_title(self):
+        mail = create(Builder('mail').with_message(self.msg_subject_encoding))
+        self.assertEquals(
+            u'Re: Test Subject M\xe9dicaleQ1|\x04\ufffdK\x0e\ufffd\u0355\ufffd\ufffd testtesttes neuch\xe2telois - Test',
+            mail.title)
 
     # def test_special(self):
     #     here = os.path.dirname(__file__)
