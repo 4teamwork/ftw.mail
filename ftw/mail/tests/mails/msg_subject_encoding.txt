@@ -1,0 +1,11 @@
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=16347299321.fF1feCe.22
+Content-Transfer-Encoding: 7bit
+To: =?iso-8859-1?q?Friedrich_H=F6lderlin?= <to@example.org>
+From: from@example.org
+Subject: Re: Test Subject =?UTF-8?B?TcOpZGljYWxl?=,
+ =?UTF-8?B?IFLDqXNlYXU=?= testtesttes =?UTF-8?B?bmV1Y2jDonRlbG9pcw==?=, =?UTF-8?B?IE5ldWNow6J0ZWw=?= - Test
+Date: Wed, 28 Aug 2010 INVALID 18:50:04
+Message-Id: <1>
+
+Text

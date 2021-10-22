@@ -13,6 +13,7 @@ from plone.namedfile import field
 from plone.rfc822.interfaces import IPrimaryField
 from premailer import transform as premailer_transform
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.deprecation import deprecate
@@ -60,8 +61,8 @@ class Mail(Item):
         if subject:
             # long headers may contain line breaks with tabs.
             # replace these by a space.
-            subject = subject.replace('\n\t', ' ')
-            self._title = subject.decode('utf8')
+            subject = safe_unicode(subject).replace(u'\n\t', u' ')
+            self._title = subject
 
     @property
     def message(self):
