@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.7.3 (unreleased)
+2.7.3 (2021-10-22)
 ------------------
 
 - Make title extraction from mail subject more decondig error-tolerant. [phgross]
