@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.7.4 (unreleased)
+2.7.4 (2022-11-15)
 ------------------
 
 - Handle cropped filenames of attachments. [phgross]
