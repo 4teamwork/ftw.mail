@@ -39,6 +39,8 @@ class TestUtils(unittest2.TestCase):
             'nested_attachments.txt')
         self.nested_referenced_image_attachment = mails.load_mail(
             'nested_referenced_image_attachment.txt')
+        self.cropped_filename_attachment = mails.load_mail(
+            'cropped_filename_attachment.txt')
         self.msg_multiple_html_parts = mails.load_mail(
             'multiple_html_parts.txt')
         self.multipart_encoded_with_attachments = mails.load_mail(
@@ -472,6 +474,14 @@ Content-Transfer-Encoding: base64
         mail = email.message_from_string(data)
         self.assertEqual('from@example.org', mail.get("from"))
         self.assertEqual('to@example.org', mail.get("to"))
+
+    def test_get_attachment_data_for_attachment_with_cropped_filename(self):
+        self.assertEquals(
+            [{'position': 1,
+              'size': 7,
+              'content-type': 'application/octet-stream',
+              'filename': 'Lorem ipsum dolor sit ametx consetetur sadipscing elitrx seddLorem ipsum dolor sit ametx consetetur sadipscing.txt'}],
+            utils.get_attachments(self.cropped_filename_attachment))
 
 
 def test_suite():

@@ -343,6 +343,17 @@ def get_filename(msg, content_type=None):
             subject = subject.replace('\n\t', ' ')
             filename = subject + ".eml"
 
+    # In some cases the content-disposition header contains multiple name
+    # attributes and pythons email module returns a cropped name without an
+    # extension when using the get_filename method. Therefore we handle this
+    # case explicit as a fallback.
+    if filename and filename.endswith('...'):
+        filenames = [
+            param[1] for param in msg.get_params() if param[0] == 'name']
+
+        if len(filenames) > 1:
+            filename = filenames[-1]
+
     # if the value is already decoded or another tuple
     # we just take the value and use the decode_header function
     if isinstance(filename, tuple):
