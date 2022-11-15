@@ -5,7 +5,7 @@ Changelog
 2.7.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Handle cropped filenames of attachments. [phgross]
 
 
 2.7.3 (2021-10-22)
