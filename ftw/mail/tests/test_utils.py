@@ -490,7 +490,7 @@ Content-Transfer-Encoding: base64
             [{'position': 1,
               'size': 7,
               'content-type': 'application/octet-stream',
-              'filename': 'My\n title is cropped in some places.pdf'}],
+              'filename': 'My title is cropped in some places.pdf'}],
             utils.get_attachments(self.cropped_filename_attachment2))
 
 
