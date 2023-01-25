@@ -5,7 +5,7 @@ Changelog
 2.7.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Handle more cases of cropped attachment filenames. [lgraf]
 
 
 2.7.4 (2022-11-15)

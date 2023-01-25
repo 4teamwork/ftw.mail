@@ -1,0 +1,20 @@
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=908752978
+To: to@example.org
+From: from@example.org
+Subject: Attachment Test
+Date: Thu, 01 Jan 1970 01:00:00 +0100
+Message-Id: <1>
+
+
+--908752978
+Content-Type: application/octet-stream; name="My
+ title is cropped in some places.pdf"
+Content-Disposition: attachment; filename*0="My
+ title is cropped in some places"; filename*1=".pdf"; filename="My
+ title is cropped..."
+Content-Transfer-Encoding: base64
+
+w6TDtsOcCg==
+
+--908752978--

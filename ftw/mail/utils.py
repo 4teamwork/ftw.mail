@@ -351,7 +351,7 @@ def get_filename(msg, content_type=None):
         filenames = [
             param[1] for param in msg.get_params() if param[0] == 'name']
 
-        if len(filenames) > 1:
+        if len(filenames) >= 1:
             filename = filenames[-1]
 
     # if the value is already decoded or another tuple
