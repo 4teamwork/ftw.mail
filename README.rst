@@ -1,6 +1,7 @@
 Introduction
 ============
 
+XXX - run tests
 ``ftw.mail`` provides a dexterity based mail contenttype which allows you to
 upload emails to your Plone site.
 This includes extracting of important data of the email, like:
