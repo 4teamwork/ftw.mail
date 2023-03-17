@@ -326,9 +326,6 @@ def get_filename(msg, content_type=None):
     filename = msg.get_filename(None)
 
     if filename is None:
-        filename = msg.get_param('Name', None)
-
-    if filename is None:
         # Outlook does not set filename for attached eml files
         if content_type is None:
             content_type = msg.get_content_type()
