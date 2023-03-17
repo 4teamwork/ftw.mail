@@ -6,6 +6,7 @@ from email.Utils import mktime_tz
 from email.Utils import parsedate_tz
 from ftw.mail import _
 from ftw.mail import config
+from future.backports.email import utils
 from zExceptions import NotFound
 from zope.globalrequest import getRequest
 from zope.i18n import translate
@@ -323,7 +324,20 @@ def get_position_for_cid(msg, cid):
 def get_filename(msg, content_type=None):
     """Get the filename of a message (part)
     """
-    filename = msg.get_filename(None)
+    filename = None
+    # In some cases the content-disposition header contains multiple filename
+    # attributes and get_param would return the first one. This does not
+    # seem to be the desired behavior as the first one is sometimes
+    # a cropped name or a normalised name without umlauts. Instead we
+    # take the last one.
+    filenames = [param[1] for param in msg.get_params([], header='content-disposition')
+                 if param[0].lower() == 'filename']
+    if filenames:
+        filename = filenames[-1]
+
+    if filename:
+        filename = utils.collapse_rfc2231_value(filename).strip()
+        filename = filename.replace('\n', '')
 
     if filename is None:
         # Outlook does not set filename for attached eml files
@@ -340,31 +354,7 @@ def get_filename(msg, content_type=None):
             subject = subject.replace('\n\t', ' ')
             filename = subject + ".eml"
 
-    # In some cases the content-disposition header contains multiple name
-    # attributes and pythons email module returns a cropped name without an
-    # extension when using the get_filename method. Therefore we handle this
-    # case explicit as a fallback.
-    if filename and filename.endswith('...'):
-        filenames = [
-            param[1] for param in msg.get_params(header='content-disposition')
-            if param[0].lower() == 'filename']
-
-        if len(filenames) >= 1:
-            filename = filenames[-1]
-            if isinstance(filename, basestring):
-                filename = filename.replace('\n', '')
-
-    # if the value is already decoded or another tuple
-    # we just take the value and use the decode_header function
-    if isinstance(filename, tuple):
-        if filename[0] is not None and filename[0] not in ('utf-8', 'utf8'):
-            filename = filename[2].decode(filename[0]).encode('utf-8')
-        else:
-            filename = safe_utf8(filename[2])
-
-    else:
-        filename = safe_decode_header(filename)
-
+    filename = safe_decode_header(filename)
     return filename
 
 

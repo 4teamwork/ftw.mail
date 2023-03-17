@@ -43,6 +43,8 @@ class TestUtils(unittest2.TestCase):
             'cropped_filename_attachment.txt')
         self.cropped_filename_attachment2 = mails.load_mail(
             'cropped_filename_attachment2.txt')
+        self.filename_attachment_with_umlauts = mails.load_mail(
+            'filename_attachment_with_umlauts.txt')
         self.msg_multiple_html_parts = mails.load_mail(
             'multiple_html_parts.txt')
         self.multipart_encoded_with_attachments = mails.load_mail(
@@ -492,6 +494,14 @@ Content-Transfer-Encoding: base64
               'content-type': 'application/octet-stream',
               'filename': 'My title is cropped in some places.pdf'}],
             utils.get_attachments(self.cropped_filename_attachment2))
+
+    def test_get_attachment_data_for_attachment_umlauts_in_filenames(self):
+        self.assertEquals(
+            [{'position': 1,
+              'size': 7,
+              'content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+              'filename': '230228_Besondere Leistungen_M\xc3\xb6gliche F\xc3\xa4lle.xlsx'}],
+            utils.get_attachments(self.filename_attachment_with_umlauts))
 
 
 def test_suite():
