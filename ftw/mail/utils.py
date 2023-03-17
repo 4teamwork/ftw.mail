@@ -346,7 +346,8 @@ def get_filename(msg, content_type=None):
     # case explicit as a fallback.
     if filename and filename.endswith('...'):
         filenames = [
-            param[1] for param in msg.get_params() if param[0].lower() == 'name']
+            param[1] for param in msg.get_params(header='content-disposition')
+            if param[0].lower() == 'filename']
 
         if len(filenames) >= 1:
             filename = filenames[-1]

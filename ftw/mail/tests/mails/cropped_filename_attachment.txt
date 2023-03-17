@@ -13,8 +13,8 @@ Content-Type: application/octet-stream;
  name*1*=Lorem ipsum dolor sit ametx consetetur sadipscing.txt;
  name="Lorem ipsum dolor sit ametx consetetur sadipscing elitrx sed digam..."
 Content-Disposition: attachment;
- filename*0*=UTF-8''Lorem ipsum dolor sit ametx consetetur sadipscing elitrx ;
- filename*1*=sedd Lorem ipsum dolor sit ametx consetetur sadipscing.txt;
+ filename*0*=UTF-8''Lorem ipsum dolor sit ametx consetetur sadipscing elitrx sedd;
+ filename*1*=Lorem ipsum dolor sit ametx consetetur sadipscing.txt;
  filename="Lorem ipsum dolor sit ametx consetetur sadipscing elitrx sed digam..."
 Content-Transfer-Encoding: base64
 
