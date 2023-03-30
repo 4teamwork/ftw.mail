@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.7.6 (unreleased)
+2.7.6 (2023-03-30)
 ------------------
 
 - Further improve attachment filename extraction. [njohner]
