@@ -1,0 +1,20 @@
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=908752978
+Content-Transfer-Encoding: 7bit
+To: to@example.org
+From: from@example.org
+Subject: Attachment Test
+Date: Thu, 01 Jan 1970 01:00:00 +0100
+Message-Id: <1>
+
+
+--908752978
+Content-ID: <16136533043.c18D.10630@mut.4teamwork.ch>
+Content-Type:
+ application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+Content-Disposition: attachment; filename="OSUniLU_Final08_Tab_Für4tw.xlsx"
+Content-Transfer-Encoding: base64
+
+w6TDtsOcCg==
+
+--908752978--

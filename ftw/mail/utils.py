@@ -6,7 +6,7 @@ from email.Utils import mktime_tz
 from email.Utils import parsedate_tz
 from ftw.mail import _
 from ftw.mail import config
-from future.backports.email import utils
+from email import utils
 from zExceptions import NotFound
 from zope.globalrequest import getRequest
 from zope.i18n import translate
