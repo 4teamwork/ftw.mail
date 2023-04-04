@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.7.7 (unreleased)
+2.7.7 (2023-04-04)
 ------------------
 
 - Fix unicode decode error in mail attachment filename extraction. [njohner]
