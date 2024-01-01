@@ -7,10 +7,11 @@ from ftw.mail import utils
 from persistent.mapping import PersistentMapping
 from plone import api
 from plone.dexterity.content import Item
-from plone.directives import form
 from plone.memoize import instance
 from plone.namedfile import field
 from plone.rfc822.interfaces import IPrimaryField
+from plone.supermodel import model
+from plone.supermodel.directives import primary
 from premailer import transform as premailer_transform
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -22,11 +23,11 @@ from zope.interface import implements
 import email
 
 
-class IMail(form.Schema):
+class IMail(model.Schema):
     """An e-mail message.
     """
 
-    form.primary('message')
+    primary('message')
     message = field.NamedBlobFile(
         title=_(u"label_raw_message", default=u"Raw Message"),
         description=_(u"help_raw_message", default=u""),

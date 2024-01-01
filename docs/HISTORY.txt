@@ -5,7 +5,7 @@ Changelog
 2.7.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Remove dependency on deprecated plone.directives.form. [buchi]
 
 
 2.7.7 (2023-04-04)
