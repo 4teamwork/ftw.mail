@@ -136,6 +136,18 @@ class TestUtils(unittest2.TestCase):
               'filename': 'smime.p7s'}],
             pop_size(utils.get_attachments(msg)))
 
+    def test_properly_set_filename_of_eml_attachment_with_missing_extension(self):
+        msg = mails.load_mail('eml_mail_attachment_without_filename_extension.eml')
+        self.assertEquals(
+            [
+                {
+                    'position': 4,
+                    'content-type': 'message/rfc822',
+                    'filename': 'Eine Mitteilung.eml',
+                }
+            ],
+            pop_size(utils.get_attachments(msg)))
+
     def test_walk_signed_nested_with_attachments(self):
         msg = mails.load_mail('signed_nested_with_attachments.eml')
         parts = list(utils.walk(msg))

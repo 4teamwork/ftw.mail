@@ -11,6 +11,7 @@ from zExceptions import NotFound
 from zope.globalrequest import getRequest
 from zope.i18n import translate
 import email
+import os
 import re
 
 
@@ -351,11 +352,21 @@ def get_filename(msg, content_type=None):
             subject = get_header(unwrapped, "Subject") or default_subject
             # long headers may contain line breaks with tabs.
             # replace these by a space.
-            subject = subject.replace('\n\t', ' ')
-            filename = subject + ".eml"
+            filename = subject.replace('\n\t', ' ')
+
+    if content_type == "message/rfc822" and not has_extension(filename):
+        # Always add the .eml extension if it is missing. We do this only for
+        # .eml files because other file formats will be handled correctly by
+        # outlook or the msgconvert.
+        filename += ".eml"
 
     filename = safe_decode_header(filename)
     return filename
+
+
+def has_extension(filename):
+    filename, extension = os.path.splitext(filename)
+    return bool(extension)
 
 
 def get_best_alternative(alternatives):
