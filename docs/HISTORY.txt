@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.8.1 (unreleased)
+2.8.1 (2025-04-25)
 ------------------
 
 - Properly extract the file extension of eml-attachments without a filename. [elioschmutz]
